@@ -16,12 +16,20 @@ on:
         options:
           - morning
           - closing
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'run_briefing.py'
+      - '.github/workflows/**'
 
 jobs:
   run-radar:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
 
     steps:
       - name: Checkout do Repositorio
@@ -39,13 +47,19 @@ jobs:
           pip install -r requirements.txt
 
       - name: Executar Rotina Matinal (Abertura)
-        if: ${{ github.event.schedule == '35 11 * * 1-5' || github.event.inputs.mode == 'morning' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode != 'closing') }}
+        if: ${{ github.event.schedule == '35 11 * * 1-5' || github.event.inputs.mode == 'morning' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode != 'closing') || github.event_name == 'push' }}
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
         run: |
           python run_briefing.py
@@ -53,6 +67,8 @@ jobs:
       - name: Executar Rotina Vespertina (Fechamento & Auditoria)
         if: ${{ github.event.schedule == '15 21 * * 1-5' || github.event.inputs.mode == 'closing' }}
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

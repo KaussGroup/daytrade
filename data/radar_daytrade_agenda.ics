@@ -1,0 +1,29 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//KaussGroup//Radar Day Trade B3//PT-BR
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Radar Day Trade B3
+X-WR-TIMEZONE:America/Sao_Paulo
+BEGIN:VEVENT
+UID:radar-daytrade-b3-daily@kaussgroup.com
+DTSTAMP:20261012T120000Z
+DTSTART;TZID=America/Sao_Paulo:20261013T083500
+DTEND;TZID=America/Sao_Paulo:20261013T085500
+RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR
+SUMMARY:🎯 Radar Day Trade B3 (WIN & WDO)
+DESCRIPTION:Plano de Voo Matinal, projeções em pontos, alvos e travas de stop para Mini-Índice e Mini-Dólar antes da abertura do pregão.\n\nAcesse o painel direto: https://github.com/KaussGroup/daytrade/blob/main/index.html\nAlertas e Histórico: https://github.com/KaussGroup/daytrade/issues
+LOCATION:B3 / Online
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:-PT10M
+ACTION:DISPLAY
+DESCRIPTION:Lembrete: Radar B3 pronto para conferir antes das 09:00!
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT0M
+ACTION:DISPLAY
+DESCRIPTION:Radar B3: Horário do pregão!
+END:VALARM
+END:VEVENT
+END:VCALENDAR

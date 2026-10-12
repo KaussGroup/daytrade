@@ -5,6 +5,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from datetime import datetime
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 def send_telegram_notification(analysis, dashboard_url=""):
     """Envia o resumo executivo matinal formatado direto no Telegram."""
     bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -69,7 +74,7 @@ def send_email_notification(analysis, dashboard_url=""):
     email_to = os.getenv("NOTIFICATION_EMAIL")
     
     if not resend_key or not email_to:
-        print("ℹ️ E-mail não configurado (RESEND_API_KEY ou NOTIFICATION_EMAIL ausentes). Pulando...")
+        print("ℹ️ Resend não configurado (RESEND_API_KEY ou NOTIFICATION_EMAIL ausentes). Pulando...")
         return False
         
     win = analysis["win"]
@@ -123,14 +128,174 @@ def send_email_notification(analysis, dashboard_url=""):
             print("✔ E-mail enviado com sucesso via Resend!")
             return True
         else:
-            print(f"⚠️ Erro ao enviar e-mail: {res.text}")
+            print(f"⚠️ Erro ao enviar e-mail via Resend: {res.text}")
             return False
     except Exception as e:
-        print(f"⚠️ Falha no envio de e-mail: {e}")
+        print(f"⚠️ Falha no envio de e-mail via Resend: {e}")
+        return False
+
+def send_smtp_email_notification(analysis, dashboard_url=""):
+    """Envia e-mail direto por SMTP padrão (Gmail, Outlook ou servidor próprio)."""
+    smtp_server = os.getenv("SMTP_SERVER")
+    smtp_port = int(os.getenv("SMTP_PORT", "587"))
+    smtp_user = os.getenv("SMTP_USER")
+    smtp_pass = os.getenv("SMTP_PASSWORD")
+    email_to = os.getenv("NOTIFICATION_EMAIL", smtp_user)
+
+    if not smtp_server or not smtp_user or not smtp_pass or not email_to:
+        return False
+
+    win = analysis["win"]
+    wdo = analysis["wdo"]
+    fp = analysis.get("flight_plan", {})
+    today_str = datetime.now().strftime("%d/%m/%Y")
+
+    subject = f"🎯 Radar Day Trade B3 [{today_str}] - WIN: {win.get('trend_badge', win['direction'])} | WDO: {wdo.get('trend_badge', wdo['direction'])}"
+
+    body = f"""Olá Eduardo,
+
+Aqui está o seu Radar de Abertura para o pregão de hoje ({today_str}):
+
+==================================================
+⚡ PLANO DE VOO EM 30 SEGUNDOS
+==================================================
+• Mini-Índice (WIN): {win.get('trend_badge', win['direction'])}
+• Mini-Dólar (WDO):  {wdo.get('trend_badge', wdo['direction'])}
+• Risco Geral:       {analysis.get('risk_score', 5)}/10 ({analysis.get('risk_label', 'Moderado')})
+• Zona de Perigo:    {fp.get('danger')}
+
+==================================================
+📊 MINI-ÍNDICE (WIN)
+==================================================
+• Projeção (%):    {win['expected_range']} ({win.get('points_range')})
+• 🎯 Alvo 1:       {win.get('target_1_val')}
+• 🎯 Alvo 2:       {win.get('target_2_val')}
+• 🛡️ Trava Stop:   {win.get('trava_val')}
+
+==================================================
+💵 MINI-DÓLAR (WDO)
+==================================================
+• Projeção (%):    {wdo['expected_range']} ({wdo.get('points_range')})
+• 🎯 Alvo 1:       {wdo.get('target_1_val')}
+• 🎯 Alvo 2:       {wdo.get('target_2_val')}
+• 🛡️ Trava Stop:   {wdo.get('trava_val')}
+
+Acesse o painel completo: {dashboard_url if dashboard_url else 'https://github.com/KaussGroup/daytrade'}
+
+Bons trades!
+"""
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = smtp_user
+        msg['To'] = email_to
+        msg['Subject'] = subject
+        msg.attach(MIMEText(body, 'plain', 'utf-8'))
+
+        server = smtplib.SMTP(smtp_server, smtp_port, timeout=15)
+        server.starttls()
+        server.login(smtp_user, smtp_pass)
+        server.sendmail(smtp_user, [email_to], msg.as_string())
+        server.quit()
+        print("✔ E-mail enviado com sucesso via SMTP!")
+        return True
+    except Exception as e:
+        print(f"⚠️ Falha no envio por SMTP: {e}")
+        return False
+
+def send_github_issue_notification(analysis, dashboard_url=""):
+    """
+    Cria uma Issue no repositório GitHub via GITHUB_TOKEN nativo do GitHub Actions.
+    Como o repositório é seu, o GitHub dispara automaticamente um E-MAIL e NOTIFICAÇÃO PUSH
+    no seu celular com todo o relatório de alvos, travas e links, SEM PRECISAR DE NENHUMA CHAVE EXTRA!
+    """
+    token = os.getenv("GITHUB_TOKEN")
+    repo = os.getenv("GITHUB_REPOSITORY", "KaussGroup/daytrade")
+
+    if not token:
+        print("ℹ️ GITHUB_TOKEN não disponível no ambiente local. No GitHub Actions ele roda automático!")
+        return False
+
+    win = analysis["win"]
+    wdo = analysis["wdo"]
+    fp = analysis.get("flight_plan", {})
+    risk_score = analysis.get("risk_score", 5)
+    risk_label = analysis.get("risk_label", "Moderado")
+    today_str = datetime.now().strftime("%d/%m/%Y")
+
+    title = f"🎯 Radar Day Trade [{today_str}] | WIN: {win.get('trend_badge', win['direction'])} | WDO: {wdo.get('trend_badge', wdo['direction'])}"
+
+    body = f"""# 🎯 Radar de Abertura Day Trade B3 — {today_str}
+
+> **Plano de Voo Matinal (30 Segundos)**  
+> Alerta disparado automaticamente antes da abertura do pregão (08:35 BRT).
+
+---
+
+### ⚡ Resumo Executivo
+* **Mini-Índice (WIN):** {win.get('trend_badge', win['direction'])}
+* **Mini-Dólar (WDO):** {wdo.get('trend_badge', wdo['direction'])}
+* **Nível de Risco:** **{risk_score}/10** ({risk_label})
+* **⚠️ Zona de Perigo:** {fp.get('danger', 'Atenção aos horários de volatilidade (10:00 e 10:30).')}
+
+---
+
+### 📊 Mini-Índice (WIN)
+* **Projeção (%):** `{win['expected_range']}`
+* **Amplitude:** `{win.get('points_range')}`
+* 🎯 **Alvo 1:** `{win.get('target_1_val')}`
+* 🎯 **Alvo 2:** `{win.get('target_2_val')}`
+* 🛡️ **Trava de Stop:** `{win.get('trava_val')}`
+
+---
+
+### 💵 Mini-Dólar (WDO)
+* **Projeção (%):** `{wdo['expected_range']}`
+* **Amplitude:** `{wdo.get('points_range')}`
+* 🎯 **Alvo 1:** `{wdo.get('target_1_val')}`
+* 🎯 **Alvo 2:** `{wdo.get('target_2_val')}`
+* 🛡️ **Trava de Stop:** `{wdo.get('trava_val')}`
+
+---
+
+### 🔗 Acesso Rápido ao Painel
+* 🖥️ **[Abrir Arquivo do Painel no Repositório](https://github.com/{repo}/blob/main/index.html)**
+* 📱 **[Abrir Visualização Renderizada Web](https://htmlpreview.github.io/?https://github.com/{repo}/blob/main/index.html)**
+{f'* 🌐 [Painel Live]({dashboard_url})' if dashboard_url else ''}
+
+---
+_Gerado automaticamente pelo robô KaussGroup Radar B3._
+"""
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github.v3+json",
+        "Content-Type": "application/json"
+    }
+
+    url = f"https://api.github.com/repos/{repo}/issues"
+    payload = {
+        "title": title,
+        "body": body,
+        "labels": ["radar-b3", "pregao-do-dia"]
+    }
+
+    try:
+        res = requests.post(url, headers=headers, json=payload, timeout=10)
+        if res.status_code in [200, 201]:
+            issue_data = res.json()
+            print(f"✔ Notificação por GitHub Issue criada com sucesso! Issue #{issue_data.get('number')}: {issue_data.get('html_url')}")
+            return True
+        else:
+            print(f"⚠️ Status ao criar Issue no GitHub: {res.status_code} - {res.text}")
+            return False
+    except Exception as e:
+        print(f"⚠️ Falha ao criar Issue no GitHub: {e}")
         return False
 
 def notify_all(analysis, dashboard_url=""):
-    """Dispara todas as notificações ativas (Telegram e E-mail)."""
+    """Dispara todas as notificações ativas (GitHub Issue/Email, Telegram, Resend, SMTP)."""
+    gh_ok = send_github_issue_notification(analysis, dashboard_url)
     t_ok = send_telegram_notification(analysis, dashboard_url)
     e_ok = send_email_notification(analysis, dashboard_url)
-    return t_ok or e_ok
+    s_ok = send_smtp_email_notification(analysis, dashboard_url)
+    return gh_ok or t_ok or e_ok or s_ok
