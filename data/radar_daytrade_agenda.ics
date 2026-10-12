@@ -12,8 +12,8 @@ DTSTART;TZID=America/Sao_Paulo:20261013T083500
 DTEND;TZID=America/Sao_Paulo:20261013T085500
 RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR
 SUMMARY:🎯 Radar Day Trade B3 (WIN & WDO)
-DESCRIPTION:Plano de Voo Matinal, projeções em pontos, alvos e travas de stop para Mini-Índice e Mini-Dólar antes da abertura do pregão.\n\nAcesse o painel direto: https://github.com/KaussGroup/daytrade/blob/main/index.html\nAlertas e Histórico: https://github.com/KaussGroup/daytrade/issues
-LOCATION:B3 / Online
+DESCRIPTION:Plano de Voo Matinal, projeções em pontos, alvos e travas de stop para Mini-Índice e Mini-Dólar antes da abertura do pregão.\n\n🌐 Acesso Direto ao Painel Visual: https://kaussgroup.github.io/daytrade/\n📊 Alertas e Histórico: https://github.com/KaussGroup/daytrade/issues
+LOCATION:Online / B3
 STATUS:CONFIRMED
 BEGIN:VALARM
 TRIGGER:-PT10M

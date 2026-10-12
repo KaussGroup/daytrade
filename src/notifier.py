@@ -265,9 +265,9 @@ def send_github_issue_notification(analysis, dashboard_url=""):
 ---
 
 ### 🔗 Acesso Rápido ao Painel
-* 🖥️ **[Abrir Painel no GitHub](https://github.com/{repo}/blob/main/index.html)**
+* 🌐 **[Abrir Painel Visual Completo](https://kaussgroup.github.io/daytrade/)**
 * 📊 **[Ver Histórico e Alertas](https://github.com/{repo}/issues)**
-{f'* 🌐 [Painel Web Live]({dashboard_url})' if dashboard_url else ''}
+* 🖥️ **[Ver Código no Repositório](https://github.com/{repo}/blob/main/index.html)**
 
 ---
 _Gerado automaticamente pelo robô KaussGroup Radar B3._
