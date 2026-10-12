@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radar Day Trade B3 - 12/10/2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #070a10;
+            color: #f1f5f9;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-amber-500/30 selection:text-amber-300 pb-12">
+    
+    <!-- Top Bar -->
+    <header class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center font-black text-slate-950 text-sm shadow-lg shadow-amber-500/20">
+                    B3
+                </div>
+                <div>
+                    <h1 class="text-sm font-extrabold tracking-tight text-white flex items-center gap-2">
+                        RADAR DE ABERTURA DAY TRADE
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                            AO VIVO
+                        </span>
+                    </h1>
+                    <p class="text-[11px] text-slate-400">Projeção em Pontos | Travas de Stop | Pré-Mercado NY</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4 text-xs">
+                <div class="text-right">
+                    <p class="text-slate-400 text-[10px]">Data do Pregão</p>
+                    <p class="font-mono font-bold text-slate-200">12/10/2026 | 15:14 BRT</p>
+                </div>
+                <div class="h-6 w-px bg-slate-800"></div>
+                <div class="text-right">
+                    <p class="text-slate-400 text-[10px]">Humor Global</p>
+                    <span class="font-bold text-amber-400">NEUTRO / EQUILIBRADO</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-5 space-y-5">
+
+        <!-- 1. HERO: PLANO DE VOO EM 30 SEGUNDOS -->
+        <section class="bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950 border-2 border-amber-500/40 rounded-2xl p-4 sm:p-5 shadow-2xl relative overflow-hidden">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-3.5 pb-2.5 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-black">⚡</span>
+                    <h2 class="text-xs font-black uppercase tracking-wider text-amber-400">
+                        Plano de Voo em 30 Segundos (Resumo Executivo)
+                    </h2>
+                </div>
+                <button id="copyBtn" onclick="copyTradePlan()" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm">
+                    📋 Copiar Níveis de Trade
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800">
+                    <div class="flex items-center gap-2 text-xs font-bold text-emerald-400 mb-1">
+                        <span>📊 Mini-Índice (WIN)</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded border bg-emerald-500/10 border-emerald-500/30 uppercase">LATERAL</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">Consolidação inicial (-0.3% a +0.3%). Aguardar definição entre 209.694 e 208.440 pts. Trava em 208.022 pts.</p>
+                </div>
+
+                <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800">
+                    <div class="flex items-center gap-2 text-xs font-bold text-blue-400 mb-1">
+                        <span>💵 Mini-Dólar (WDO)</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded border bg-blue-500/10 border-blue-500/30 uppercase">BAIXA</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">Vendedor acompanhando recuo do Forex. Buscar 1º alvo em 4.971.3 pts e expansão em 4.946.4 pts. Trava de stop nos 5.003.8 pts.</p>
+                </div>
+
+                <div class="bg-slate-950/70 p-3 rounded-xl border border-rose-500/20">
+                    <div class="flex items-center gap-1.5 text-xs font-bold text-rose-400 mb-1">
+                        <span>⚠️ Zona de Perigo</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">Atenção máxima às 10:00 (Abertura do Mercado à Vista B3) e 10:30 (Abertura de Wall Street). Evite ordens a mercado durante o leilão.</p>
+                </div>
+            </div>
+
+            <!-- Termômetro Visual de Estresse do Mercado (Barra 1 a 10) -->
+            <div class="mt-3.5 pt-3 border-t border-slate-800/80">
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="text-slate-400 font-medium">Termômetro de Estresse / Ruído do Mercado:</span>
+                    <span class="font-mono font-bold text-slate-200"><span class="text-amber-400">5/10</span> — Mercado Misto / Ruído Moderado</span>
+                </div>
+                <div class="flex gap-1.5">
+                    <div class="h-2 flex-1 rounded-full bg-emerald-500"></div><div class="h-2 flex-1 rounded-full bg-emerald-500"></div><div class="h-2 flex-1 rounded-full bg-emerald-500"></div><div class="h-2 flex-1 rounded-full bg-amber-500"></div><div class="h-2 flex-1 rounded-full bg-amber-500"></div><div class="h-2 flex-1 rounded-full bg-slate-800"></div><div class="h-2 flex-1 rounded-full bg-slate-800"></div><div class="h-2 flex-1 rounded-full bg-slate-800"></div><div class="h-2 flex-1 rounded-full bg-slate-800"></div><div class="h-2 flex-1 rounded-full bg-slate-800"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. PLACAR DE ASSERTIVIDADE (ÚLTIMOS 60 PREGÕES) -->
+        <section class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-base">🎯</span>
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">
+                        Índice de Assertividade do Sistema
+                    </h2>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+                        Últimos 60 pregões analisados
+                    </span>
+                </div>
+                <span class="text-[11px] text-slate-400">Conferência matemática: Viés matinal vs. Fechamento oficial</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3.5 flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] text-slate-400 font-medium">Taxa Geral Combinada</p>
+                        <p class="text-2xl font-black text-white font-mono mt-0.5">80.8%</p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">97 acertos em 120 projeções</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full border-4 border-amber-500/40 flex items-center justify-center font-bold text-xs text-amber-400 font-mono">
+                        60D
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3.5 flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] text-slate-400 font-medium">Mini-Índice (WIN)</p>
+                        <p class="text-2xl font-black text-emerald-400 font-mono mt-0.5">81.7%</p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">49 de 60 pregões acertados</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full border-4 border-emerald-500/40 flex items-center justify-center font-bold text-xs text-emerald-400 font-mono">
+                        WIN
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3.5 flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] text-slate-400 font-medium">Mini-Dólar (WDO)</p>
+                        <p class="text-2xl font-black text-blue-400 font-mono mt-0.5">80.0%</p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">48 de 60 pregões acertados</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full border-4 border-blue-500/40 flex items-center justify-center font-bold text-xs text-blue-400 font-mono">
+                        WDO
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. O CORAÇÃO DO TRADE: DIRECIONAL, PONTOS E TRAVAS -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- CARD MINI-ÍNDICE (WIN) -->
+            <div class="bg-slate-900 border-2 border-slate-800 hover:border-slate-700 transition rounded-2xl p-5 shadow-xl relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute top-0 right-0 w-36 h-36 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none"></div>
+                <div>
+                    <div class="flex items-center justify-between mb-3.5">
+                        <div class="flex items-center gap-2.5">
+                            <span class="text-xl">📊</span>
+                            <div>
+                                <h2 class="text-sm font-extrabold text-white">MINI-ÍNDICE (WIN)</h2>
+                                <p class="text-[11px] text-slate-400">Abertura: 09:00 BRT</p>
+                            </div>
+                        </div>
+                        <span class="px-3.5 py-1 text-xs font-black rounded-lg border bg-slate-800 text-slate-300 border-slate-700 font-bold flex items-center gap-1.5 shadow-sm">
+                            <span>◆ LATERAL / CONSOLIDAÇÃO</span>
+                        </span>
+                    </div>
+
+                    <!-- Bloco Vertical Limpo, Fluido e Objetivo -->
+                    <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 mb-3.5 font-mono text-xs space-y-2">
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5 font-sans">
+                            <span class="text-slate-400">Projeção (%):</span>
+                            <span class="font-black text-slate-300 font-mono text-sm">-0.3% a +0.3%</span>
+                        </div>
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5 font-sans">
+                            <span class="text-slate-400">Amplitude em Pontos:</span>
+                            <span class="font-bold text-amber-400 font-mono">-627 a +627 pts</span>
+                        </div>
+                        <div class="flex items-center justify-between text-emerald-400">
+                            <span class="font-sans font-semibold">🎯 Alvo 1 (-0.3%):</span>
+                            <span class="font-bold">209.694 pts (+627 pts)</span>
+                        </div>
+                        <div class="flex items-center justify-between text-emerald-400">
+                            <span class="font-sans font-semibold">🎯 Alvo 2 (+0.3%):</span>
+                            <span class="font-bold">208.440 pts (-627 pts)</span>
+                        </div>
+                        <div class="flex items-center justify-between text-rose-400 border-t border-slate-800/80 pt-1.5">
+                            <span class="font-sans font-semibold">🛡️ Trava de Stop:</span>
+                            <span class="font-bold">208.022 pts (-1045 pts)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-xs text-slate-300 bg-slate-950/40 border border-slate-800/60 rounded-xl p-3">
+                    <span class="text-amber-400 font-bold block mb-1 text-[11px]">⚡ Catalisador Principal:</span>
+                    <p class="leading-relaxed">Variações mistas entre commodities e bolsas na madrugada; abertura sem tendência direcional forte.</p>
+                </div>
+            </div>
+
+            <!-- CARD MINI-DÓLAR (WDO) -->
+            <div class="bg-slate-900 border-2 border-slate-800 hover:border-slate-700 transition rounded-2xl p-5 shadow-xl relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute top-0 right-0 w-36 h-36 bg-blue-500/5 rounded-full blur-2xl pointer-events-none"></div>
+                <div>
+                    <div class="flex items-center justify-between mb-3.5">
+                        <div class="flex items-center gap-2.5">
+                            <span class="text-xl">💵</span>
+                            <div>
+                                <h2 class="text-sm font-extrabold text-white">MINI-DÓLAR (WDO)</h2>
+                                <p class="text-[11px] text-slate-400">Abertura: 09:00 BRT</p>
+                            </div>
+                        </div>
+                        <span class="px-3.5 py-1 text-xs font-black rounded-lg border bg-rose-500/20 text-rose-400 border-rose-500/40 font-bold flex items-center gap-1.5 shadow-sm">
+                            <span>▼ TENDÊNCIA DE BAIXA</span>
+                        </span>
+                    </div>
+
+                    <!-- Bloco Vertical Limpo, Fluido e Objetivo -->
+                    <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 mb-3.5 font-mono text-xs space-y-2">
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5 font-sans">
+                            <span class="text-slate-400">Projeção (%):</span>
+                            <span class="font-black text-rose-400 font-mono text-sm">-0.8% a -0.3%</span>
+                        </div>
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5 font-sans">
+                            <span class="text-slate-400">Amplitude em Pontos:</span>
+                            <span class="font-bold text-amber-400 font-mono">-39.9 a -15.0 pts</span>
+                        </div>
+                        <div class="flex items-center justify-between text-rose-400">
+                            <span class="font-sans font-semibold">🎯 Alvo 1 (-0.3%):</span>
+                            <span class="font-bold">4.971.3 pts (-15.0 pts)</span>
+                        </div>
+                        <div class="flex items-center justify-between text-rose-400">
+                            <span class="font-sans font-semibold">🎯 Alvo 2 (-0.8%):</span>
+                            <span class="font-bold">4.946.4 pts (-39.9 pts)</span>
+                        </div>
+                        <div class="flex items-center justify-between text-emerald-400 border-t border-slate-800/80 pt-1.5">
+                            <span class="font-sans font-semibold">🛡️ Trava de Stop:</span>
+                            <span class="font-bold">5.003.8 pts (+17.5 pts)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-xs text-slate-300 bg-slate-950/40 border border-slate-800/60 rounded-xl p-3">
+                    <span class="text-amber-400 font-bold block mb-1 text-[11px]">⚡ Catalisador Principal:</span>
+                    <p class="leading-relaxed">Arrefecimento do Dólar global (DXY: +0.34%) e alta de commodities favorecem entrada de divisas.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. PRÉ-MERCADO DE NOVA YORK (ADRs BRASIL) & CÂMBIO -->
+        <section class="bg-gradient-to-r from-slate-900 to-slate-950 border border-amber-500/30 rounded-2xl p-4 sm:p-5 shadow-lg">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div>
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                        <span>🔥</span> Pré-Mercado de Nova York (ADRs Brasil em Wall Street)
+                    </h2>
+                    <p class="text-[11px] text-slate-400">Negociações a partir das 05h BRT em NY: antecipam a abertura de Petrobras, Vale, Itaú e Ibovespa</p>
+                </div>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold uppercase">Alta Relevância</span>
+            </div>
+
+            <!-- Destaque do Dólar no Pré-Mercado -->
+            <div class="mb-3.5 p-3 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-lg">💵</span>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-white">DÓLAR NO PRÉ-MERCADO INTERNACIONAL (FOREX)</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-black border uppercase bg-emerald-500/20 text-emerald-400 border-emerald-500/40">▼ DÓLAR CAINDO NO PRÉ-MERCADO (-0.63%)</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Paridade USD/BRL negociada a R$ 4.99 no Forex em recuo, favorecendo abertura com gap de baixa no WDO.</p>
+                    </div>
+                </div>
+                <span class="text-[10px] text-slate-500 font-mono">Forex 24h</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-bold text-slate-200 flex items-center gap-1.5">🇧🇷 EWZ (Brasil em NY)</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +0.24%</span>
+                </div>
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-base font-black text-slate-100 font-mono">43.65</span>
+                    <span class="text-xs font-bold font-mono text-emerald-400">+0.24%</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2 mt-1">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><span class="text-amber-400/90 font-medium">Motivo:</span> Pré-mercado do EWZ (Ibovespa em NY) em alta, indicando fluxo comprador de fundos estrangeiros.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-bold text-slate-200 flex items-center gap-1.5">⛏️ Vale ADR (VALE)</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.37%</span>
+                </div>
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-base font-black text-slate-100 font-mono">13.57</span>
+                    <span class="text-xs font-bold font-mono text-rose-400">-0.37%</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2 mt-1">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><span class="text-amber-400/90 font-medium">Motivo:</span> ADR da Vale recuando no pré-mercado de NY, indicando abertura defensiva para mineradoras na B3.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-bold text-slate-200 flex items-center gap-1.5">🛢️ Petrobras ADR (PBR)</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +0.20%</span>
+                </div>
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-base font-black text-slate-100 font-mono">25.35</span>
+                    <span class="text-xs font-bold font-mono text-emerald-400">+0.20%</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2 mt-1">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><span class="text-amber-400/90 font-medium">Motivo:</span> ADR da Petrobras em alta no pré-mercado de Wall Street, dando suporte de abertura a PETR4.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-bold text-slate-200 flex items-center gap-1.5">🏦 Itaú ADR (ITUB)</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.88%</span>
+                </div>
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-base font-black text-slate-100 font-mono">10.07</span>
+                    <span class="text-xs font-bold font-mono text-rose-400">-0.88%</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2 mt-1">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><span class="text-amber-400/90 font-medium">Motivo:</span> ADR do Itaú em baixa no pré-mercado de NY, sinalizando cautela institucional com bancos na B3.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-bold text-slate-200 flex items-center gap-1.5">💵 Dólar / Real (USD/BRL Pré-Mkt)</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.63%</span>
+                </div>
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-base font-black text-slate-100 font-mono">4.99</span>
+                    <span class="text-xs font-bold font-mono text-rose-400">-0.63%</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2 mt-1">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><span class="text-amber-400/90 font-medium">Motivo:</span> Entrada de fluxo comercial e alívio no risco-país puxam cotação do dólar para baixo.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-bold text-slate-200 flex items-center gap-1.5">💵 DXY (Dólar Global)</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +0.34%</span>
+                </div>
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-base font-black text-slate-100 font-mono">102.55</span>
+                    <span class="text-xs font-bold font-mono text-emerald-400">+0.34%</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2 mt-1">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><span class="text-amber-400/90 font-medium">Motivo:</span> Moeda americana fortalecida globalmente com postura hawkish do Fed e busca por porto seguro.</p>
+            </div>
+        </div>
+        
+            </div>
+        </section>
+
+        <!-- 5. COMMODITIES GLOBAIS (PETRÓLEO, GÁS, MINÉRIO, OURO) -->
+        <section class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div>
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                        <span>⛏️</span> Commodities Globais (Minério, Petróleo, Gás & Ouro)
+                    </h2>
+                    <p class="text-[11px] text-slate-400">Termômetro industrial, energético e ativo de proteção global</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-bold text-slate-200 flex items-center gap-1.5">⛏️ Minério de Ferro 62%</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.33%</span>
+                </div>
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-base font-black text-slate-100 font-mono">90.68</span>
+                    <span class="text-xs font-bold font-mono text-rose-400">-0.33%</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2 mt-1">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><span class="text-amber-400/90 font-medium">Motivo:</span> Cautela com demanda siderúrgica chinesa e restrições ambientais em usinas reduzem o minério.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-bold text-slate-200 flex items-center gap-1.5">🛢️ Petróleo Brent</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +2.09%</span>
+                </div>
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-base font-black text-slate-100 font-mono">106.91</span>
+                    <span class="text-xs font-bold font-mono text-emerald-400">+2.09%</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2 mt-1">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><span class="text-amber-400/90 font-medium">Motivo:</span> Tensões geopolíticas com risco de interrupção de oferta no Oriente Médio e disciplina da OPEP+.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-bold text-slate-200 flex items-center gap-1.5">🔥 Gás Natural</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -2.45%</span>
+                </div>
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-base font-black text-slate-100 font-mono">3.14</span>
+                    <span class="text-xs font-bold font-mono text-rose-400">-2.45%</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2 mt-1">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><span class="text-amber-400/90 font-medium">Motivo:</span> Armazenamento elevado de gás natural e temperaturas amenas limitam as cotações.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-bold text-slate-200 flex items-center gap-1.5">🪙 Ouro (Gold)</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.52%</span>
+                </div>
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-base font-black text-slate-100 font-mono">4,194.30</span>
+                    <span class="text-xs font-bold font-mono text-rose-400">-0.52%</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2 mt-1">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><span class="text-amber-400/90 font-medium">Motivo:</span> Ouro em baixa com investidores preferindo alocação em renda variável e títulos soberanos.</p>
+            </div>
+        </div>
+        
+            </div>
+        </section>
+
+        <!-- 6. WALL STREET, JUROS & MOEDAS GLOBAIS -->
+        <section class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div>
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                        <span>🌐</span> Wall Street, Volatilidade (VIX), Câmbio & Ásia
+                    </h2>
+                    <p class="text-[11px] text-slate-400">Índices americanos, DXY, Treasury 10 Anos e bolsas asiáticas</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-bold text-slate-200 flex items-center gap-1.5">🇺🇸 S&P 500 Futuro</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.10%</span>
+                </div>
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-base font-black text-slate-100 font-mono">7,851.75</span>
+                    <span class="text-xs font-bold font-mono text-rose-400">-0.10%</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2 mt-1">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><span class="text-amber-400/90 font-medium">Motivo:</span> Aversão a risco em Wall Street com temores de juros restritivos do Fed e realização de lucros.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-bold text-slate-200 flex items-center gap-1.5">💻 Nasdaq Futuro</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.73%</span>
+                </div>
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-base font-black text-slate-100 font-mono">30,883.00</span>
+                    <span class="text-xs font-bold font-mono text-rose-400">-0.73%</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2 mt-1">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><span class="text-amber-400/90 font-medium">Motivo:</span> Pressão vendedora em Big Techs e rotação defensiva de carteiras institucionais.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-bold text-slate-200 flex items-center gap-1.5">⚡ VIX (Índice do Medo)</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +2.36%</span>
+                </div>
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-base font-black text-slate-100 font-mono">15.19</span>
+                    <span class="text-xs font-bold font-mono text-emerald-400">+2.36%</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2 mt-1">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><span class="text-amber-400/90 font-medium">Motivo:</span> VIX (Índice do Medo) em alta, indicando aversão a risco e risco de volatilidade súbita nas bolsas.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-bold text-slate-200 flex items-center gap-1.5">📈 Treasury 10A (Yield)</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.08%</span>
+                </div>
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-base font-black text-slate-100 font-mono">5.24</span>
+                    <span class="text-xs font-bold font-mono text-rose-400">-0.08%</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2 mt-1">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><span class="text-amber-400/90 font-medium">Motivo:</span> Yields dos títulos americanos recuam com busca por renda fixa soberana e alívio inflacionário.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-bold text-slate-200 flex items-center gap-1.5">🇨🇳 Hang Seng (China/HK)</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +1.79%</span>
+                </div>
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-base font-black text-slate-100 font-mono">24,211.35</span>
+                    <span class="text-xs font-bold font-mono text-emerald-400">+1.79%</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2 mt-1">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><span class="text-amber-400/90 font-medium">Motivo:</span> Pacote de liquidez do Banco Central Chinês (PBoC) e avanço de ações de tecnologia em Hong Kong.</p>
+            </div>
+        </div>
+        
+            </div>
+        </section>
+
+        <!-- 7. MERCADO DE TRABALHO & CALENDÁRIO DE RISCO -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            
+            <!-- Indicadores de Emprego -->
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-2">
+                        <span>💼</span> Mercado de Trabalho & Emprego
+                    </h2>
+                    <span class="text-[10px] text-slate-500">EUA & Brasil</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-xs font-bold text-slate-100">Non-Farm Payroll (NFP)</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border uppercase font-bold bg-rose-500/20 text-rose-400 border-rose-500/30">MÁXIMO</span>
+                </div>
+                <div class="text-[11px] text-amber-400/90 font-mono mb-2">
+                    <span>🇺🇸 EUA | 1ª Sexta-feira do mês (10:30 BRT)</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><strong class="text-slate-300">Gatilho de Trade:</strong> Acima do esperado = Fed mantém juros altos (Dólar ▲, Bolsa ▼). Abaixo do esperado = Corte de juros (Dólar ▼, Bolsa ▲).</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-xs font-bold text-slate-100">Pedidos de Seguro-Desemprego (Jobless Claims)</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border uppercase font-bold bg-amber-500/20 text-amber-400 border-amber-500/30">ALTO</span>
+                </div>
+                <div class="text-[11px] text-amber-400/90 font-mono mb-2">
+                    <span>🇺🇸 EUA | Todas as quintas-feiras (10:30 BRT)</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><strong class="text-slate-300">Gatilho de Trade:</strong> Termômetro semanal de demissões. Pedidos altos = mercado esfriando. Pedidos baixos = mercado aquecido.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-xs font-bold text-slate-100">Taxa de Desemprego (IBGE / PNAD)</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border uppercase font-bold bg-amber-500/20 text-amber-400 border-amber-500/30">ALTO</span>
+                </div>
+                <div class="text-[11px] text-amber-400/90 font-mono mb-2">
+                    <span>🇧🇷 Brasil | Mensal / Trimestral</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><strong class="text-slate-300">Gatilho de Trade:</strong> Desemprego em queda pressiona salários e setor de serviços, influenciando decisões de alta ou corte da Selic pelo Copom.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-xs font-bold text-slate-100">CAGED (Emprego Formal)</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border uppercase font-bold bg-amber-500/20 text-amber-400 border-amber-500/30">MÉDIO</span>
+                </div>
+                <div class="text-[11px] text-amber-400/90 font-mono mb-2">
+                    <span>🇧🇷 Brasil | Divulgação mensal pelo Ministério do Trabalho</span>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-2">
+                <p class="text-[11px] text-slate-400 leading-relaxed"><strong class="text-slate-300">Gatilho de Trade:</strong> Saldo líquido de contratações formais com carteira assinada. Baliza a força do consumo interno na B3.</p>
+            </div>
+        </div>
+        
+                </div>
+            </div>
+
+            <!-- Régua de Horários Críticos -->
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-rose-400 flex items-center gap-2">
+                        <span>⚠️</span> Régua de Horários Críticos do Pregão
+                    </h2>
+                    <span class="text-[10px] text-slate-500">Picos de Volatilidade</span>
+                </div>
+                <div class="space-y-2">
+                    
+        <div class="flex items-start gap-3 p-2.5 bg-slate-900/50 border border-slate-800/60 rounded-lg">
+            <span class="px-2 py-0.5 text-xs font-mono font-bold text-amber-400 bg-amber-400/10 rounded border border-amber-400/20">09:00</span>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-slate-200">Abertura do Contrato Futuro de Índice (WIN) e Dólar (WDO)</span>
+                    <span class="text-[9px] px-1.5 py-0.2 rounded border uppercase font-bold bg-amber-500/20 text-amber-400 border-amber-500/30">ALTO</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-0.5">Primeiro leilão e volatilidade de gap</p>
+            </div>
+        </div>
+        
+        <div class="flex items-start gap-3 p-2.5 bg-slate-900/50 border border-slate-800/60 rounded-lg">
+            <span class="px-2 py-0.5 text-xs font-mono font-bold text-amber-400 bg-amber-400/10 rounded border border-amber-400/20">09:30</span>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-slate-200">Pré-mercado de Ações nos EUA & Indicadores Econômicos</span>
+                    <span class="text-[9px] px-1.5 py-0.2 rounded border uppercase font-bold bg-slate-800 text-slate-300 border-slate-700">MÉDIO</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-0.5">Definição de tração inicial</p>
+            </div>
+        </div>
+        
+        <div class="flex items-start gap-3 p-2.5 bg-slate-900/50 border border-slate-800/60 rounded-lg">
+            <span class="px-2 py-0.5 text-xs font-mono font-bold text-amber-400 bg-amber-400/10 rounded border border-amber-400/20">10:00</span>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-slate-200">Abertura do Mercado à Vista B3 (Ações Petrobras, Vale, Bancos)</span>
+                    <span class="text-[9px] px-1.5 py-0.2 rounded border uppercase font-bold bg-rose-500/20 text-rose-400 border-rose-500/30">MÁXIMO</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-0.5">Entrada do fluxo institucional e arbitragens</p>
+            </div>
+        </div>
+        
+        <div class="flex items-start gap-3 p-2.5 bg-slate-900/50 border border-slate-800/60 rounded-lg">
+            <span class="px-2 py-0.5 text-xs font-mono font-bold text-amber-400 bg-amber-400/10 rounded border border-amber-400/20">10:30</span>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-slate-200">Abertura das Bolsas de Nova York (NYSE e Nasdaq)</span>
+                    <span class="text-[9px] px-1.5 py-0.2 rounded border uppercase font-bold bg-rose-500/20 text-rose-400 border-rose-500/30">MÁXIMO</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-0.5">Pico de volume e correlação com S&P</p>
+            </div>
+        </div>
+        
+        <div class="flex items-start gap-3 p-2.5 bg-slate-900/50 border border-slate-800/60 rounded-lg">
+            <span class="px-2 py-0.5 text-xs font-mono font-bold text-amber-400 bg-amber-400/10 rounded border border-amber-400/20">14:00 - 15:30</span>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-slate-200">Discursos de autoridades do Federal Reserve / BCB</span>
+                    <span class="text-[9px] px-1.5 py-0.2 rounded border uppercase font-bold bg-slate-800 text-slate-300 border-slate-700">MÉDIO</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-0.5">Cuidado com violinadas nas taxas de juros</p>
+            </div>
+        </div>
+        
+        <div class="flex items-start gap-3 p-2.5 bg-slate-900/50 border border-slate-800/60 rounded-lg">
+            <span class="px-2 py-0.5 text-xs font-mono font-bold text-amber-400 bg-amber-400/10 rounded border border-amber-400/20">17:00</span>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-slate-200">Fechamento do Mercado à Vista e Call de Fechamento</span>
+                    <span class="text-[9px] px-1.5 py-0.2 rounded border uppercase font-bold bg-amber-500/20 text-amber-400 border-amber-500/30">ALTO</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-0.5">Leilão de encerramento das ações</p>
+            </div>
+        </div>
+        
+                </div>
+            </div>
+
+        </section>
+
+        <!-- 8. NOTÍCIAS & CATALISADORES (RETRÁTIL / ACORDEÃO) -->
+        <details open class="group bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5 transition">
+            <summary class="flex items-center justify-between cursor-pointer list-none select-none">
+                <div class="flex items-center gap-2">
+                    <span>📰</span>
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">
+                        Noticiário & Catalisadores das Últimas 4h e 24h
+                    </h2>
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">7 Categorias</span>
+                </div>
+                <span class="text-xs text-amber-400 font-bold group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 mt-4 pt-3 border-t border-slate-800">
+                
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3 flex items-center justify-between">
+                <span>💼 Mercado de Trabalho (Payroll, Seguro-Desemprego, CAGED)</span>
+            </h3>
+            <div class="space-y-2">
+                
+            <a href="https://news.google.com/rss/articles/CBMi4AFBVV95cUxNODhmRTF1emZ6V3hiRzlnY05NSG1iWDFveENUUGYxMndnX0tfLTNST3BkS0VlOEZqTFAtd3RCSklMNlRfU3p2YVZnWk5UMVE4dW1uVE9XTm91S0otU05wT252MGJ1NmV0b0tHX0VJSmFJM0d4c3dIMHFJeERfaVJqX1hELTVFeHc2bWt6Vm9UaVF3MDFCVFI1eTBiTnNSUHZUN01QU2JEYTdISkFPVWpKWDU2aHl1SC1IME1qM1RGeDUtSGVsMmV6ZkRDcDIxaTIxZjhOZnU4OE1weWlDaTNyedIB5gFBVV95cUxNakp5WkNmdkZuXzQtdExyWnNjU1JlczVLNzJCNEdQbTNiemJ1RC1KMjI1di1NYTE4NENaQkJ3R0p1cU5hTVFNSnd3S1BvMHVOYWl0Z3pTUVpJT29hckptNGRsMGR0ajFwRUxmVk9oc1piUkk3TzFMZDhLX1ctQjlsQmU4RzRMdGp6WHRmdEd0OW5aQ3g5dzZ3ZUxuT2dJQkVpalhFT01VV2M1WjA0R01Ka1c2elgyS0tJN3M5eVZTd2VnV2x0NFJQMkpnSU1Gdm5aY2drc1gtdlFFbGtDQ2g3cWRHeG9VZw?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Calendário econômico: payroll, desemprego no Brasil e inflação dos EUA movimentam a semana</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">Estadão</span>
+                    <span>Sun, 27 Sep 2026</span>
+                </div>
+            </a>
+            
+            <a href="https://news.google.com/rss/articles/CBMiigFBVV95cUxQRXNnMzh1NlU4THRFZzNIdTFHUUQyR0I5THJHTlBreUswZDM2UUFmeVdpQlBia3FPZlZJM3dJSE9qc3pXQWlhcjlNR1lwZEU0RVJOeGpFalptMHBkS3lvLWM1SUwzbVowWS05ZmQzenA5aHBuQWJldTZ2cXAyNmprVk45ajg1cThqVEE?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Agenda da semana: Payroll e PCE movimentam mercados</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">BPMoney</span>
+                    <span>Sun, 27 Sep 2026</span>
+                </div>
+            </a>
+            
+            <a href="https://news.google.com/rss/articles/CBMiugFBVV95cUxONlU4b0IyckVoTW94SEo3RXJhY1hKZjkzSG9QQ3dDOERfVUQtVUV3UkZGTDNDM3UzeGdPaWNPczlJRmZldjlhTW05RVVGaXM0VnFaRm5QU0EtMGZpMzhac1lWd1ZlbzRMSTBCUlM4MWZ3ZUJzcE1kTVR4bTM0b0RmdTdnZzJoc21TUkx3VHB3c1JsU0YydjExajZRVFI3eDljZ0RxTElRd2NvRElwVGRXaHpWSDJRQjBDdXfSAb8BQVVfeXFMUDRtMC04SDlUMkVlaVFJQXpIY0o1Sy0tSTZWTW1jbDdad1dRS2ViSW1IOFF5UDFaZVYyRUZhNjlTNzFoSHNzcm13S1cwUzE4OE1DbnNVY3pRZlB1bzQxUjY2U1Zxd2JjcEpZQVhJa1BiN0hhNUczWS01M1cyMGlVamd1enZfclUyZ0lzaFNmODJ5WUxQaVVjTGh5eGszNFA3eFF3RzQ0eHlvQlJtMFVBaElKSDhZeUMwd1BZNmJMbW8?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Calendário econômico da semana: dados de trabalho nos EUA e no Brasil serão foco</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">InfoMoney</span>
+                    <span>Sun, 28 Jun 2026</span>
+                </div>
+            </a>
+            
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3 flex items-center justify-between">
+                <span>⚔️ Geopolítica & Guerras</span>
+            </h3>
+            <div class="space-y-2">
+                
+            <a href="https://news.google.com/rss/articles/CBMisgFBVV95cUxON3ZHbkx0ZU9XeVNGRWdjdlRhcU1GaVBjaE5haFJVdTF1T2F0ZkRqZnEtb0E1SlFSS25xbTVzZk93RlZjZmNya0k5WVVqeHhGcG9xbF9sNkRtWTV1ak8zRV9PWlJpUWtPQWJlMHFoQkctZ3dCakI4NFdrU2hoaFY4dklIbmFnUTlhWnBXYlZUQlBtZkN5eDB2WTc5SjNMMndPX3JReWp5Y1JyeFVPQkJxeEdR?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Demétrio Magnoli analisa conflitos internacionais e explica a nova ordem geopolítica</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">CBN Ribeirão</span>
+                    <span>Sat, 18 Jul 2026</span>
+                </div>
+            </a>
+            
+            <a href="https://news.google.com/rss/articles/CBMi9wFBVV95cUxNcFhoRE9EWjRGNzZDVnZkRkNiWU4teWhUdTZQV3ZUYzR1NUVqUG90S2t2SU5IVGRuYmpVSTRxU0lKbDFWRmJ1VDRwLW15a0QwckVndHRqVEFVZjBublBUU2dYeU1YSU9SRTJaZFJYcHIzM3RjU2dkdUFjbVNjTnMzcnRTc0xVMEhtUmdlMlhHUUVzREYwQk5BdnI4Q3ktNXFNeG9WbUhnQWxKSklrS1N5TlVRVG5vUGd1RjNZVk9BX1RJanJna0lOdy03NGFjVVdjeGlhRGJESjNHemY1TUFseFdQeGxicnFuOWt2QmZRMVJsc1BvLXdB?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">A Possível Fusão dos Conflitos da Eurásia e do Oriente Médio: Uma Análise à Luz da Metodologia Integrada de Análise Geopolítica (MIAG)</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">Defesa em Foco</span>
+                    <span>Mon, 07 Sep 2026</span>
+                </div>
+            </a>
+            
+            <a href="https://news.google.com/rss/articles/CBMitwFBVV95cUxPYmFQalY5Wjd0NG1CMXZJbHQ1cUpLbjhvWDFwMnlFYThDUmFHMGMzdVpWNG1nYkE4N3ZOUWdJOWFNSE9BR0F6bE8yN0hqeVhwN3Q1WnB6TnAxaU1YNVRYS2hfbENhUTdGa2sxMktnOVlqbDkxY3pjYmtlaENiY0taREUtb1p0aFJkNWh5dXZRTXZVOC1CaU1SclZQN2NKQUhveThGWGJXc2VZQ0FPRmp5aXVHZDRwaHPSAcYBQVVfeXFMUDJMZml6b1N0WmhvTXZoMjVMOUd3M1J5QUt2U25JUGxTVm9zWnlYaEJ5cFdZS2VuWmxXbHhQV3dpRFBlYzlPN1p0VUNGc1NwZjVtT0p1dlpQUjRNMFRwSDdPaVc1OUJGemhtV25rcVlFUDFvNXlaT2tyTlR5WlR2VUdhQ1gwMUd2YTV5eXNRM1ZlWExZVlE2emFfNzFrdzc3R1pDYktjQUV2bkNXZnByazZVMmZmTFBxdU5zaUtrRUVteEEtbm9B?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">G7 se reúne sob peso de crise geopolítica e desafios econômicos</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">Valor Econômico</span>
+                    <span>Sun, 14 Jun 2026</span>
+                </div>
+            </a>
+            
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3 flex items-center justify-between">
+                <span>🛢️ Petróleo, Gás & Minério</span>
+            </h3>
+            <div class="space-y-2">
+                <p class='text-xs text-slate-500 italic p-2'>Sem notícias críticas registradas neste tópico nas últimas horas.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3 flex items-center justify-between">
+                <span>💻 Tech & Inteligência Artificial</span>
+            </h3>
+            <div class="space-y-2">
+                
+            <a href="https://news.google.com/rss/articles/CBMitwFBVV95cUxNVWFuLWdud2tiUThXTVNic3JiZ0psQzA3SnBTeGFzQmcxX2FGVzR4c0J5X1FjMDFUa3FKZlF6OHRSREFCVV85eG1MaWNRSnBjejdQQmxHSXZlM0VvVTBweHZoWnd5ZFJHTWtTbGZfbUdsd2xRcG1oRlI3ckNFd0dQeTUwbUJNTk5pUFZLTHJYbmRKWWhsRmhzaVRBdi1lTXl1c0Q5aDN0cko5ZlJ0RmpkeEJnN3ZQZG8?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">O que a reunião de Trump e Xi com chefes das big techs pode mudar na tecnologia global</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">Exame</span>
+                    <span>Thu, 24 Sep 2026</span>
+                </div>
+            </a>
+            
+            <a href="https://news.google.com/rss/articles/CBMie0FVX3lxTE10TzFFVlRJTDZXdWx6Y1hycDU2WTNYZVVUcWI0THJGYzAwSlByaVZ1M2tlZlBvTVRDLWg4Rm15d3BzejdKaC11R0o4YVg0ZkR0RzlBc2hUTWxpc0N1QUp6R194djVIdEphZlFvYUhqX1gxeURfRzdMbGY3aw?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">O pool de Wall Street para desafogar a Nvidia</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">Brazil Journal</span>
+                    <span>Tue, 11 Aug 2026</span>
+                </div>
+            </a>
+            
+            <a href="https://news.google.com/rss/articles/CBMizwFBVV95cUxOMldXQUVoeHFIWkFhenFXMlpmMzV0UHBxeFdhRUF4WUhKY3FJd1lkaUFRY0FDZjltdVduYzY4eE50MnJWNGVrdzlIQVA0OFlZYU52dE5ZLVhfS1dxTTJ0N3F6N29MM1VPYVRQTHhzS2ZxSk1nb29WTVRCWTdULUlyRlFHQ0xGRHp3elFNV2lxOVpMbXdOV0Zoc0NjdlB3anAtUl8xU29VY1h6c0FNUVhvU0lNV2EzX2VseFFZZEZBVWt1aXFPMEthTktwZDNKSGs?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">O mundo virou uma big tech? Ranking das empresas mais valiosas mostra domínio da tecnologia</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">Olhar Digital</span>
+                    <span>Wed, 24 Jun 2026</span>
+                </div>
+            </a>
+            
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3 flex items-center justify-between">
+                <span>🏛️ Política & Brasília</span>
+            </h3>
+            <div class="space-y-2">
+                
+            <a href="https://news.google.com/rss/articles/CBMi0AFBVV95cUxQelBZUmJqUU0zM3NoblFudmc5ZndEWWVHMThiM0RjeUxfWFA5UFhPai1XOENBcjNOX0pCSkMyRWxfU0JWWmF2ZkZ1VmxTZGVpQ3pENko1Ny1GWjhKOW94YWZjb0x6Z2VER1ZTWERHUUpFLTV2NWprU1JvUVY4Y3hVQ2VEek1BZXg2OHpTQlVWeko5ZGloWFRmSVA0dEJtUGlyaWlMTVd3b1d4REhYN1h5VUF4YWN0Q05SN1M1UFB5bzEzMEpkTWNwX0JwZXkyQ1hv?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Renan Santos afirma que Brasil será governado pelo 'mais corrupto da família Bolsonaro'</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">Folha de S.Paulo</span>
+                    <span>Sun, 04 Oct 2026</span>
+                </div>
+            </a>
+            
+            <a href="https://news.google.com/rss/articles/CBMiuwFBVV95cUxOQWgyVmJTSXdZLUU3NjEwbXNEek45bWNnaTZDaVhGQjdac0F0QVVnb2RReGIyTGhvNm5SS09EVFlReW5XbC1ZU05ucFpmbjVXV2Vnb1hyOWJpMXdlelREajRBb24zV3k1U3BxNFk1bE9QVEpzN1ljaTd0OGw1RWdwbEVuQXlQb1ZhZ3pKd1ZUNzZKVnk5Q0FDTmhkNXF2OUdVeFBmRGQyNkt1UWpHa2xrUGVNdDYxQmdkUGhV?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Lula perde metade dos vetos e usa o STF contra o Congresso</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">Gazeta do Povo</span>
+                    <span>Sun, 02 Aug 2026</span>
+                </div>
+            </a>
+            
+            <a href="https://news.google.com/rss/articles/CBMiqwFBVV95cUxPckRmVVh5R2k1ZEo1MzZ5Q2txemFId3l5MXpuZzYwR2ZUdmQ0TkhDbDBuUUtmRHRqeVpBZzBrQ0ZKNnNyZGdFZmV5dERrZVFQcjJ6R3RqVjhqV1lVRVU1b0V6bVJWbmRSZlpLbnBWVVlDZER4NnFyOGJyXzZLZGhRMXR0T1lySDV4VkFNRmFfTEtFZGRROWl3SU85Z294aTRIWTJGOWhNRGxVb0HSAboBQVVfeXFMTVFjbFV6OU1ESVRkekkyRkdwSnVfWGtLS0ZZdHlUNzRJNUtSQkg4Z1Y1TkhZMWhvck5DYnROeTZWbFZkRFdvSDlvQzgyQ2VWOXNlbTV6N2I2OEtFUmtkMEs5S2pkX1hLeXAzNFFYZnRFdnl1UjdkaTBUSmdtaFpSM25GeDJVdGk2eDQxZkFSUHFIZFB2YXg3MDdEcHRyQmtRQ2UwbkY0ekZFWmVQNWNpbnJFV3V6NHV6dm53?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Em derrota histórica, Senado rejeita indicação de Jorge Messias para o STF</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">G1</span>
+                    <span>Wed, 29 Apr 2026</span>
+                </div>
+            </a>
+            
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3 flex items-center justify-between">
+                <span>🌏 EUA & China (Índices & Bancos Centrais)</span>
+            </h3>
+            <div class="space-y-2">
+                
+            <a href="https://news.google.com/rss/articles/CBMiwgFBVV95cUxOMU02bDFEZTNNTFRXMGdrV2JPcEtJaHFWNU5DWlA4QmptdVppM1NvLTVQT0RFTUc0Ymd6VUtKYzJ5R1Rza19pWFhuTi1PeExlNFpWTjJsV2pLSGhPenAtU0xVbFFtSm5WY2Y3enY1blpadXg5elBxLXdZZnVuci1vTGZsUVJxVFNLODhBcXIyc2N3aUZZc0pCczRiQmMwY2hGdGJsUDFEMTF0MW9TWlNWVVU2NVVQUlNPWDNoYmJkUjhmdw?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Wall Street fecha sem rumo após falas diretor do Fed sobre elevar juros</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">CNN Brasil</span>
+                    <span>Thu, 24 Sep 2026</span>
+                </div>
+            </a>
+            
+            <a href="https://news.google.com/rss/articles/CBMirwFBVV95cUxNTW9hZHgzckR6WjhwbWNXWXY0Zm10UnIyM2MtaWNzUmQwanZmT1pxbTAyMmlqRHpyWlVOZVlWa21SRFhVckpkVG40WFl5aWJ5OVRQbEJFdkxodU1vS2oyckh2U2ZHMTJkMlZ5UThBeWtKY3pnZk9lWXpId0E3Q29UY3hfbGpnZHpRN1YxN1dLOHV1ZzFQZnVzbWlOYkNvaEZVTDMtcHNnV1kxOWJndjFZ?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Bolsas sobem em Wall Street e na Europa após alta de juros nos EUA</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">UOL Economia</span>
+                    <span>Thu, 17 Sep 2026</span>
+                </div>
+            </a>
+            
+            <a href="https://news.google.com/rss/articles/CBMiowFBVV95cUxQSFNiSUpncE9DVFFOTV9PdjNkMEhsYUZWbFYxaEFHTmJXUXV0TGFBbmdpeHJrTnVZYU9ESUdhVDlSSHlfb2syaFhyeS0wZmdYSjRKbzZhVG1OaFJtaF9waTc2c0M5YnFzQkhvcVNIUjRMc0xOaW9yNGc5UTNjX2M0RnZWM2VTRXZMLUljWU1CZlVVRzNBYlpHRUtodks5VmtfU0Vz?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Wall Street cai com temor de juros nos EUA, mas Ibovespa sobe 0,46%</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">TV Sim Brasil</span>
+                    <span>Tue, 29 Sep 2026</span>
+                </div>
+            </a>
+            
+            </div>
+        </div>
+        
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3 flex items-center justify-between">
+                <span>🏦 Fundos & Fluxo Institucional</span>
+            </h3>
+            <div class="space-y-2">
+                
+            <a href="https://news.google.com/rss/articles/CBMiwwFBVV95cUxOSEZoMGRoRlNjMXowLXZST2QzYzRGMVRkTmh1SzN0M25YcDlMck80S3lDNFRzWVB6Wjd6UEZwWm84UFJkR0oyeFc3SEFqcU1CVkF2SFpyYW9Za3RXdzlhWkVCWUQzMmVpcVhvSWpuX2RvQmp3YTViXzkwTFhZSFNKekE4MGNMb0Qwck5pTXpscVAxV1BfWWpVQTRBVWtJMHVVZlp4WjNBbXBTRE03aHpKSXlSMmhhVFVGT2FXTm5vZmdxY00?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Fundo da BlackRock ligado à Bolsa brasileira dispara e atrai maior fluxo em quase 10 anos</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">VEJA</span>
+                    <span>Tue, 14 Apr 2026</span>
+                </div>
+            </a>
+            
+            <a href="https://news.google.com/rss/articles/CBMirAFBVV95cUxQLUtKamJma1F3ZFVYb2V0S0pxMUMzTUxaUXlpcDVGcURpWHJxUnNhaWFwbDBLLVBmQlhURW00LTFUVno1d2U4elB6QlhyLXowQ3lZNUFRUHVydUxpUzFJSS1ETGVZLUNNWjJmczlSaEVxX3IwU2stbXNYUzZqYnhwWGxSMjhVTWJSTWNxYkhWWHdlUVI2TlRWcDhvR2w1QTN1SDRYUDR0eEw3NGpI?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">B3 diz que BlackRock reduziu participação na companhia</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">CNN Brasil</span>
+                    <span>Wed, 15 Jul 2026</span>
+                </div>
+            </a>
+            
+            <a href="https://news.google.com/rss/articles/CBMickFVX3lxTE16VVVVOWZxTlVrWGxQZ0k2ZHktVUtHSzc0d2FPZGF5NVhaQklxeDllRmdSOWF5c1g4RE8xOUljdlJOdGh6eUpTRHBnOU9wS3hmQzVRNVpjQ0ZpS0I0UDF3THRZdVVDV1FLZll4MzNkeEhzUQ?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">China-tech atrai fluxo recorde e capital foge de Bitcoin diante da busca global por baixo risco | ETF Brief Junho 2026</p>
+                <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
+                    <span class="font-semibold text-slate-400">XP Investimentos</span>
+                    <span>Mon, 08 Jun 2026</span>
+                </div>
+            </a>
+            
+            </div>
+        </div>
+        
+            </div>
+        </details>
+
+        <!-- 9. HISTÓRICO DE AUDITORIA DE ASSERTIVIDADE (RETRÁTIL) -->
+        <details class="group bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5 transition">
+            <summary class="flex items-center justify-between cursor-pointer list-none select-none">
+                <div class="flex items-center gap-2">
+                    <span>📋</span>
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">
+                        Auditoria de Assertividade (Histórico dos Pregões Anteriores)
+                    </h2>
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Conferência dos 60 Dias</span>
+                </div>
+                <span class="text-xs text-slate-400 font-bold group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            
+            <div class="overflow-x-auto mt-4 pt-3 border-t border-slate-800">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-800 text-[10px] uppercase tracking-wider text-slate-400 font-semibold bg-slate-950/40">
+                            <th class="py-2.5 px-3">Data</th>
+                            <th class="py-2.5 px-3">WIN Previsto</th>
+                            <th class="py-2.5 px-3">WIN Real</th>
+                            <th class="py-2.5 px-3">Status WIN</th>
+                            <th class="py-2.5 px-3">WDO Previsto</th>
+                            <th class="py-2.5 px-3">WDO Real</th>
+                            <th class="py-2.5 px-3">Status WDO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
+            <td class="py-2.5 px-3 font-mono text-slate-300">2026-10-09</td>
+            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
+            <td class="py-2.5 px-3 font-mono">-0.52%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
+            <td class="py-2.5 px-3 font-mono">+0.82%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
+            <td class="py-2.5 px-3 font-mono text-slate-300">2026-10-08</td>
+            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
+            <td class="py-2.5 px-3 font-mono">+0.45%</td>
+            <td class="py-2.5 px-3"><span class='text-rose-400 font-bold'>✖ Errou</span></td>
+            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
+            <td class="py-2.5 px-3 font-mono">+0.32%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
+            <td class="py-2.5 px-3 font-mono text-slate-300">2026-10-07</td>
+            <td class="py-2.5 px-3 font-semibold">ALTA (+0.5% a +1.2%)</td>
+            <td class="py-2.5 px-3 font-mono">+0.52%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.4% a -0.9%)</td>
+            <td class="py-2.5 px-3 font-mono">-0.69%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
+            <td class="py-2.5 px-3 font-mono text-slate-300">2026-10-06</td>
+            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
+            <td class="py-2.5 px-3 font-mono">-1.11%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
+            <td class="py-2.5 px-3 font-mono">+0.30%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
+            <td class="py-2.5 px-3 font-mono text-slate-300">2026-10-05</td>
+            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
+            <td class="py-2.5 px-3 font-mono">-0.46%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
+            <td class="py-2.5 px-3 font-mono">+0.97%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
+            <td class="py-2.5 px-3 font-mono text-slate-300">2026-10-02</td>
+            <td class="py-2.5 px-3 font-semibold">ALTA (+0.5% a +1.2%)</td>
+            <td class="py-2.5 px-3 font-mono">+1.23%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.4% a -0.9%)</td>
+            <td class="py-2.5 px-3 font-mono">-0.66%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
+            <td class="py-2.5 px-3 font-mono text-slate-300">2026-10-01</td>
+            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
+            <td class="py-2.5 px-3 font-mono">-1.27%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
+            <td class="py-2.5 px-3 font-mono">+0.56%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
+            <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-30</td>
+            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
+            <td class="py-2.5 px-3 font-mono">+0.72%</td>
+            <td class="py-2.5 px-3"><span class='text-rose-400 font-bold'>✖ Errou</span></td>
+            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
+            <td class="py-2.5 px-3 font-mono">+0.70%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
+            <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-29</td>
+            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
+            <td class="py-2.5 px-3 font-mono">-0.59%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
+            <td class="py-2.5 px-3 font-mono">+0.36%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
+            <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-28</td>
+            <td class="py-2.5 px-3 font-semibold">ALTA (+0.5% a +1.2%)</td>
+            <td class="py-2.5 px-3 font-mono">+1.00%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.4% a -0.9%)</td>
+            <td class="py-2.5 px-3 font-mono">-0.52%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
+            <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-25</td>
+            <td class="py-2.5 px-3 font-semibold">ALTA (+0.5% a +1.2%)</td>
+            <td class="py-2.5 px-3 font-mono">+1.33%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.4% a -0.9%)</td>
+            <td class="py-2.5 px-3 font-mono">-0.69%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
+            <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-24</td>
+            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
+            <td class="py-2.5 px-3 font-mono">-0.46%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
+            <td class="py-2.5 px-3 font-mono">-0.35%</td>
+            <td class="py-2.5 px-3"><span class='text-rose-400 font-bold'>✖ Errou</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
+            <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-23</td>
+            <td class="py-2.5 px-3 font-semibold">LATERAL (-0.3% a +0.3%)</td>
+            <td class="py-2.5 px-3 font-mono">+0.17%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
+            <td class="py-2.5 px-3 font-mono">-0.29%</td>
+            <td class="py-2.5 px-3"><span class='text-rose-400 font-bold'>✖ Errou</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
+            <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-22</td>
+            <td class="py-2.5 px-3 font-semibold">ALTA (+0.5% a +1.2%)</td>
+            <td class="py-2.5 px-3 font-mono">+0.53%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.4% a -0.9%)</td>
+            <td class="py-2.5 px-3 font-mono">-0.87%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
+            <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-21</td>
+            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
+            <td class="py-2.5 px-3 font-mono">-0.70%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
+            <td class="py-2.5 px-3 font-mono">+0.94%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+        </tr>
+        
+                    </tbody>
+                </table>
+            </div>
+        </details>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 mt-10 py-6 text-center text-xs text-slate-500">
+        <p>Radar Day Trade B3 | Atualizado diariamente 20 min antes da abertura dos futuros | Foco em disciplina e travas operacionais.</p>
+    </footer>
+
+    <!-- Script de Cópia Rápida -->
+    <script>
+        function copyTradePlan() {
+            const text = `🎯 PLANO DE TRADE DO DIA (12/10/2026)\n\n📊 MINI-ÍNDICE (WIN): LATERAL\n• Projeção: -0.3% a +0.3% (-627 a +627 pts)\n• Alvo 1: 209.694 pts (+627 pts)\n• Alvo 2: 208.440 pts (-627 pts)\n• Trava de Stop: 208.022 pts (-1045 pts)\n\n💵 MINI-DÓLAR (WDO): BAIXA\n• Projeção: -0.8% a -0.3% (-39.9 a -15.0 pts)\n• Alvo 1: 4.971.3 pts (-15.0 pts)\n• Alvo 2: 4.946.4 pts (-39.9 pts)\n• Trava de Stop: 5.003.8 pts (+17.5 pts)\n\n⚠️ Zona de Risco: Atenção máxima às 10:00 (Abertura do Mercado à Vista B3) e 10:30 (Abertura de Wall Street). Evite ordens a mercado durante o leilão.`;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.innerText = '✔ Níveis Copiados!';
+                btn.classList.add('bg-emerald-500', 'text-slate-950');
+                setTimeout(() => {
+                    btn.innerText = '📋 Copiar Níveis de Trade';
+                    btn.classList.remove('bg-emerald-500', 'text-slate-950');
+                }, 2000);
+            });
+        }
+    </script>
+
+</body>
+</html>

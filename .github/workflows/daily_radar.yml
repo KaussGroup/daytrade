@@ -1,0 +1,70 @@
+name: Radar Day Trade B3 - Automacao Diaria
+
+on:
+  schedule:
+    # 08:35 BRT (Horário de Brasília) = 11:35 UTC (Segunda a Sexta)
+    - cron: '35 11 * * 1-5'
+    # 18:15 BRT (Fechamento e Auditoria) = 21:15 UTC (Segunda a Sexta)
+    - cron: '15 21 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Selecione o modo de execucao'
+        required: true
+        default: 'morning'
+        type: choice
+        options:
+          - morning
+          - closing
+
+jobs:
+  run-radar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout do Repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Instalar Dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Executar Rotina Matinal (Abertura)
+        if: ${{ github.event.schedule == '35 11 * * 1-5' || github.event.inputs.mode == 'morning' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode != 'closing') }}
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
+          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
+        run: |
+          python run_briefing.py
+
+      - name: Executar Rotina Vespertina (Fechamento & Auditoria)
+        if: ${{ github.event.schedule == '15 21 * * 1-5' || github.event.inputs.mode == 'closing' }}
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
+          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
+        run: |
+          python run_closing.py
+
+      - name: Salvar e Commitar Dados Atualizados
+        run: |
+          git config --global user.name "Radar B3 Bot"
+          git config --global user.email "bot@radardaytrade.com"
+          git add index.html data/history.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: atualizacao automatica do radar [skip ci]" && git push)
