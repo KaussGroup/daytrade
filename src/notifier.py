@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 import requests
 from dotenv import load_dotenv
+
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 load_dotenv()
 
