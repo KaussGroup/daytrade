@@ -1,6 +1,5 @@
 {
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  "buildCommand": "mkdir -p public && cp index.html public/ && cp -r data public/ 2>/dev/null || true",
+  "outputDirectory": "public",
+  "cleanUrls": true
 }
