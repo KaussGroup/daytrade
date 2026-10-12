@@ -44,7 +44,7 @@ jobs:
       - name: Instalar Dependencias
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements-bot.txt
 
       - name: Executar Rotina Matinal (Abertura)
         if: ${{ github.event.schedule == '35 11 * * 1-5' || github.event.inputs.mode == 'morning' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode != 'closing') || github.event_name == 'push' }}
