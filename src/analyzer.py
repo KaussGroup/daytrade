@@ -275,6 +275,9 @@ def analyze_with_heuristics(collected_data):
         win_points_range = f"{pts_target2:,} a +{pts_target1:,} pts".replace(",", ".")
         win_reason = "Variações mistas entre commodities e bolsas na madrugada; abertura sem tendência direcional forte."
 
+    win_t1_pct = 0.30 if win_dir == "LATERAL" else p_min
+    win_t2_pct = -0.30 if win_dir == "LATERAL" else p_max
+
     # --- CÁLCULO DE PONTOS & TRAVAS: MINI-DÓLAR (WDO) ---
     if wdo_score >= 0.25:
         wdo_dir = "FORTE ALTA"
@@ -398,9 +401,9 @@ def analyze_with_heuristics(collected_data):
             "expected_range": win_exp_range,
             "points_range": win_points_range,
             "base_price": f"{win_base_price:,.0f} pts".replace(",", "."),
-            "target_1_label": f"🎯 Alvo 1 ({p_min:+.1f}%):",
+            "target_1_label": f"🎯 Alvo 1 ({win_t1_pct:+.1f}%):",
             "target_1_val": f"{price_target1:,.0f} pts ({pts_target1:+d} pts)".replace(",", "."),
-            "target_2_label": f"🎯 Alvo 2 ({p_max:+.1f}%):",
+            "target_2_label": f"🎯 Alvo 2 ({win_t2_pct:+.1f}%):",
             "target_2_val": f"{price_target2:,.0f} pts ({pts_target2:+d} pts)".replace(",", "."),
             "trava_label": "🛡️ Trava de Stop:",
             "trava_val": f"{price_trava:,.0f} pts ({pts_trava:+d} pts)".replace(",", "."),

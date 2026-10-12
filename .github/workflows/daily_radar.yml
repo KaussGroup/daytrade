@@ -2,8 +2,12 @@ name: Radar Day Trade B3 - Automacao Diaria
 
 on:
   schedule:
-    # 08:35 BRT (Horário de Brasília) = 11:35 UTC (Segunda a Sexta)
+    # 08:35 BRT (Pré-Mercado & Abertura) = 11:35 UTC (Segunda a Sexta)
     - cron: '35 11 * * 1-5'
+    # 10:15 BRT (Abertura de Wall Street & Ações B3) = 13:15 UTC (Segunda a Sexta)
+    - cron: '15 13 * * 1-5'
+    # 13:00 BRT (Ajuste Intradiário da Tarde) = 16:00 UTC (Segunda a Sexta)
+    - cron: '00 16 * * 1-5'
     # 18:15 BRT (Fechamento e Auditoria) = 21:15 UTC (Segunda a Sexta)
     - cron: '15 21 * * 1-5'
   workflow_dispatch:
@@ -46,8 +50,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-bot.txt
 
-      - name: Executar Rotina Matinal (Abertura)
-        if: ${{ github.event.schedule == '35 11 * * 1-5' || github.event.inputs.mode == 'morning' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode != 'closing') || github.event_name == 'push' }}
+      - name: Executar Rotina de Mercado (Abertura e Intradiário)
+        if: ${{ github.event.schedule != '15 21 * * 1-5' && (github.event.inputs.mode != 'closing' || github.event_name == 'push') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}

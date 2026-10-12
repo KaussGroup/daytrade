@@ -66,6 +66,46 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
     risk_score = analysis.get("risk_score", 5)
     risk_label = analysis.get("risk_label", "Mercado Misto / Ruído Moderado")
     
+    # Formatador dinâmico de cores dos alvos (Verde para subida/positivo, Vermelho para queda/negativo)
+    def format_target_row(label, val_str, is_stop=False):
+        if not val_str:
+            return f'<span class="font-sans font-semibold text-slate-400">{label}</span><span class="font-bold text-slate-400">N/D</span>'
+        
+        if is_stop:
+            badge_cls = "text-rose-400 bg-rose-500/10 px-2.5 py-0.5 rounded-lg border border-rose-500/30 font-bold"
+        else:
+            # Subida (+ pts ou +%) -> VERDE
+            if "(+" in val_str or "+ " in val_str or "pts (+" in val_str:
+                badge_cls = "text-emerald-400 bg-emerald-500/15 px-2.5 py-0.5 rounded-lg border border-emerald-500/30 font-bold"
+            # Queda (- pts ou -%) -> VERMELHO
+            elif "(-" in val_str or "- " in val_str or "pts (-" in val_str:
+                badge_cls = "text-rose-400 bg-rose-500/15 px-2.5 py-0.5 rounded-lg border border-rose-500/30 font-bold"
+            else:
+                badge_cls = "text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-lg border border-amber-500/20 font-bold"
+                
+        return f'<span class="font-sans font-semibold text-slate-300">{label}</span><span class="font-mono {badge_cls}">{val_str}</span>'
+
+    win_t1_html = format_target_row(win.get('target_1_label', '🎯 Alvo 1:'), win.get('target_1_val', win.get('target_1')))
+    win_t2_html = format_target_row(win.get('target_2_label', '🎯 Alvo 2:'), win.get('target_2_val', win.get('target_2')))
+    win_trava_html = format_target_row(win.get('trava_label', '🛡️ Trava de Stop:'), win.get('trava_val', win.get('trava_risco')), is_stop=True)
+
+    wdo_t1_html = format_target_row(wdo.get('target_1_label', '🎯 Alvo 1:'), wdo.get('target_1_val', wdo.get('target_1')))
+    wdo_t2_html = format_target_row(wdo.get('target_2_label', '🎯 Alvo 2:'), wdo.get('target_2_val', wdo.get('target_2')))
+    wdo_trava_html = format_target_row(wdo.get('trava_label', '🛡️ Trava de Stop:'), wdo.get('trava_val', wdo.get('trava_risco')), is_stop=True)
+
+    # Coleta de preços base para comparação em Tempo Real
+    btc_asset = next((a for a in collected_data.get("assets", []) if a["symbol"] == "BTC-USD"), {})
+    btc_asset_price = btc_asset.get("price", "N/D")
+    
+    eur_asset = next((a for a in collected_data.get("assets", []) if a["symbol"] == "EURUSD=X"), {})
+    eur_price = eur_asset.get("price", "N/D")
+
+    sp_asset = next((a for a in collected_data.get("assets", []) if a["symbol"] == "ES=F"), {})
+    sp_price = sp_asset.get("price", "N/D")
+
+    nq_asset = next((a for a in collected_data.get("assets", []) if a["symbol"] == "NQ=F"), {})
+    nq_price = nq_asset.get("price", "N/D")
+
     # Barra visual de 10 níveis de risco
     risk_bars_html = ""
     for i in range(1, 11):
@@ -352,6 +392,106 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             </div>
         </section>
 
+        <!-- 1.5. MONITORAMENTO EM TEMPO REAL (PRÉ-MERCADO vs COTAÇÃO ATUAL) -->
+        <section class="bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950 border border-emerald-500/40 rounded-2xl p-4 sm:p-5 shadow-xl relative overflow-hidden">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-3.5 pb-2.5 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </span>
+                    <h2 class="text-xs font-black uppercase tracking-wider text-emerald-400">
+                        Painel Dinâmico: Pré-Mercado vs Tempo Real ao Vivo
+                    </h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span id="liveStatusText" class="text-[11px] font-mono text-slate-300 flex items-center gap-1.5">
+                        <span class="text-emerald-400 font-bold">● FEED CONECTADO</span>
+                    </span>
+                    <button onclick="refreshLiveMarket()" class="px-3 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold transition flex items-center gap-1 shadow-sm active:scale-95">
+                        🔄 Atualizar Agora
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                <!-- Bitcoin Live -->
+                <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-slate-400 mb-1">
+                            <span class="font-bold text-slate-200">₿ Bitcoin (BTC/USD)</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-bold">Crypto 24h</span>
+                        </div>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <div>
+                                <p class="text-[10px] text-slate-500">No Pré-Mkt: <span class="font-mono text-slate-300 font-semibold">{btc_asset_price}</span></p>
+                                <p class="text-base font-black text-white font-mono mt-0.5" id="liveBtcPrice">Carregando...</p>
+                            </div>
+                            <span class="text-xs font-bold font-mono px-2 py-0.5 rounded" id="liveBtcChange">...</span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-2 border-t border-slate-800/80 pt-1.5" id="liveBtcSignal">Aguardando feed institucional...</p>
+                </div>
+
+                <!-- Dólar Comercial Live -->
+                <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-slate-400 mb-1">
+                            <span class="font-bold text-slate-200">💵 Dólar Comercial (USD/BRL)</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">Forex Live</span>
+                        </div>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <div>
+                                <p class="text-[10px] text-slate-500">No Pré-Mkt: <span class="font-mono text-slate-300 font-semibold">R$ {usd_price}</span></p>
+                                <p class="text-base font-black text-white font-mono mt-0.5" id="liveUsdPrice">Carregando...</p>
+                            </div>
+                            <span class="text-xs font-bold font-mono px-2 py-0.5 rounded" id="liveUsdChange">...</span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-2 border-t border-slate-800/80 pt-1.5" id="liveUsdSignal">Aguardando feed cambial...</p>
+                </div>
+
+                <!-- Euro / Dólar Live -->
+                <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-slate-400 mb-1">
+                            <span class="font-bold text-slate-200">🇪🇺 Euro / Dólar (EUR/USD)</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 font-bold">DXY Driver</span>
+                        </div>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <div>
+                                <p class="text-[10px] text-slate-500">No Pré-Mkt: <span class="font-mono text-slate-300 font-semibold">{eur_price}</span></p>
+                                <p class="text-base font-black text-white font-mono mt-0.5" id="liveEurPrice">Carregando...</p>
+                            </div>
+                            <span class="text-xs font-bold font-mono px-2 py-0.5 rounded" id="liveEurChange">...</span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-2 border-t border-slate-800/80 pt-1.5" id="liveEurSignal">Balizador do Dólar Global</p>
+                </div>
+
+                <!-- Relógio Oficial do Pregão e Status de Sessão -->
+                <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-slate-400 mb-1">
+                            <span class="font-bold text-slate-200">⏰ Sessão B3 & Wall Street</span>
+                            <span class="text-xs font-mono font-bold text-amber-400" id="liveClock">--:--:-- BRT</span>
+                        </div>
+                        <div class="space-y-1.5 mt-2 text-[11px]" id="marketStatusPills">
+                            <div class="flex items-center justify-between bg-slate-900 px-2 py-1 rounded border border-slate-800">
+                                <span>Futuros B3 (WIN/WDO)</span>
+                                <span class="font-bold font-mono" id="statusFuturos">Verificando...</span>
+                            </div>
+                            <div class="flex items-center justify-between bg-slate-900 px-2 py-1 rounded border border-slate-800">
+                                <span>Mercado à Vista (Ações)</span>
+                                <span class="font-bold font-mono" id="statusAVista">Verificando...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-2 border-t border-slate-800/80 pt-1">Horário Oficial de Brasília (GMT-3)</p>
+                </div>
+            </div>
+        </section>
+
         <!-- 2. PLACAR DE ASSERTIVIDADE (ÚLTIMOS 60 PREGÕES) -->
         <section class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg">
             <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
@@ -433,17 +573,14 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                             <span class="text-slate-400">Amplitude em Pontos:</span>
                             <span class="font-bold text-amber-400 font-mono">{win.get('points_range', 'N/D')}</span>
                         </div>
-                        <div class="flex items-center justify-between text-emerald-400">
-                            <span class="font-sans font-semibold">{win.get('target_1_label', '🎯 Alvo 1:')}</span>
-                            <span class="font-bold">{win.get('target_1_val', win.get('target_1'))}</span>
+                        <div class="flex items-center justify-between">
+                            {win_t1_html}
                         </div>
-                        <div class="flex items-center justify-between text-emerald-400">
-                            <span class="font-sans font-semibold">{win.get('target_2_label', '🎯 Alvo 2:')}</span>
-                            <span class="font-bold">{win.get('target_2_val', win.get('target_2'))}</span>
+                        <div class="flex items-center justify-between">
+                            {win_t2_html}
                         </div>
-                        <div class="flex items-center justify-between text-rose-400 border-t border-slate-800/80 pt-1.5">
-                            <span class="font-sans font-semibold">{win.get('trava_label', '🛡️ Trava de Stop:')}</span>
-                            <span class="font-bold">{win.get('trava_val', win.get('trava_risco'))}</span>
+                        <div class="flex items-center justify-between border-t border-slate-800/80 pt-1.5">
+                            {win_trava_html}
                         </div>
                     </div>
                 </div>
@@ -481,17 +618,14 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                             <span class="text-slate-400">Amplitude em Pontos:</span>
                             <span class="font-bold text-amber-400 font-mono">{wdo.get('points_range', 'N/D')}</span>
                         </div>
-                        <div class="flex items-center justify-between text-rose-400">
-                            <span class="font-sans font-semibold">{wdo.get('target_1_label', '🎯 Alvo 1:')}</span>
-                            <span class="font-bold">{wdo.get('target_1_val', wdo.get('target_1'))}</span>
+                        <div class="flex items-center justify-between">
+                            {wdo_t1_html}
                         </div>
-                        <div class="flex items-center justify-between text-rose-400">
-                            <span class="font-sans font-semibold">{wdo.get('target_2_label', '🎯 Alvo 2:')}</span>
-                            <span class="font-bold">{wdo.get('target_2_val', wdo.get('target_2'))}</span>
+                        <div class="flex items-center justify-between">
+                            {wdo_t2_html}
                         </div>
-                        <div class="flex items-center justify-between text-emerald-400 border-t border-slate-800/80 pt-1.5">
-                            <span class="font-sans font-semibold">{wdo.get('trava_label', '🛡️ Trava de Stop:')}</span>
-                            <span class="font-bold">{wdo.get('trava_val', wdo.get('trava_risco'))}</span>
+                        <div class="flex items-center justify-between border-t border-slate-800/80 pt-1.5">
+                            {wdo_trava_html}
                         </div>
                     </div>
                 </div>
@@ -726,6 +860,123 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                     if (e.key === 'Enter') checkPin();
                 }});
             }}
+        }});
+
+        // --- Sincronizador de Mercado em Tempo Real ---
+        async function fetchLiveBtc() {{
+            try {{
+                const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
+                if (res.ok) {{
+                    const d = await res.json();
+                    const p = parseFloat(d.lastPrice);
+                    const chg = parseFloat(d.priceChangePercent);
+                    const elPrice = document.getElementById('liveBtcPrice');
+                    const elChg = document.getElementById('liveBtcChange');
+                    const elSig = document.getElementById('liveBtcSignal');
+                    if (elPrice) elPrice.innerText = '$ ' + p.toLocaleString('en-US', {{ minimumFractionDigits: 2, maximumFractionDigits: 2 }});
+                    if (elChg) {{
+                        elChg.innerText = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+                        elChg.className = 'text-xs font-bold font-mono px-2 py-0.5 rounded ' + (chg >= 0 ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-400 bg-rose-500/10 border border-rose-500/20');
+                    }}
+                    if (elSig) {{
+                        elSig.innerText = chg > 1.0 ? '🚀 Apetite a risco global firme (positivo para Bolsa)' : (chg < -1.0 ? '⚠️ Cautela com liquidez e aversão a risco' : 'Equilíbrio nas criptomoedas');
+                    }}
+                }}
+            }} catch (e) {{ console.log('BTC live error:', e); }}
+        }}
+
+        async function fetchLiveForex() {{
+            try {{
+                const res = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-USD');
+                if (res.ok) {{
+                    const d = await res.json();
+                    if (d.USDBRL) {{
+                        const usdP = parseFloat(d.USDBRL.bid);
+                        const usdChg = parseFloat(d.USDBRL.pctChange);
+                        const elP = document.getElementById('liveUsdPrice');
+                        const elC = document.getElementById('liveUsdChange');
+                        const elS = document.getElementById('liveUsdSignal');
+                        if (elP) elP.innerText = 'R$ ' + usdP.toFixed(4);
+                        if (elC) {{
+                            elC.innerText = (usdChg >= 0 ? '+' : '') + usdChg.toFixed(2) + '%';
+                            elC.className = 'text-xs font-bold font-mono px-2 py-0.5 rounded ' + (usdChg >= 0 ? 'text-rose-400 bg-rose-500/10 border border-rose-500/20' : 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20');
+                        }}
+                        if (elS) {{
+                            elS.innerText = usdChg > 0.3 ? '▲ Pressão compradora no Dólar' : (usdChg < -0.3 ? '▼ Entrada de fluxo vendedor no Dólar' : 'Dólar estável no intradiário');
+                        }}
+                    }}
+                    if (d.EURUSD) {{
+                        const eurP = parseFloat(d.EURUSD.bid);
+                        const eurChg = parseFloat(d.EURUSD.pctChange);
+                        const elP = document.getElementById('liveEurPrice');
+                        const elC = document.getElementById('liveEurChange');
+                        if (elP) elP.innerText = '$ ' + eurP.toFixed(4);
+                        if (elC) {{
+                            elC.innerText = (eurChg >= 0 ? '+' : '') + eurChg.toFixed(2) + '%';
+                            elC.className = 'text-xs font-bold font-mono px-2 py-0.5 rounded ' + (eurChg >= 0 ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-400 bg-rose-500/10 border border-rose-500/20');
+                        }}
+                    }}
+                }}
+            }} catch (e) {{ console.log('Forex live error:', e); }}
+        }}
+
+        function updateClockAndSessions() {{
+            const now = new Date();
+            const brtTime = new Intl.DateTimeFormat('pt-BR', {{
+                timeZone: 'America/Sao_Paulo',
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+            }}).format(now);
+            const elClock = document.getElementById('liveClock');
+            if (elClock) elClock.innerText = brtTime + ' BRT';
+
+            const parts = brtTime.split(':');
+            const h = parseInt(parts[0], 10);
+            const m = parseInt(parts[1], 10);
+            const totalMin = h * 60 + m;
+
+            const elFut = document.getElementById('statusFuturos');
+            const elVista = document.getElementById('statusAVista');
+
+            if (elFut) {{
+                if (totalMin >= 540 && totalMin < 1080) {{
+                    elFut.innerHTML = '<span class="text-emerald-400 font-bold">🟢 ABERTO</span>';
+                }} else if (totalMin >= 530 && totalMin < 540) {{
+                    elFut.innerHTML = '<span class="text-amber-400 font-bold">🟡 LEILÃO</span>';
+                }} else {{
+                    elFut.innerHTML = '<span class="text-slate-500 font-bold">🔴 FECHADO</span>';
+                }}
+            }}
+
+            if (elVista) {{
+                if (totalMin >= 600 && totalMin < 1020) {{
+                    elVista.innerHTML = '<span class="text-emerald-400 font-bold">🟢 ABERTO</span>';
+                }} else if (totalMin >= 585 && totalMin < 600) {{
+                    elVista.innerHTML = '<span class="text-amber-400 font-bold">🟡 LEILÃO</span>';
+                }} else {{
+                    elVista.innerHTML = '<span class="text-slate-500 font-bold">🔴 FECHADO</span>';
+                }}
+            }}
+        }}
+
+        function refreshLiveMarket() {{
+            fetchLiveBtc();
+            fetchLiveForex();
+            updateClockAndSessions();
+            const el = document.getElementById('liveStatusText');
+            if (el) {{
+                el.innerHTML = '<span class="text-emerald-400 font-bold">✔ ATUALIZADO</span>';
+                setTimeout(() => {{
+                    el.innerHTML = '<span class="text-emerald-400 font-bold">● FEED CONECTADO</span>';
+                }}, 2000);
+            }}
+        }}
+
+        setInterval(updateClockAndSessions, 1000);
+        setInterval(fetchLiveBtc, 15000);
+        setInterval(fetchLiveForex, 30000);
+
+        document.addEventListener('DOMContentLoaded', () => {{
+            refreshLiveMarket();
         }});
     </script>
 

@@ -69,7 +69,7 @@
             <div class="flex items-center gap-4 text-xs">
                 <div class="text-right">
                     <p class="text-slate-400 text-[10px]">Data do Pregão</p>
-                    <p class="font-mono font-bold text-slate-200">12/10/2026 | 17:13 BRT</p>
+                    <p class="font-mono font-bold text-slate-200">12/10/2026 | 17:32 BRT</p>
                 </div>
                 <div class="h-6 w-px bg-slate-800"></div>
                 <div class="text-right">
@@ -129,6 +129,106 @@
                 </div>
                 <div class="flex gap-1.5">
                     <div class="h-2 flex-1 rounded-full bg-emerald-500"></div><div class="h-2 flex-1 rounded-full bg-emerald-500"></div><div class="h-2 flex-1 rounded-full bg-emerald-500"></div><div class="h-2 flex-1 rounded-full bg-amber-500"></div><div class="h-2 flex-1 rounded-full bg-amber-500"></div><div class="h-2 flex-1 rounded-full bg-slate-800"></div><div class="h-2 flex-1 rounded-full bg-slate-800"></div><div class="h-2 flex-1 rounded-full bg-slate-800"></div><div class="h-2 flex-1 rounded-full bg-slate-800"></div><div class="h-2 flex-1 rounded-full bg-slate-800"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1.5. MONITORAMENTO EM TEMPO REAL (PRÉ-MERCADO vs COTAÇÃO ATUAL) -->
+        <section class="bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950 border border-emerald-500/40 rounded-2xl p-4 sm:p-5 shadow-xl relative overflow-hidden">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-3.5 pb-2.5 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </span>
+                    <h2 class="text-xs font-black uppercase tracking-wider text-emerald-400">
+                        Painel Dinâmico: Pré-Mercado vs Tempo Real ao Vivo
+                    </h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span id="liveStatusText" class="text-[11px] font-mono text-slate-300 flex items-center gap-1.5">
+                        <span class="text-emerald-400 font-bold">● FEED CONECTADO</span>
+                    </span>
+                    <button onclick="refreshLiveMarket()" class="px-3 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold transition flex items-center gap-1 shadow-sm active:scale-95">
+                        🔄 Atualizar Agora
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                <!-- Bitcoin Live -->
+                <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-slate-400 mb-1">
+                            <span class="font-bold text-slate-200">₿ Bitcoin (BTC/USD)</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-bold">Crypto 24h</span>
+                        </div>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <div>
+                                <p class="text-[10px] text-slate-500">No Pré-Mkt: <span class="font-mono text-slate-300 font-semibold">82,955.26</span></p>
+                                <p class="text-base font-black text-white font-mono mt-0.5" id="liveBtcPrice">Carregando...</p>
+                            </div>
+                            <span class="text-xs font-bold font-mono px-2 py-0.5 rounded" id="liveBtcChange">...</span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-2 border-t border-slate-800/80 pt-1.5" id="liveBtcSignal">Aguardando feed institucional...</p>
+                </div>
+
+                <!-- Dólar Comercial Live -->
+                <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-slate-400 mb-1">
+                            <span class="font-bold text-slate-200">💵 Dólar Comercial (USD/BRL)</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">Forex Live</span>
+                        </div>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <div>
+                                <p class="text-[10px] text-slate-500">No Pré-Mkt: <span class="font-mono text-slate-300 font-semibold">R$ 4.98</span></p>
+                                <p class="text-base font-black text-white font-mono mt-0.5" id="liveUsdPrice">Carregando...</p>
+                            </div>
+                            <span class="text-xs font-bold font-mono px-2 py-0.5 rounded" id="liveUsdChange">...</span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-2 border-t border-slate-800/80 pt-1.5" id="liveUsdSignal">Aguardando feed cambial...</p>
+                </div>
+
+                <!-- Euro / Dólar Live -->
+                <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-slate-400 mb-1">
+                            <span class="font-bold text-slate-200">🇪🇺 Euro / Dólar (EUR/USD)</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 font-bold">DXY Driver</span>
+                        </div>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <div>
+                                <p class="text-[10px] text-slate-500">No Pré-Mkt: <span class="font-mono text-slate-300 font-semibold">1.12</span></p>
+                                <p class="text-base font-black text-white font-mono mt-0.5" id="liveEurPrice">Carregando...</p>
+                            </div>
+                            <span class="text-xs font-bold font-mono px-2 py-0.5 rounded" id="liveEurChange">...</span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-2 border-t border-slate-800/80 pt-1.5" id="liveEurSignal">Balizador do Dólar Global</p>
+                </div>
+
+                <!-- Relógio Oficial do Pregão e Status de Sessão -->
+                <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-slate-400 mb-1">
+                            <span class="font-bold text-slate-200">⏰ Sessão B3 & Wall Street</span>
+                            <span class="text-xs font-mono font-bold text-amber-400" id="liveClock">--:--:-- BRT</span>
+                        </div>
+                        <div class="space-y-1.5 mt-2 text-[11px]" id="marketStatusPills">
+                            <div class="flex items-center justify-between bg-slate-900 px-2 py-1 rounded border border-slate-800">
+                                <span>Futuros B3 (WIN/WDO)</span>
+                                <span class="font-bold font-mono" id="statusFuturos">Verificando...</span>
+                            </div>
+                            <div class="flex items-center justify-between bg-slate-900 px-2 py-1 rounded border border-slate-800">
+                                <span>Mercado à Vista (Ações)</span>
+                                <span class="font-bold font-mono" id="statusAVista">Verificando...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-2 border-t border-slate-800/80 pt-1">Horário Oficial de Brasília (GMT-3)</p>
                 </div>
             </div>
         </section>
@@ -214,17 +314,14 @@
                             <span class="text-slate-400">Amplitude em Pontos:</span>
                             <span class="font-bold text-amber-400 font-mono">-627 a +627 pts</span>
                         </div>
-                        <div class="flex items-center justify-between text-emerald-400">
-                            <span class="font-sans font-semibold">🎯 Alvo 1 (-0.3%):</span>
-                            <span class="font-bold">209.694 pts (+627 pts)</span>
+                        <div class="flex items-center justify-between">
+                            <span class="font-sans font-semibold text-slate-300">🎯 Alvo 1 (+0.3%):</span><span class="font-mono text-emerald-400 bg-emerald-500/15 px-2.5 py-0.5 rounded-lg border border-emerald-500/30 font-bold">209.694 pts (+627 pts)</span>
                         </div>
-                        <div class="flex items-center justify-between text-emerald-400">
-                            <span class="font-sans font-semibold">🎯 Alvo 2 (+0.3%):</span>
-                            <span class="font-bold">208.440 pts (-627 pts)</span>
+                        <div class="flex items-center justify-between">
+                            <span class="font-sans font-semibold text-slate-300">🎯 Alvo 2 (-0.3%):</span><span class="font-mono text-rose-400 bg-rose-500/15 px-2.5 py-0.5 rounded-lg border border-rose-500/30 font-bold">208.440 pts (-627 pts)</span>
                         </div>
-                        <div class="flex items-center justify-between text-rose-400 border-t border-slate-800/80 pt-1.5">
-                            <span class="font-sans font-semibold">🛡️ Trava de Stop:</span>
-                            <span class="font-bold">208.022 pts (-1045 pts)</span>
+                        <div class="flex items-center justify-between border-t border-slate-800/80 pt-1.5">
+                            <span class="font-sans font-semibold text-slate-300">🛡️ Trava de Stop:</span><span class="font-mono text-rose-400 bg-rose-500/10 px-2.5 py-0.5 rounded-lg border border-rose-500/30 font-bold">208.022 pts (-1045 pts)</span>
                         </div>
                     </div>
                 </div>
@@ -262,24 +359,21 @@
                             <span class="text-slate-400">Amplitude em Pontos:</span>
                             <span class="font-bold text-amber-400 font-mono">+14.9 a +39.9 pts</span>
                         </div>
-                        <div class="flex items-center justify-between text-rose-400">
-                            <span class="font-sans font-semibold">🎯 Alvo 1 (+0.3%):</span>
-                            <span class="font-bold">4.996.9 pts (+14.9 pts)</span>
+                        <div class="flex items-center justify-between">
+                            <span class="font-sans font-semibold text-slate-300">🎯 Alvo 1 (+0.3%):</span><span class="font-mono text-emerald-400 bg-emerald-500/15 px-2.5 py-0.5 rounded-lg border border-emerald-500/30 font-bold">4.996.9 pts (+14.9 pts)</span>
                         </div>
-                        <div class="flex items-center justify-between text-rose-400">
-                            <span class="font-sans font-semibold">🎯 Alvo 2 (+0.8%):</span>
-                            <span class="font-bold">5.021.9 pts (+39.9 pts)</span>
+                        <div class="flex items-center justify-between">
+                            <span class="font-sans font-semibold text-slate-300">🎯 Alvo 2 (+0.8%):</span><span class="font-mono text-emerald-400 bg-emerald-500/15 px-2.5 py-0.5 rounded-lg border border-emerald-500/30 font-bold">5.021.9 pts (+39.9 pts)</span>
                         </div>
-                        <div class="flex items-center justify-between text-emerald-400 border-t border-slate-800/80 pt-1.5">
-                            <span class="font-sans font-semibold">🛡️ Trava de Stop:</span>
-                            <span class="font-bold">4.964.6 pts (-17.4 pts)</span>
+                        <div class="flex items-center justify-between border-t border-slate-800/80 pt-1.5">
+                            <span class="font-sans font-semibold text-slate-300">🛡️ Trava de Stop:</span><span class="font-mono text-rose-400 bg-rose-500/10 px-2.5 py-0.5 rounded-lg border border-rose-500/30 font-bold">4.964.6 pts (-17.4 pts)</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="text-xs text-slate-300 bg-slate-950/40 border border-slate-800/60 rounded-xl p-3">
                     <span class="text-amber-400 font-bold block mb-1 text-[11px]">⚡ Catalisador Principal:</span>
-                    <p class="leading-relaxed">Dólar internacional fortalecido (DXY: +0.39%) e juros dos Treasuries pressionando moedas emergentes.</p>
+                    <p class="leading-relaxed">Dólar internacional fortalecido (DXY: +0.38%) e juros dos Treasuries pressionando moedas emergentes.</p>
                 </div>
             </div>
         </section>
@@ -317,11 +411,11 @@
             <div>
                 <div class="flex items-center justify-between text-xs mb-1.5">
                     <span class="font-bold text-slate-200 flex items-center gap-1.5">🇧🇷 EWZ (Brasil em NY)</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">ESTÁVEL (-0.02%)</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-slate-800 text-slate-400 border-slate-700">ESTÁVEL (+0.00%)</span>
                 </div>
                 <div class="flex items-baseline justify-between mb-2">
-                    <span class="text-base font-black text-slate-100 font-mono">43.53</span>
-                    <span class="text-xs font-bold font-mono text-rose-400">-0.02%</span>
+                    <span class="text-base font-black text-slate-100 font-mono">43.54</span>
+                    <span class="text-xs font-bold font-mono text-gray-400">+0.00%</span>
                 </div>
             </div>
             <div class="border-t border-slate-800/80 pt-2 mt-1">
@@ -333,11 +427,11 @@
             <div>
                 <div class="flex items-center justify-between text-xs mb-1.5">
                     <span class="font-bold text-slate-200 flex items-center gap-1.5">⛏️ Vale ADR (VALE)</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.66%</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.73%</span>
                 </div>
                 <div class="flex items-baseline justify-between mb-2">
-                    <span class="text-base font-black text-slate-100 font-mono">13.53</span>
-                    <span class="text-xs font-bold font-mono text-rose-400">-0.66%</span>
+                    <span class="text-base font-black text-slate-100 font-mono">13.52</span>
+                    <span class="text-xs font-bold font-mono text-rose-400">-0.73%</span>
                 </div>
             </div>
             <div class="border-t border-slate-800/80 pt-2 mt-1">
@@ -349,11 +443,11 @@
             <div>
                 <div class="flex items-center justify-between text-xs mb-1.5">
                     <span class="font-bold text-slate-200 flex items-center gap-1.5">🛢️ Petrobras ADR (PBR)</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +0.51%</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +0.47%</span>
                 </div>
                 <div class="flex items-baseline justify-between mb-2">
-                    <span class="text-base font-black text-slate-100 font-mono">25.43</span>
-                    <span class="text-xs font-bold font-mono text-emerald-400">+0.51%</span>
+                    <span class="text-base font-black text-slate-100 font-mono">25.42</span>
+                    <span class="text-xs font-bold font-mono text-emerald-400">+0.47%</span>
                 </div>
             </div>
             <div class="border-t border-slate-800/80 pt-2 mt-1">
@@ -397,11 +491,11 @@
             <div>
                 <div class="flex items-center justify-between text-xs mb-1.5">
                     <span class="font-bold text-slate-200 flex items-center gap-1.5">💵 DXY (Dólar Global)</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +0.39%</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +0.38%</span>
                 </div>
                 <div class="flex items-baseline justify-between mb-2">
-                    <span class="text-base font-black text-slate-100 font-mono">102.61</span>
-                    <span class="text-xs font-bold font-mono text-emerald-400">+0.39%</span>
+                    <span class="text-base font-black text-slate-100 font-mono">102.60</span>
+                    <span class="text-xs font-bold font-mono text-emerald-400">+0.38%</span>
                 </div>
             </div>
             <div class="border-t border-slate-800/80 pt-2 mt-1">
@@ -444,11 +538,11 @@
             <div>
                 <div class="flex items-center justify-between text-xs mb-1.5">
                     <span class="font-bold text-slate-200 flex items-center gap-1.5">🛢️ Petróleo Brent</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +1.34%</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +1.28%</span>
                 </div>
                 <div class="flex items-baseline justify-between mb-2">
-                    <span class="text-base font-black text-slate-100 font-mono">106.12</span>
-                    <span class="text-xs font-bold font-mono text-emerald-400">+1.34%</span>
+                    <span class="text-base font-black text-slate-100 font-mono">106.06</span>
+                    <span class="text-xs font-bold font-mono text-emerald-400">+1.28%</span>
                 </div>
             </div>
             <div class="border-t border-slate-800/80 pt-2 mt-1">
@@ -460,11 +554,11 @@
             <div>
                 <div class="flex items-center justify-between text-xs mb-1.5">
                     <span class="font-bold text-slate-200 flex items-center gap-1.5">🔥 Gás Natural</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -1.58%</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -1.61%</span>
                 </div>
                 <div class="flex items-baseline justify-between mb-2">
                     <span class="text-base font-black text-slate-100 font-mono">3.17</span>
-                    <span class="text-xs font-bold font-mono text-rose-400">-1.58%</span>
+                    <span class="text-xs font-bold font-mono text-rose-400">-1.61%</span>
                 </div>
             </div>
             <div class="border-t border-slate-800/80 pt-2 mt-1">
@@ -476,11 +570,11 @@
             <div>
                 <div class="flex items-center justify-between text-xs mb-1.5">
                     <span class="font-bold text-slate-200 flex items-center gap-1.5">🪙 Ouro (Gold)</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.57%</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.51%</span>
                 </div>
                 <div class="flex items-baseline justify-between mb-2">
-                    <span class="text-base font-black text-slate-100 font-mono">4,192.30</span>
-                    <span class="text-xs font-bold font-mono text-rose-400">-0.57%</span>
+                    <span class="text-base font-black text-slate-100 font-mono">4,194.70</span>
+                    <span class="text-xs font-bold font-mono text-rose-400">-0.51%</span>
                 </div>
             </div>
             <div class="border-t border-slate-800/80 pt-2 mt-1">
@@ -523,11 +617,11 @@
             <div>
                 <div class="flex items-center justify-between text-xs mb-1.5">
                     <span class="font-bold text-slate-200 flex items-center gap-1.5">💻 Nasdaq Futuro</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.71%</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.73%</span>
                 </div>
                 <div class="flex items-baseline justify-between mb-2">
-                    <span class="text-base font-black text-slate-100 font-mono">30,886.75</span>
-                    <span class="text-xs font-bold font-mono text-rose-400">-0.71%</span>
+                    <span class="text-base font-black text-slate-100 font-mono">30,880.75</span>
+                    <span class="text-xs font-bold font-mono text-rose-400">-0.73%</span>
                 </div>
             </div>
             <div class="border-t border-slate-800/80 pt-2 mt-1">
@@ -539,11 +633,11 @@
             <div>
                 <div class="flex items-center justify-between text-xs mb-1.5">
                     <span class="font-bold text-slate-200 flex items-center gap-1.5">⚡ VIX (Índice do Medo)</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +2.56%</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +2.49%</span>
                 </div>
                 <div class="flex items-baseline justify-between mb-2">
-                    <span class="text-base font-black text-slate-100 font-mono">15.22</span>
-                    <span class="text-xs font-bold font-mono text-emerald-400">+2.56%</span>
+                    <span class="text-base font-black text-slate-100 font-mono">15.21</span>
+                    <span class="text-xs font-bold font-mono text-emerald-400">+2.49%</span>
                 </div>
             </div>
             <div class="border-t border-slate-800/80 pt-2 mt-1">
@@ -603,11 +697,11 @@
             <div>
                 <div class="flex items-center justify-between text-xs mb-1.5">
                     <span class="font-bold text-slate-200 flex items-center gap-1.5">🇲🇽 Dólar / Peso Mexicano (USD/MXN)</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +0.44%</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +0.38%</span>
                 </div>
                 <div class="flex items-baseline justify-between mb-2">
-                    <span class="text-base font-black text-slate-100 font-mono">18.27</span>
-                    <span class="text-xs font-bold font-mono text-emerald-400">+0.44%</span>
+                    <span class="text-base font-black text-slate-100 font-mono">18.25</span>
+                    <span class="text-xs font-bold font-mono text-emerald-400">+0.38%</span>
                 </div>
             </div>
             <div class="border-t border-slate-800/80 pt-2 mt-1">
@@ -619,11 +713,11 @@
             <div>
                 <div class="flex items-center justify-between text-xs mb-1.5">
                     <span class="font-bold text-slate-200 flex items-center gap-1.5">🇪🇺 Euro / Dólar (EUR/USD)</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.50%</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.49%</span>
                 </div>
                 <div class="flex items-baseline justify-between mb-2">
                     <span class="text-base font-black text-slate-100 font-mono">1.12</span>
-                    <span class="text-xs font-bold font-mono text-rose-400">-0.50%</span>
+                    <span class="text-xs font-bold font-mono text-rose-400">-0.49%</span>
                 </div>
             </div>
             <div class="border-t border-slate-800/80 pt-2 mt-1">
@@ -635,11 +729,11 @@
             <div>
                 <div class="flex items-center justify-between text-xs mb-1.5">
                     <span class="font-bold text-slate-200 flex items-center gap-1.5">₿ Bitcoin (BTC/USD)</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.96%</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-rose-500/10 text-rose-400 border-rose-500/30">CAIU -0.87%</span>
                 </div>
                 <div class="flex items-baseline justify-between mb-2">
-                    <span class="text-base font-black text-slate-100 font-mono">82,877.50</span>
-                    <span class="text-xs font-bold font-mono text-rose-400">-0.96%</span>
+                    <span class="text-base font-black text-slate-100 font-mono">82,955.26</span>
+                    <span class="text-xs font-bold font-mono text-rose-400">-0.87%</span>
                 </div>
             </div>
             <div class="border-t border-slate-800/80 pt-2 mt-1">
@@ -985,11 +1079,11 @@
                 </div>
             </a>
             
-            <a href="https://news.google.com/rss/articles/CBMipAFBVV95cUxOZWpkNk1BMmpLNXRwU3VPVDR6dXFiUHF3U3kwRFdOamFla3hHWlRiNVdMNFg5VG5tSTNtcVlWVUMxMU5Qal9FaEhMdE5HakN2eWYwU0EzZUFraFB0aElQd1NHb2VrMW9DVFliLUhfZDlwN3k5czRzYjVDR3kyNGVReU1MZkh6dV8tM08yaVpLczJoMHBEUnMyak1uNEV6RnVxbmIwVdIBqgFBVV95cUxOZGtYNTBMSlBCeVBOSFhZd0J5eVVGOUF6WlJfNTJFOS1yVU4tNksxWmpZODNDN3RxQUxuYi1taHcyeEEtbW5mckoxNjlPOFJWdlU0cTBScnd2ejJfcUhZcVh0WTEzbGx0bmlFRlJjWjlTTnplMFRzZnljT3JfTUxHQnoxSFlYbk1vTnVPTEE3QXktT0s1aXhOVXoxTE5ZSXoxX2s4S000TjJvZw?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
-                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Na estreia de Kevin Warsh, Fed mantém juros e sinaliza possível alta ainda em 2026</p>
+            <a href="https://news.google.com/rss/articles/CBMiowFBVV95cUxQSFNiSUpncE9DVFFOTV9PdjNkMEhsYUZWbFYxaEFHTmJXUXV0TGFBbmdpeHJrTnVZYU9ESUdhVDlSSHlfb2syaFhyeS0wZmdYSjRKbzZhVG1OaFJtaF9waTc2c0M5YnFzQkhvcVNIUjRMc0xOaW9yNGc5UTNjX2M0RnZWM2VTRXZMLUljWU1CZlVVRzNBYlpHRUtodks5VmtfU0Vz?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Wall Street cai com temor de juros nos EUA, mas Ibovespa sobe 0,46%</p>
                 <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
-                    <span class="font-semibold text-slate-400">InvestNews</span>
-                    <span>Wed, 17 Jun 2026</span>
+                    <span class="font-semibold text-slate-400">TV Sim Brasil</span>
+                    <span>Tue, 29 Sep 2026</span>
                 </div>
             </a>
             
@@ -1278,6 +1372,123 @@
                     if (e.key === 'Enter') checkPin();
                 });
             }
+        });
+
+        // --- Sincronizador de Mercado em Tempo Real ---
+        async function fetchLiveBtc() {
+            try {
+                const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
+                if (res.ok) {
+                    const d = await res.json();
+                    const p = parseFloat(d.lastPrice);
+                    const chg = parseFloat(d.priceChangePercent);
+                    const elPrice = document.getElementById('liveBtcPrice');
+                    const elChg = document.getElementById('liveBtcChange');
+                    const elSig = document.getElementById('liveBtcSignal');
+                    if (elPrice) elPrice.innerText = '$ ' + p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    if (elChg) {
+                        elChg.innerText = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+                        elChg.className = 'text-xs font-bold font-mono px-2 py-0.5 rounded ' + (chg >= 0 ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-400 bg-rose-500/10 border border-rose-500/20');
+                    }
+                    if (elSig) {
+                        elSig.innerText = chg > 1.0 ? '🚀 Apetite a risco global firme (positivo para Bolsa)' : (chg < -1.0 ? '⚠️ Cautela com liquidez e aversão a risco' : 'Equilíbrio nas criptomoedas');
+                    }
+                }
+            } catch (e) { console.log('BTC live error:', e); }
+        }
+
+        async function fetchLiveForex() {
+            try {
+                const res = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-USD');
+                if (res.ok) {
+                    const d = await res.json();
+                    if (d.USDBRL) {
+                        const usdP = parseFloat(d.USDBRL.bid);
+                        const usdChg = parseFloat(d.USDBRL.pctChange);
+                        const elP = document.getElementById('liveUsdPrice');
+                        const elC = document.getElementById('liveUsdChange');
+                        const elS = document.getElementById('liveUsdSignal');
+                        if (elP) elP.innerText = 'R$ ' + usdP.toFixed(4);
+                        if (elC) {
+                            elC.innerText = (usdChg >= 0 ? '+' : '') + usdChg.toFixed(2) + '%';
+                            elC.className = 'text-xs font-bold font-mono px-2 py-0.5 rounded ' + (usdChg >= 0 ? 'text-rose-400 bg-rose-500/10 border border-rose-500/20' : 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20');
+                        }
+                        if (elS) {
+                            elS.innerText = usdChg > 0.3 ? '▲ Pressão compradora no Dólar' : (usdChg < -0.3 ? '▼ Entrada de fluxo vendedor no Dólar' : 'Dólar estável no intradiário');
+                        }
+                    }
+                    if (d.EURUSD) {
+                        const eurP = parseFloat(d.EURUSD.bid);
+                        const eurChg = parseFloat(d.EURUSD.pctChange);
+                        const elP = document.getElementById('liveEurPrice');
+                        const elC = document.getElementById('liveEurChange');
+                        if (elP) elP.innerText = '$ ' + eurP.toFixed(4);
+                        if (elC) {
+                            elC.innerText = (eurChg >= 0 ? '+' : '') + eurChg.toFixed(2) + '%';
+                            elC.className = 'text-xs font-bold font-mono px-2 py-0.5 rounded ' + (eurChg >= 0 ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-400 bg-rose-500/10 border border-rose-500/20');
+                        }
+                    }
+                }
+            } catch (e) { console.log('Forex live error:', e); }
+        }
+
+        function updateClockAndSessions() {
+            const now = new Date();
+            const brtTime = new Intl.DateTimeFormat('pt-BR', {
+                timeZone: 'America/Sao_Paulo',
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+            }).format(now);
+            const elClock = document.getElementById('liveClock');
+            if (elClock) elClock.innerText = brtTime + ' BRT';
+
+            const parts = brtTime.split(':');
+            const h = parseInt(parts[0], 10);
+            const m = parseInt(parts[1], 10);
+            const totalMin = h * 60 + m;
+
+            const elFut = document.getElementById('statusFuturos');
+            const elVista = document.getElementById('statusAVista');
+
+            if (elFut) {
+                if (totalMin >= 540 && totalMin < 1080) {
+                    elFut.innerHTML = '<span class="text-emerald-400 font-bold">🟢 ABERTO</span>';
+                } else if (totalMin >= 530 && totalMin < 540) {
+                    elFut.innerHTML = '<span class="text-amber-400 font-bold">🟡 LEILÃO</span>';
+                } else {
+                    elFut.innerHTML = '<span class="text-slate-500 font-bold">🔴 FECHADO</span>';
+                }
+            }
+
+            if (elVista) {
+                if (totalMin >= 600 && totalMin < 1020) {
+                    elVista.innerHTML = '<span class="text-emerald-400 font-bold">🟢 ABERTO</span>';
+                } else if (totalMin >= 585 && totalMin < 600) {
+                    elVista.innerHTML = '<span class="text-amber-400 font-bold">🟡 LEILÃO</span>';
+                } else {
+                    elVista.innerHTML = '<span class="text-slate-500 font-bold">🔴 FECHADO</span>';
+                }
+            }
+        }
+
+        function refreshLiveMarket() {
+            fetchLiveBtc();
+            fetchLiveForex();
+            updateClockAndSessions();
+            const el = document.getElementById('liveStatusText');
+            if (el) {
+                el.innerHTML = '<span class="text-emerald-400 font-bold">✔ ATUALIZADO</span>';
+                setTimeout(() => {
+                    el.innerHTML = '<span class="text-emerald-400 font-bold">● FEED CONECTADO</span>';
+                }, 2000);
+            }
+        }
+
+        setInterval(updateClockAndSessions, 1000);
+        setInterval(fetchLiveBtc, 15000);
+        setInterval(fetchLiveForex, 30000);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshLiveMarket();
         });
     </script>
 
