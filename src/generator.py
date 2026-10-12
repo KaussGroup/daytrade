@@ -78,6 +78,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
     # Separar ativos por grupos de análise
     adrs_html = ""
     commodities_html = ""
+    forex_crypto_html = ""
     macro_html = ""
     
     for a in collected_data.get("assets", []):
@@ -110,6 +111,8 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             adrs_html += card
         elif "Commodities" in cat:
             commodities_html += card
+        elif "Crypto" in cat or "Forex" in cat:
+            forex_crypto_html += card
         else:
             macro_html += card
 
@@ -236,6 +239,33 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
     </style>
 </head>
 <body class="min-h-screen antialiased selection:bg-amber-500/30 selection:text-amber-300 pb-12">
+    
+    <!-- Lock Screen Modal (PIN 102030) -->
+    <div id="pinLockModal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700/80 rounded-2xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl space-y-5">
+            <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl shadow-inner">
+                🔒
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white tracking-tight">Radar Kauss Day Trade</h3>
+                <p class="text-xs text-slate-400 mt-1">Acesso Restrito às Informações e Níveis</p>
+            </div>
+            <div class="space-y-3">
+                <input type="password" id="pinInput" maxlength="10" placeholder="Digite o PIN de Acesso" 
+                    class="w-full text-center text-lg tracking-widest font-mono bg-slate-950 border border-slate-700 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all placeholder:text-slate-600 placeholder:tracking-normal placeholder:text-sm">
+                <p id="pinError" class="text-rose-400 text-xs font-semibold hidden">PIN incorreto. Tente novamente.</p>
+                
+                <div class="flex items-center justify-center gap-2 text-xs text-slate-400">
+                    <input type="checkbox" id="rememberPin" class="rounded bg-slate-950 border-slate-700 text-amber-500 focus:ring-0">
+                    <label for="rememberPin" class="cursor-pointer">Lembrar neste dispositivo</label>
+                </div>
+
+                <button onclick="checkPin()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black rounded-xl text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95">
+                    Desbloquear Painel 🔓
+                </button>
+            </div>
+        </div>
+    </div>
     
     <!-- Top Bar -->
     <header class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
@@ -535,7 +565,23 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             </div>
         </section>
 
-        <!-- 7. MERCADO DE TRABALHO & CALENDÁRIO DE RISCO -->
+        <!-- 7. FOREX & CRYPTO: APETITE A RISCO & CESTA CAMBIAL -->
+        <section class="bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950 border border-blue-500/30 rounded-2xl p-4 sm:p-5 shadow-lg">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div>
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-2">
+                        <span>⚡</span> Crypto & Forex (Apetite a Risco Global & Cesta Cambial)
+                    </h2>
+                    <p class="text-[11px] text-slate-400">Bitcoin baliza apetite a risco 24/7; USD/MXN (México) e EUR/USD balizam a força real do Dólar</p>
+                </div>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-bold uppercase">Liquidez 24h</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {forex_crypto_html}
+            </div>
+        </section>
+
+        <!-- 8. MERCADO DE TRABALHO & CALENDÁRIO DE RISCO -->
         <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             
             <!-- Indicadores de Emprego -->
@@ -638,6 +684,49 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 }}, 2000);
             }});
         }}
+
+        // --- Trava de Segurança por PIN (102030) ---
+        const CORRECT_PIN = "102030";
+
+        function checkPin() {{
+            const input = document.getElementById('pinInput').value.trim();
+            const remember = document.getElementById('rememberPin').checked;
+            const errorMsg = document.getElementById('pinError');
+            const modal = document.getElementById('pinLockModal');
+            
+            if (input === CORRECT_PIN) {{
+                if (remember) {{
+                    localStorage.setItem('kauss_radar_pin', 'verified_102030');
+                }} else {{
+                    sessionStorage.setItem('kauss_radar_pin', 'verified_102030');
+                }}
+                modal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }} else {{
+                errorMsg.classList.remove('hidden');
+                document.getElementById('pinInput').classList.add('border-rose-500');
+                document.getElementById('pinInput').value = '';
+            }}
+        }}
+
+        document.addEventListener('DOMContentLoaded', () => {{
+            const isRemembered = localStorage.getItem('kauss_radar_pin') === 'verified_102030' || 
+                                 sessionStorage.getItem('kauss_radar_pin') === 'verified_102030';
+            const modal = document.getElementById('pinLockModal');
+            const input = document.getElementById('pinInput');
+            if (isRemembered && modal) {{
+                modal.classList.add('hidden');
+            }} else if (modal) {{
+                document.body.classList.add('overflow-hidden');
+                if (input) input.focus();
+            }}
+
+            if (input) {{
+                input.addEventListener('keyup', (e) => {{
+                    if (e.key === 'Enter') checkPin();
+                }});
+            }}
+        }});
     </script>
 
 </body>

@@ -30,8 +30,13 @@ ASSETS_MAP = {
     # Moedas, Juros & Ásia
     "USDBRL=X": {"name": "Dólar / Real (USD/BRL Pré-Mkt)", "category": "Pré-Mercado NY", "icon": "💵"},
     "DX-Y.NYB": {"name": "DXY (Dólar Global)", "category": "Pré-Mercado NY", "icon": "💵"},
+    "USDMXN=X": {"name": "Dólar / Peso Mexicano (USD/MXN)", "category": "Forex Emergentes", "icon": "🇲🇽"},
+    "EURUSD=X": {"name": "Euro / Dólar (EUR/USD)", "category": "Forex Global", "icon": "🇪🇺"},
     "^TNX": {"name": "Treasury 10A (Yield)", "category": "Juros EUA", "icon": "📈"},
-    "^HSI": {"name": "Hang Seng (China/HK)", "category": "China & Ásia", "icon": "🇨🇳"}
+    "^HSI": {"name": "Hang Seng (China/HK)", "category": "China & Ásia", "icon": "🇨🇳"},
+    
+    # Crypto & Apetite a Risco Global
+    "BTC-USD": {"name": "Bitcoin (BTC/USD)", "category": "Crypto & Risco Global", "icon": "₿"}
 }
 
 NEWS_TOPICS = {

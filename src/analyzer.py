@@ -70,6 +70,18 @@ ASSET_CATALYST_TEMPLATES = {
     "USDBRL=X": {
         "up": "Pressão de alta no câmbio doméstico com ruído fiscal em Brasília e dólar forte no exterior.",
         "down": "Entrada de fluxo comercial e alívio no risco-país puxam cotação do dólar para baixo."
+    },
+    "BTC-USD": {
+        "up": "Bitcoin e criptoativos em forte alta, sinalizando apetite por risco global e descompressão de liquidez institucional.",
+        "down": "Correção no Bitcoin refletindo cautela macroeconômica e aversão a risco de ativos especulativos no overnight."
+    },
+    "USDMXN=X": {
+        "up": "Dólar valorizado contra o peso mexicano no Forex, indicando saída de capital de emergentes latino-americanos.",
+        "down": "Peso mexicano firme no Forex, indicando entrada de fluxo e alívio sobre moedas emergentes da América Latina."
+    },
+    "EURUSD=X": {
+        "up": "Euro apreciado contra o dólar no Forex, enfraquecendo a força da moeda americana globalmente.",
+        "down": "Euro recuando frente ao dólar no Forex, impulsionando a cesta do DXY internacional para cima."
     }
 }
 
@@ -144,33 +156,52 @@ def analyze_with_heuristics(collected_data):
     itub_adr_pct = assets.get("ITUB", {}).get("change_pct", 0.0)
     vix_pct = assets.get("^VIX", {}).get("change_pct", 0.0)
     
-    # Ponderação de Elite para o WIN:
+    btc_pct = assets.get("BTC-USD", {}).get("change_pct", 0.0)
+    usdmxn_pct = assets.get("USDMXN=X", {}).get("change_pct", 0.0)
+    eurusd_pct = assets.get("EURUSD=X", {}).get("change_pct", 0.0)
+    
+    # Verificação de Confluência Cambial (DXY vs Pares Emergentes)
+    forex_aligned = (dxy_pct * usdmxn_pct >= 0)
+    forex_divergence = (dxy_pct > 0.15 and usdmxn_pct < -0.15) or (dxy_pct < -0.15 and usdmxn_pct > 0.15)
+    
+    # Ponderação de Elite para o WIN (com Bitcoin e Liquidez Global):
     # 1. ADRs em NY (25%): Vale (10%), Petrobras (8%), Itaú (4%), EWZ (3%)
-    # 2. Commodities (30%): Minério (15%), Petróleo (10%), Gás (5%)
-    # 3. Wall Street (25%): S&P 500 (15%), Nasdaq (10%)
+    # 2. Commodities (28%): Minério (14%), Petróleo (10%), Gás (4%)
+    # 3. Wall Street (22%): S&P 500 (12%), Nasdaq (10%)
     # 4. China & Ásia (10%)
-    # 5. DXY Global (-10%)
+    # 5. Bitcoin & Apetite a Risco Global (5%)
+    # 6. DXY Global (-10%)
     win_score = (
         (vale_adr_pct * 0.10) + (pbr_adr_pct * 0.08) + (itub_adr_pct * 0.04) + (ewz_pct * 0.03) +
-        (iron_pct * 0.15) + (brent_pct * 0.10) + (gas_pct * 0.05) + 
-        (sp_pct * 0.15) + (nasdaq_pct * 0.10) + 
-        (china_pct * 0.10) - 
+        (iron_pct * 0.14) + (brent_pct * 0.10) + (gas_pct * 0.04) + 
+        (sp_pct * 0.12) + (nasdaq_pct * 0.10) + 
+        (china_pct * 0.10) +
+        (btc_pct * 0.05) - 
         (dxy_pct * 0.10)
     )
     
-    # Ponderação para o WDO:
-    # 1. DXY Global (+30%)
-    # 2. Juros Treasuries (+20%)
-    # 3. Fluxo de ADRs em NY (-20% - compra de ADR atrai dólar ao país)
-    # 4. Commodities (-15% - exportações)
-    # 5. Bolsas Mundiais (-15%)
+    # Ponderação para o WDO (com Forex Cuidadoso e Cesta de Emergentes):
+    # 1. DXY Global (+20%)
+    # 2. Forex Emergentes / Peso Mexicano (+15% - confirmação de fluxo LatAm)
+    # 3. Euro no Forex (-10% - inverso do dólar)
+    # 4. Juros Treasuries (+15%)
+    # 5. Fluxo de ADRs em NY (-18%)
+    # 6. Commodities (-12%)
+    # 7. Bolsas Mundiais & BTC (-10%)
     wdo_score = (
-        (dxy_pct * 0.30) + 
-        (tnx_pct * 0.20) - 
-        (vale_adr_pct * 0.08) - (pbr_adr_pct * 0.07) - (ewz_pct * 0.05) -
-        (iron_pct * 0.08) - (brent_pct * 0.07) - 
-        (sp_pct * 0.10) - (china_pct * 0.05)
+        (dxy_pct * 0.20) + 
+        (usdmxn_pct * 0.15) - 
+        (eurusd_pct * 0.10) +
+        (tnx_pct * 0.15) - 
+        (vale_adr_pct * 0.07) - (pbr_adr_pct * 0.06) - (ewz_pct * 0.05) -
+        (iron_pct * 0.07) - (brent_pct * 0.05) - 
+        (sp_pct * 0.07) - (china_pct * 0.03) -
+        (btc_pct * 0.05)
     )
+    
+    # Se houver divergência no Forex (ex: DXY sobe mas México cai), amortecer o viés para evitar falso rompimento
+    if forex_divergence:
+        wdo_score = wdo_score * 0.50
     
     # --- CÁLCULO DE PONTOS & TRAVAS: MINI-ÍNDICE (WIN) ---
     if win_score >= 0.30:

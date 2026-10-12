@@ -1089,8 +1089,8 @@
       "hit": true
     },
     "wdo": {
-      "bias": "BAIXA",
-      "expected_pct": "-0.8% a -0.3%",
+      "bias": "ALTA",
+      "expected_pct": "+0.3% a +0.8%",
       "actual_pct": "-0.63%",
       "actual_dir": "BAIXA",
       "hit": true
