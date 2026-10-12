@@ -265,9 +265,9 @@ def send_github_issue_notification(analysis, dashboard_url=""):
 ---
 
 ### 🔗 Acesso Rápido ao Painel
-* 🖥️ **[Abrir Arquivo do Painel no Repositório](https://github.com/{repo}/blob/main/index.html)**
-* 📱 **[Abrir Visualização Renderizada Web](https://htmlpreview.github.io/?https://github.com/{repo}/blob/main/index.html)**
-{f'* 🌐 [Painel Live]({dashboard_url})' if dashboard_url else ''}
+* 🖥️ **[Abrir Painel no GitHub](https://github.com/{repo}/blob/main/index.html)**
+* 📊 **[Ver Histórico e Alertas](https://github.com/{repo}/issues)**
+{f'* 🌐 [Painel Web Live]({dashboard_url})' if dashboard_url else ''}
 
 ---
 _Gerado automaticamente pelo robô KaussGroup Radar B3._
