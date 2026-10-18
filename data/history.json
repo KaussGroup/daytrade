@@ -1095,7 +1095,43 @@
       "actual_dir": "BAIXA",
       "hit": true
     },
-    "status": "PENDENTE_FECHAMENTO"
+    "status": "COMPLETO"
+  },
+  {
+    "date": "2026-10-16",
+    "win": {
+      "bias": "ALTA",
+      "expected_pct": "+0.4% a +1.0%",
+      "actual_pct": "+0.65%",
+      "actual_dir": "ALTA",
+      "hit": true
+    },
+    "wdo": {
+      "bias": "BAIXA",
+      "expected_pct": "-0.8% a -0.3%",
+      "actual_pct": "-0.70%",
+      "actual_dir": "BAIXA",
+      "hit": false,
+      "base_price": "5.080,5 pts",
+      "base_price_val": 5080.5,
+      "line_t1": "5.065,5 pts",
+      "line_t1_val": 5065.5,
+      "line_t2": "5.040,0 pts",
+      "line_t2_val": 5040.0,
+      "pts_t1": "-15.0 pts",
+      "pts_t2": "-40.5 pts",
+      "points_range": "-40.5 a -15.0 pts",
+      "open": 5079.0,
+      "high": 5115.0,
+      "low": 5072.0,
+      "close": 5080.5,
+      "target_1_hit": false,
+      "target_2_hit": false,
+      "range_hit": false,
+      "t1_hit": false,
+      "t2_hit": false
+    },
+    "status": "COMPLETO"
   },
   {
     "date": "2026-10-17",

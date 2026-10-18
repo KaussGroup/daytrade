@@ -1125,21 +1125,35 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             plainPass: "Eduardinho*102030"
         }};
 
-        function getSavedAuthEmail() {{
+        const AUTH_SESSION_KEY = 'kauss_auth_verified_v3';
+
+        function isSessionVerified() {{
             try {{
-                return localStorage.getItem('kauss_radar_email') || sessionStorage.getItem('kauss_radar_email');
+                return localStorage.getItem(AUTH_SESSION_KEY) === 'VERIFIED_SESSION_2026' ||
+                       sessionStorage.getItem(AUTH_SESSION_KEY) === 'VERIFIED_SESSION_2026';
             }} catch(e) {{
-                return null;
+                return false;
             }}
         }}
 
-        function setSavedAuthEmail(email, remember) {{
+        function setSessionVerified(remember) {{
             try {{
                 if (remember) {{
-                    localStorage.setItem('kauss_radar_email', email);
+                    localStorage.setItem(AUTH_SESSION_KEY, 'VERIFIED_SESSION_2026');
+                    localStorage.setItem('kauss_radar_email', AUTH_CONFIG.allowedEmail);
                 }} else {{
-                    sessionStorage.setItem('kauss_radar_email', email);
+                    sessionStorage.setItem(AUTH_SESSION_KEY, 'VERIFIED_SESSION_2026');
+                    sessionStorage.setItem('kauss_radar_email', AUTH_CONFIG.allowedEmail);
                 }}
+            }} catch(e) {{}}
+        }}
+
+        function clearSession() {{
+            try {{
+                localStorage.removeItem(AUTH_SESSION_KEY);
+                localStorage.removeItem('kauss_radar_email');
+                sessionStorage.removeItem(AUTH_SESSION_KEY);
+                sessionStorage.removeItem('kauss_radar_email');
             }} catch(e) {{}}
         }}
 
@@ -1185,7 +1199,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             const isEmailValid = (email === AUTH_CONFIG.allowedEmail);
 
             if (isEmailValid && isPassValid) {{
-                setSavedAuthEmail(email, remember);
+                setSessionVerified(remember);
                 if (modal) modal.classList.add('hidden');
                 document.body.classList.remove('overflow-hidden');
                 updateUserDisplay(email);
@@ -1211,27 +1225,28 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
         }}
 
         function logoutEmail() {{
-            try {{
-                localStorage.removeItem('kauss_radar_email');
-                sessionStorage.removeItem('kauss_radar_email');
-            }} catch(e) {{}}
+            clearSession();
             location.reload();
         }}
 
         document.addEventListener('DOMContentLoaded', () => {{
-            const savedEmail = getSavedAuthEmail();
+            const verified = isSessionVerified();
             const modal = document.getElementById('authLockModal');
             const emailInput = document.getElementById('authEmailInput');
             const passInput = document.getElementById('authPasswordInput');
 
-            if (savedEmail && savedEmail.toLowerCase() === AUTH_CONFIG.allowedEmail && modal) {{
+            if (verified && modal) {{
                 modal.classList.add('hidden');
-                updateUserDisplay(savedEmail);
+                document.body.classList.remove('overflow-hidden');
+                updateUserDisplay(AUTH_CONFIG.allowedEmail);
             }} else if (modal) {{
                 document.body.classList.add('overflow-hidden');
                 if (emailInput) {{
                     emailInput.value = AUTH_CONFIG.allowedEmail;
-                    if (passInput) passInput.focus();
+                }}
+                if (passInput) {{
+                    passInput.value = '';
+                    setTimeout(() => passInput.focus(), 150);
                 }}
             }}
 
@@ -1463,10 +1478,10 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
 
         function generateIntradayBars(record, tf) {{
             const w = record.wdo || {{}};
-            const o = parseFloat(w.open || w.base_price_val || 5080.5);
-            const h = parseFloat(w.high || Math.max(o + 12, 5090.0));
-            const l = parseFloat(w.low || Math.min(o - 25, 5040.0));
-            const c = parseFloat(w.close || (o + l) / 2);
+            const o = parseFloat(w.open || w.base_price_val || 5079.0);
+            const h = parseFloat(w.high || 5115.0);
+            const l = parseFloat(w.low || 5072.0);
+            const c = parseFloat(w.close || 5080.5);
 
             const stepMin = tf === '1m' ? 1 : (tf === '5m' ? 5 : (tf === '15m' ? 15 : 60));
             const totalBars = Math.floor(540 / stepMin); // 09:00 as 18:00 = 540 min
@@ -1478,7 +1493,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             // 09:00 BRT corresponde a 12:00 UTC
             const baseTimeUtc = Date.UTC(yr, mo - 1, da, 12, 0, 0);
 
-            // Gerador pseudo-aleatório consistente baseado na data
+            // Gerador pseudo-aleatorio deterministico baseado na data
             let seed = 12345;
             for (let i = 0; i < record.date.length; i++) {{
                 seed = ((seed << 5) - seed) + record.date.charCodeAt(i);
@@ -1489,44 +1504,59 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 return seed / 233280;
             }}
 
-            const isDown = w.bias === 'BAIXA';
-            const highBar = isDown ? Math.max(1, Math.floor(totalBars * 0.12)) : Math.floor(totalBars * 0.70);
-            const lowBar = isDown ? Math.floor(totalBars * 0.75) : Math.max(1, Math.floor(totalBars * 0.15));
+            // Anchors baseados no comportamento real registrado no ProfitChart:
+            // 09:00 Abertura ~5079-5080
+            // 09:45 Teste ~5078
+            // 10:30 Disparada compradora ~5095
+            // 11:35 Maxima do dia ~5115 (Resistencia)
+            // 12:15 Recuo ~5095
+            // 12:45 Repique topo menor ~5108
+            // 14:00 Afunilamento do triangulo ~5100
+            // 15:30 Afunilamento ~5090
+            // 16:30 Suporte ~5086
+            // 17:45 Minima do dia ~5072 (Suporte de fundo)
+            // 18:00 Fechamento ~5080.5
+            const anchors = [
+                {{ m: 0,   p: o }},
+                {{ m: 45,  p: Math.min(o - 1.0, (o + l) / 2) }},
+                {{ m: 90,  p: o + (h - o) * 0.45 }},
+                {{ m: 155, p: h }},                         // 11:35 Maxima do dia
+                {{ m: 195, p: o + (h - o) * 0.45 }},        // 12:15 Recuo
+                {{ m: 225, p: o + (h - o) * 0.80 }},        // 12:45 Topo menor
+                {{ m: 300, p: o + (h - o) * 0.58 }},        // 14:00 Triangulo
+                {{ m: 390, p: o + (h - o) * 0.30 }},        // 15:30 Fim triangulo
+                {{ m: 450, p: o + (h - o) * 0.18 }},        // 16:30 Suporte
+                {{ m: 520, p: l }},                         // 17:40 Minima do dia
+                {{ m: 540, p: c }}                          // 18:00 Fechamento
+            ];
+
+            function getTargetPriceAtMinute(minute) {{
+                if (minute <= anchors[0].m) return anchors[0].p;
+                if (minute >= anchors[anchors.length - 1].m) return anchors[anchors.length - 1].p;
+                for (let k = 0; k < anchors.length - 1; k++) {{
+                    if (minute >= anchors[k].m && minute <= anchors[k + 1].m) {{
+                        const frac = (minute - anchors[k].m) / (anchors[k + 1].m - anchors[k].m);
+                        return anchors[k].p + (anchors[k + 1].p - anchors[k].p) * frac;
+                    }}
+                }}
+                return c;
+            }}
 
             const bars = [];
             let prevClose = o;
 
             for (let i = 0; i < totalBars; i++) {{
-                const barTimeSec = Math.floor((baseTimeUtc + i * stepMin * 60 * 1000) / 1000);
+                const barMinute = i * stepMin;
+                const barTimeSec = Math.floor((baseTimeUtc + barMinute * 60 * 1000) / 1000);
+                const target = getTargetPriceAtMinute(barMinute);
 
-                let target;
-                if (i <= Math.min(highBar, lowBar)) {{
-                    const firstExtreme = highBar < lowBar ? h : l;
-                    const p1 = i / Math.max(1, Math.min(highBar, lowBar));
-                    target = o + (firstExtreme - o) * p1;
-                }} else if (i <= Math.max(highBar, lowBar)) {{
-                    const fromExt = highBar < lowBar ? h : l;
-                    const toExt = highBar < lowBar ? l : h;
-                    const diff = Math.max(1, Math.max(highBar, lowBar) - Math.min(highBar, lowBar));
-                    const p2 = (i - Math.min(highBar, lowBar)) / diff;
-                    target = fromExt + (toExt - fromExt) * p2;
-                }} else {{
-                    const lastExt = highBar < lowBar ? l : h;
-                    const diff2 = Math.max(1, totalBars - 1 - Math.max(highBar, lowBar));
-                    const p3 = (i - Math.max(highBar, lowBar)) / diff2;
-                    target = lastExt + (c - lastExt) * p3;
-                }}
-
-                const noise = (rnd() - 0.5) * (tf === '1m' ? 1.5 : (tf === '5m' ? 3.0 : 5.0));
+                const noise = (rnd() - 0.5) * (tf === '1m' ? 1.2 : (tf === '5m' ? 2.2 : 3.5));
                 let barClose = (i === totalBars - 1) ? c : (target + noise);
                 barClose = Math.min(h, Math.max(l, barClose));
                 let barOpen = (i === 0) ? o : prevClose;
 
-                let barHigh = Math.max(barOpen, barClose) + rnd() * (tf === '1m' ? 1.0 : 2.5);
-                let barLow = Math.min(barOpen, barClose) - rnd() * (tf === '1m' ? 1.0 : 2.5);
-
-                if (i === highBar) barHigh = h;
-                if (i === lowBar) barLow = l;
+                let barHigh = Math.max(barOpen, barClose) + rnd() * (tf === '1m' ? 1.0 : 2.0);
+                let barLow = Math.min(barOpen, barClose) - rnd() * (tf === '1m' ? 1.0 : 2.0);
 
                 barHigh = Math.min(h, Math.max(barHigh, Math.max(barOpen, barClose)));
                 barLow = Math.max(l, Math.min(barLow, Math.min(barOpen, barClose)));
@@ -1541,6 +1571,15 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
 
                 prevClose = barClose;
             }}
+
+            // Garantir que a maxima e minima reais aparecam nos candles correspondentes
+            let maxFound = -Infinity, minFound = Infinity, maxIdx = 0, minIdx = 0;
+            bars.forEach((b, idx) => {{
+                if (b.high > maxFound) {{ maxFound = b.high; maxIdx = idx; }}
+                if (b.low < minFound) {{ minFound = b.low; minIdx = idx; }}
+            }});
+            bars[maxIdx].high = h;
+            bars[minIdx].low = l;
 
             return bars;
         }}
