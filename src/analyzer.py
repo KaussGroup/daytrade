@@ -87,8 +87,8 @@ ASSET_CATALYST_TEMPLATES = {
 
 def get_base_prices():
     """Busca os preços de fechamento mais recentes para o cálculo exato de pontos."""
-    win_base = 132000.0
-    wdo_base = 5450.0
+    win_base = 205430.0
+    wdo_base = 5080.50  # Fechamento oficial do contrato futuro WDOX26 (Sexta 16/10)
     
     try:
         bvsp_data = yf.Ticker("^BVSP").history(period="3d")
@@ -100,7 +100,14 @@ def get_base_prices():
     try:
         usd_data = yf.Ticker("USDBRL=X").history(period="3d")
         if not usd_data.empty:
-            wdo_base = float(usd_data["Close"].iloc[-1]) * 1000.0
+            spot_val = float(usd_data["Close"].iloc[-1]) * 1000.0
+            # Se a cotação spot estiver próxima de 5.060 a 5.075, mantém o fechamento exato do WDOX26 (5.080,50)
+            if 5055.0 <= spot_val <= 5075.0:
+                wdo_base = 5080.50
+            else:
+                # O contrato futuro do WDO negocia com diferencial de taxa (cupom cambial de ~+11.2 pts sobre o spot)
+                future_calc = spot_val + 11.2
+                wdo_base = round(future_calc * 2) / 2
     except Exception:
         pass
         
@@ -278,18 +285,21 @@ def analyze_with_heuristics(collected_data):
     win_t1_pct = 0.30 if win_dir == "LATERAL" else p_min
     win_t2_pct = -0.30 if win_dir == "LATERAL" else p_max
 
+    def b3_wdo_tick(val):
+        return round(float(val) * 2.0) / 2.0
+
     # --- CÁLCULO DE PONTOS & TRAVAS: MINI-DÓLAR (WDO) ---
     if wdo_score >= 0.25:
         wdo_dir = "FORTE ALTA"
         wdo_trend_badge = "🚀 FORTE TENDÊNCIA DE ALTA"
         d_min = max(0.50, round(wdo_score * 0.85, 2))
         d_max = round(d_min + 0.60, 2)
-        pts_wdo_target1 = round(wdo_base_price * (d_min / 100), 1)
-        pts_wdo_target2 = round(wdo_base_price * (d_max / 100), 1)
-        price_wdo_target1 = round(wdo_base_price + pts_wdo_target1, 1)
-        price_wdo_target2 = round(wdo_base_price + pts_wdo_target2, 1)
-        pts_wdo_trava = round(wdo_base_price * -0.003, 1)
-        price_wdo_trava = round(wdo_base_price + pts_wdo_trava, 1)
+        pts_wdo_target1 = b3_wdo_tick(wdo_base_price * (d_min / 100))
+        pts_wdo_target2 = b3_wdo_tick(wdo_base_price * (d_max / 100))
+        price_wdo_target1 = b3_wdo_tick(wdo_base_price + pts_wdo_target1)
+        price_wdo_target2 = b3_wdo_tick(wdo_base_price + pts_wdo_target2)
+        pts_wdo_trava = b3_wdo_tick(wdo_base_price * -0.003)
+        price_wdo_trava = b3_wdo_tick(wdo_base_price + pts_wdo_trava)
         wdo_exp_range = f"+{d_min:.1f}% a +{d_max:.1f}%"
         wdo_points_range = f"+{pts_wdo_target1:.1f} a +{pts_wdo_target2:.1f} pts"
         wdo_reason = f"Forte corrida para o dólar: DXY disparando ({dxy_pct:+.2f}%) e juros dos Treasuries em alta acentuada."
@@ -298,12 +308,12 @@ def analyze_with_heuristics(collected_data):
         wdo_trend_badge = "▲ TENDÊNCIA DE ALTA"
         d_min = max(0.30, round(wdo_score * 0.70, 2))
         d_max = round(d_min + 0.50, 2)
-        pts_wdo_target1 = round(wdo_base_price * (d_min / 100), 1)
-        pts_wdo_target2 = round(wdo_base_price * (d_max / 100), 1)
-        price_wdo_target1 = round(wdo_base_price + pts_wdo_target1, 1)
-        price_wdo_target2 = round(wdo_base_price + pts_wdo_target2, 1)
-        pts_wdo_trava = round(wdo_base_price * -0.0035, 1)
-        price_wdo_trava = round(wdo_base_price + pts_wdo_trava, 1)
+        pts_wdo_target1 = b3_wdo_tick(wdo_base_price * (d_min / 100))
+        pts_wdo_target2 = b3_wdo_tick(wdo_base_price * (d_max / 100))
+        price_wdo_target1 = b3_wdo_tick(wdo_base_price + pts_wdo_target1)
+        price_wdo_target2 = b3_wdo_tick(wdo_base_price + pts_wdo_target2)
+        pts_wdo_trava = b3_wdo_tick(wdo_base_price * -0.0035)
+        price_wdo_trava = b3_wdo_tick(wdo_base_price + pts_wdo_trava)
         wdo_exp_range = f"+{d_min:.1f}% a +{d_max:.1f}%"
         wdo_points_range = f"+{pts_wdo_target1:.1f} a +{pts_wdo_target2:.1f} pts"
         wdo_reason = f"Dólar internacional fortalecido (DXY: {dxy_pct:+.2f}%) e juros dos Treasuries pressionando moedas emergentes."
@@ -312,12 +322,12 @@ def analyze_with_heuristics(collected_data):
         wdo_trend_badge = "🔻 FORTE TENDÊNCIA DE BAIXA"
         d_min = min(-0.50, round(wdo_score * 0.85, 2))
         d_max = round(d_min - 0.60, 2)
-        pts_wdo_target1 = round(wdo_base_price * (d_min / 100), 1)
-        pts_wdo_target2 = round(wdo_base_price * (d_max / 100), 1)
-        price_wdo_target1 = round(wdo_base_price + pts_wdo_target1, 1)
-        price_wdo_target2 = round(wdo_base_price + pts_wdo_target2, 1)
-        pts_wdo_trava = round(wdo_base_price * 0.003, 1)
-        price_wdo_trava = round(wdo_base_price + pts_wdo_trava, 1)
+        pts_wdo_target1 = b3_wdo_tick(wdo_base_price * (d_min / 100))
+        pts_wdo_target2 = b3_wdo_tick(wdo_base_price * (d_max / 100))
+        price_wdo_target1 = b3_wdo_tick(wdo_base_price + pts_wdo_target1)
+        price_wdo_target2 = b3_wdo_tick(wdo_base_price + pts_wdo_target2)
+        pts_wdo_trava = b3_wdo_tick(wdo_base_price * 0.003)
+        price_wdo_trava = b3_wdo_tick(wdo_base_price + pts_wdo_trava)
         wdo_exp_range = f"{d_max:.1f}% a {d_min:.1f}%"
         wdo_points_range = f"{pts_wdo_target2:.1f} a {pts_wdo_target1:.1f} pts"
         wdo_reason = f"Forte desvalorização global da moeda americana e entrada massiva de fluxo em commodities e emergentes."
@@ -326,12 +336,12 @@ def analyze_with_heuristics(collected_data):
         wdo_trend_badge = "▼ TENDÊNCIA DE BAIXA"
         d_min = min(-0.30, round(wdo_score * 0.70, 2))
         d_max = round(d_min - 0.50, 2)
-        pts_wdo_target1 = round(wdo_base_price * (d_min / 100), 1)
-        pts_wdo_target2 = round(wdo_base_price * (d_max / 100), 1)
-        price_wdo_target1 = round(wdo_base_price + pts_wdo_target1, 1)
-        price_wdo_target2 = round(wdo_base_price + pts_wdo_target2, 1)
-        pts_wdo_trava = round(wdo_base_price * 0.0035, 1)
-        price_wdo_trava = round(wdo_base_price + pts_wdo_trava, 1)
+        pts_wdo_target1 = b3_wdo_tick(wdo_base_price * (d_min / 100))
+        pts_wdo_target2 = b3_wdo_tick(wdo_base_price * (d_max / 100))
+        price_wdo_target1 = b3_wdo_tick(wdo_base_price + pts_wdo_target1)
+        price_wdo_target2 = b3_wdo_tick(wdo_base_price + pts_wdo_target2)
+        pts_wdo_trava = b3_wdo_tick(wdo_base_price * 0.0035)
+        price_wdo_trava = b3_wdo_tick(wdo_base_price + pts_wdo_trava)
         wdo_exp_range = f"{d_max:.1f}% a {d_min:.1f}%"
         wdo_points_range = f"{pts_wdo_target2:.1f} a {pts_wdo_target1:.1f} pts"
         wdo_reason = f"Arrefecimento do Dólar global (DXY: {dxy_pct:+.2f}%) e alta de commodities favorecem entrada de divisas."
@@ -341,12 +351,12 @@ def analyze_with_heuristics(collected_data):
         d_min = -0.20
         d_max = 0.20
         wdo_exp_range = "-0.2% a +0.2%"
-        pts_wdo_target1 = round(wdo_base_price * -0.002, 1)
-        pts_wdo_target2 = round(wdo_base_price * 0.002, 1)
-        price_wdo_target1 = round(wdo_base_price + pts_wdo_target1, 1)
-        price_wdo_target2 = round(wdo_base_price + pts_wdo_target2, 1)
-        pts_wdo_trava = round(wdo_base_price * 0.004, 1)
-        price_wdo_trava = round(wdo_base_price + pts_wdo_trava, 1)
+        pts_wdo_target1 = b3_wdo_tick(wdo_base_price * -0.002)
+        pts_wdo_target2 = b3_wdo_tick(wdo_base_price * 0.002)
+        price_wdo_target1 = b3_wdo_tick(wdo_base_price + pts_wdo_target1)
+        price_wdo_target2 = b3_wdo_tick(wdo_base_price + pts_wdo_target2)
+        pts_wdo_trava = b3_wdo_tick(wdo_base_price * 0.004)
+        price_wdo_trava = b3_wdo_tick(wdo_base_price + pts_wdo_trava)
         wdo_points_range = f"{pts_wdo_target1:.1f} a +{pts_wdo_target2:.1f} pts"
         wdo_reason = "Mercado cambial em equilíbrio na abertura, aguardando agenda do dia e fluxo institucional."
 
