@@ -437,6 +437,13 @@ def analyze_with_heuristics(collected_data):
             "target_1": f"{price_wdo_target1:,.1f} pts ({pts_wdo_target1:+.1f} pts)".replace(",", "."),
             "target_2": f"{price_wdo_target2:,.1f} pts ({pts_wdo_target2:+.1f} pts)".replace(",", "."),
             "trava_risco": f"{price_wdo_trava:,.1f} pts ({pts_wdo_trava:+.1f} pts)".replace(",", "."),
+            "range_prices_str": f"Linha {d_min:+.1f}% em {price_wdo_target1:,.1f} pts até Linha {d_max:+.1f}% em {price_wdo_target2:,.1f} pts".replace(",", "."),
+            "line_t1": f"{price_wdo_target1:,.1f} pts".replace(",", "."),
+            "line_t2": f"{price_wdo_target2:,.1f} pts".replace(",", "."),
+            "line_stop": f"{price_wdo_trava:,.1f} pts".replace(",", "."),
+            "pts_t1": f"{pts_wdo_target1:+.1f} pts",
+            "pts_t2": f"{pts_wdo_target2:+.1f} pts",
+            "pts_stop": f"{pts_wdo_trava:+.1f} pts",
             "catalyst": wdo_reason
         },
         "overnight_summary": [

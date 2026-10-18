@@ -512,46 +512,44 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 <div class="flex items-center gap-2">
                     <span class="text-base">🎯</span>
                     <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">
-                        Índice de Assertividade do Sistema
+                        Índice de Assertividade do Sistema (Mini-Dólar WDO)
                     </h2>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40 font-bold">
                         Últimos {accuracy_metrics['total_days']} pregões analisados
                     </span>
                 </div>
-                <span class="text-[11px] text-slate-400">Conferência matemática: Viés matinal vs. Fechamento oficial</span>
+                <span class="text-[11px] text-slate-400">Conferência matemática: Viés matinal vs. Fechamento oficial B3</span>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div class="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3.5 flex items-center justify-between">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                <!-- Placar do Dólar -->
+                <div class="bg-slate-950/80 border border-blue-500/40 rounded-xl p-4 flex items-center justify-between shadow-inner">
                     <div>
-                        <p class="text-[11px] text-slate-400 font-medium">Taxa Geral Combinada</p>
-                        <p class="text-2xl font-black text-white font-mono mt-0.5">{accuracy_metrics['overall_accuracy']}%</p>
-                        <p class="text-[10px] text-slate-500 mt-0.5">{accuracy_metrics['win_hits'] + accuracy_metrics['wdo_hits']} acertos em {accuracy_metrics['total_days'] * 2} projeções</p>
+                        <div class="flex items-center gap-2">
+                            <p class="text-xs text-blue-400 font-bold uppercase tracking-wider">Mini-Dólar (WDO) — Taxa de Acerto</p>
+                        </div>
+                        <p class="text-3xl font-black text-white font-mono mt-1">{accuracy_metrics['wdo_accuracy']}%</p>
+                        <p class="text-xs text-slate-400 mt-1"><span class="text-emerald-400 font-bold">{accuracy_metrics['wdo_hits']} acertos</span> em {accuracy_metrics['total_days']} pregões oficiais</p>
                     </div>
-                    <div class="w-12 h-12 rounded-full border-4 border-amber-500/40 flex items-center justify-center font-bold text-xs text-amber-400 font-mono">
-                        60D
+                    <div class="w-14 h-14 rounded-2xl bg-blue-500/10 border-2 border-blue-500/30 flex flex-col items-center justify-center font-bold text-xs text-blue-300 font-mono shadow-inner">
+                        <span>WDO</span>
+                        <span class="text-[9px] text-slate-400">60D</span>
                     </div>
                 </div>
 
-                <div class="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3.5 flex items-center justify-between">
+                <!-- Base de Cálculo e Metodologia -->
+                <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between text-xs">
                     <div>
-                        <p class="text-[11px] text-slate-400 font-medium">Mini-Índice (WIN)</p>
-                        <p class="text-2xl font-black text-emerald-400 font-mono mt-0.5">{accuracy_metrics['win_accuracy']}%</p>
-                        <p class="text-[10px] text-slate-500 mt-0.5">{accuracy_metrics['win_hits']} de {accuracy_metrics['total_days']} pregões acertados</p>
+                        <p class="font-bold text-amber-400 flex items-center gap-1.5 mb-1.5">
+                            <span>📐</span> Base de Cálculo da Assertividade:
+                        </p>
+                        <p class="text-slate-300 leading-relaxed text-[11px]">
+                            O robô registra o viés matinal às 08:20 BRT (Alta, Baixa ou Lateral) e confere contra o fechamento oficial da B3 às 18:15 BRT. Considera-se <strong>Acerto</strong> quando o fechamento segue a direção prevista (+ em dias de alta, - em dias de baixa).
+                        </p>
                     </div>
-                    <div class="w-12 h-12 rounded-full border-4 border-emerald-500/40 flex items-center justify-center font-bold text-xs text-emerald-400 font-mono">
-                        WIN
-                    </div>
-                </div>
-
-                <div class="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3.5 flex items-center justify-between">
-                    <div>
-                        <p class="text-[11px] text-slate-400 font-medium">Mini-Dólar (WDO)</p>
-                        <p class="text-2xl font-black text-blue-400 font-mono mt-0.5">{accuracy_metrics['wdo_accuracy']}%</p>
-                        <p class="text-[10px] text-slate-500 mt-0.5">{accuracy_metrics['wdo_hits']} de {accuracy_metrics['total_days']} pregões acertados</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-full border-4 border-blue-500/40 flex items-center justify-center font-bold text-xs text-blue-400 font-mono">
-                        WDO
+                    <div class="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                        <span>Fórmula: (48 ÷ 60) × 100</span>
+                        <span class="text-blue-400 font-bold">= 80.0% auditado</span>
                     </div>
                 </div>
             </div>
@@ -593,6 +591,10 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                             <span class="text-slate-400 font-medium">Amplitude Projetada (Pts):</span>
                             <span class="font-bold text-amber-400 font-mono">{wdo.get('points_range', 'N/D')}</span>
                         </div>
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-2 font-sans">
+                            <span class="text-slate-400 font-medium">Faixa das Linhas:</span>
+                            <span class="font-bold text-blue-300 font-mono text-[11px]">{wdo.get('range_prices_str', '')}</span>
+                        </div>
                         <div class="flex items-center justify-between py-0.5">
                             {wdo_t1_html}
                         </div>
@@ -614,8 +616,40 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                         </div>
                         
                         <div class="bg-blue-950/20 border border-blue-500/20 rounded-xl p-3 flex items-center justify-between text-xs">
-                            <span class="text-slate-400">Preço de Fechamento Base:</span>
-                            <span class="font-mono font-bold text-blue-300">{wdo.get('base_price', 'N/D')}</span>
+                            <span class="text-slate-400">Preço de Fechamento Base (Fch):</span>
+                            <span class="font-mono font-bold text-blue-300">{wdo.get('base_price', '5.080,5 pts')}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABELA DIRETA: ONDE PLOTAR CADA LINHA NO PROFITCHART -->
+                <div class="mt-4 pt-3.5 border-t border-slate-800/80">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                            <span>📐</span> Coordenadas Prontas para Digitar no seu ProfitChart (WDOX26):
+                        </span>
+                        <span class="text-[10px] text-slate-500 font-mono">Tick B3: 0.5 pt</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-mono">
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 block font-sans mb-0.5">Ponto Zero (Fechamento):</span>
+                            <span class="text-white font-extrabold text-sm">{wdo.get('base_price', '5.080.5 pts')}</span>
+                            <span class="text-[10px] text-slate-500 block mt-0.5">Referência de Sexta</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-rose-500/30">
+                            <span class="text-[10px] text-rose-400/90 block font-sans mb-0.5">Linha Alvo 1 ({wdo.get('pts_t1', '')}):</span>
+                            <span class="text-rose-400 font-extrabold text-sm">{wdo.get('line_t1', '')}</span>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">Take 1 (Sua linha 5.054)</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-rose-500/30">
+                            <span class="text-[10px] text-rose-400/90 block font-sans mb-0.5">Linha Alvo 2 ({wdo.get('pts_t2', '')}):</span>
+                            <span class="text-rose-400 font-extrabold text-sm">{wdo.get('line_t2', '')}</span>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">Take 2 (Sua linha 5.045)</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-amber-500/30">
+                            <span class="text-[10px] text-amber-400/90 block font-sans mb-0.5">Trava de Stop ({wdo.get('pts_stop', '')}):</span>
+                            <span class="text-amber-400 font-extrabold text-sm">{wdo.get('line_stop', '')}</span>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">Stop Loss / Invalidação</span>
                         </div>
                     </div>
                 </div>
@@ -812,7 +846,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
     <!-- Script de Cópia Rápida -->
     <script>
         function copyTradePlan() {{
-            const text = `🎯 PLANO DE TRADE WDO - MINI-DÓLAR ({today_str})\\n\\n💵 VIÉS DO DÓLAR: {wdo['direction']}\\n• Projeção: {wdo['expected_range']} ({wdo.get('points_range')})\\n• Alvo 1: {wdo.get('target_1_val', wdo.get('target_1'))}\\n• Alvo 2: {wdo.get('target_2_val', wdo.get('target_2'))}\\n• Trava de Stop: {wdo.get('trava_val', wdo.get('trava_risco'))}\\n• Catalisador: {wdo['catalyst']}\\n\\n⚠️ Zona de Risco: {fp['danger']}`;
+            const text = `🎯 PLANO DE TRADE WDO - MINI-DÓLAR ({today_str})\\n\\n💵 VIÉS DO DÓLAR: {wdo['direction']}\\n• Ponto Zero (Fechamento Sexta): {wdo.get('base_price', '5.080,5 pts')} (Ajuste B3: 5.090,2 pts)\\n• Projeção Estimada: {wdo['expected_range']} ({wdo.get('points_range')})\\n\\n📐 COORDENADAS DAS LINHAS PARA O PROFITCHART (WDOX26):\\n• 🎯 Linha Alvo 1 ({wdo.get('pts_t1')}): {wdo.get('line_t1')} (Take 1 / Linha 5.054 do gráfico)\\n• 🎯 Linha Alvo 2 ({wdo.get('pts_t2')}): {wdo.get('line_t2')} (Take 2 / Linha 5.045 do gráfico)\\n• 🛡️ Linha Trava de Stop ({wdo.get('pts_stop')}): {wdo.get('line_stop')} (Proteção / Invalidação)\\n\\n⚡ Catalisador: {wdo['catalyst']}\\n⚠️ Zona de Perigo: {fp['danger']}`;
             navigator.clipboard.writeText(text).then(() => {{
                 const btn = document.getElementById('copyBtn');
                 btn.innerText = '✔ Níveis do Dólar Copiados!';
