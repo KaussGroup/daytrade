@@ -292,11 +292,14 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             </div>
             <div class="space-y-3">
                 <input type="password" id="pinInput" maxlength="10" placeholder="Digite o PIN de Acesso" 
+                    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="numeric"
                     class="w-full text-center text-lg tracking-widest font-mono bg-slate-950 border border-slate-700 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all placeholder:text-slate-600 placeholder:tracking-normal placeholder:text-sm">
                 <p id="pinError" class="text-rose-400 text-xs font-semibold hidden">PIN incorreto. Tente novamente.</p>
                 
+                <p class="text-[11px] text-slate-500">PIN padrão de acesso: <span class="text-amber-400/90 font-mono font-bold">102030</span></p>
+
                 <div class="flex items-center justify-center gap-2 text-xs text-slate-400">
-                    <input type="checkbox" id="rememberPin" class="rounded bg-slate-950 border-slate-700 text-amber-500 focus:ring-0">
+                    <input type="checkbox" id="rememberPin" checked class="rounded bg-slate-950 border-slate-700 text-amber-500 focus:ring-0">
                     <label for="rememberPin" class="cursor-pointer">Lembrar neste dispositivo</label>
                 </div>
 
@@ -822,30 +825,48 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
         // --- Trava de Segurança por PIN (102030) ---
         const CORRECT_PIN = "102030";
 
+        function getSavedPin() {{
+            try {{
+                return localStorage.getItem('kauss_radar_pin') || sessionStorage.getItem('kauss_radar_pin');
+            }} catch(e) {{
+                return null;
+            }}
+        }}
+
+        function setSavedPin(val, remember) {{
+            try {{
+                if (remember) {{
+                    localStorage.setItem('kauss_radar_pin', val);
+                }} else {{
+                    sessionStorage.setItem('kauss_radar_pin', val);
+                }}
+            }} catch(e) {{}}
+        }}
+
         function checkPin() {{
-            const input = document.getElementById('pinInput').value.trim();
-            const remember = document.getElementById('rememberPin').checked;
+            const inputEl = document.getElementById('pinInput');
+            const input = inputEl ? inputEl.value.trim() : '';
+            const rememberEl = document.getElementById('rememberPin');
+            const remember = rememberEl ? rememberEl.checked : true;
             const errorMsg = document.getElementById('pinError');
             const modal = document.getElementById('pinLockModal');
             
             if (input === CORRECT_PIN) {{
-                if (remember) {{
-                    localStorage.setItem('kauss_radar_pin', 'verified_102030');
-                }} else {{
-                    sessionStorage.setItem('kauss_radar_pin', 'verified_102030');
-                }}
-                modal.classList.add('hidden');
+                setSavedPin('verified_102030', remember);
+                if (modal) modal.classList.add('hidden');
                 document.body.classList.remove('overflow-hidden');
             }} else {{
-                errorMsg.classList.remove('hidden');
-                document.getElementById('pinInput').classList.add('border-rose-500');
-                document.getElementById('pinInput').value = '';
+                if (errorMsg) errorMsg.classList.remove('hidden');
+                if (inputEl) {{
+                    inputEl.classList.add('border-rose-500');
+                    inputEl.value = '';
+                    inputEl.focus();
+                }}
             }}
         }}
 
         document.addEventListener('DOMContentLoaded', () => {{
-            const isRemembered = localStorage.getItem('kauss_radar_pin') === 'verified_102030' || 
-                                 sessionStorage.getItem('kauss_radar_pin') === 'verified_102030';
+            const isRemembered = getSavedPin() === 'verified_102030';
             const modal = document.getElementById('pinLockModal');
             const input = document.getElementById('pinInput');
             if (isRemembered && modal) {{
@@ -873,16 +894,16 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                     const elPrice = document.getElementById('liveBtcPrice');
                     const elChg = document.getElementById('liveBtcChange');
                     const elSig = document.getElementById('liveBtcSignal');
-                    if (elPrice) elPrice.innerText = '$ ' + p.toLocaleString('en-US', {{ minimumFractionDigits: 2, maximumFractionDigits: 2 }});
-                    if (elChg) {{
+                    if (elPrice && !isNaN(p)) elPrice.innerText = '$ ' + p.toLocaleString('en-US', {{ minimumFractionDigits: 2, maximumFractionDigits: 2 }});
+                    if (elChg && !isNaN(chg)) {{
                         elChg.innerText = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
                         elChg.className = 'text-xs font-bold font-mono px-2 py-0.5 rounded ' + (chg >= 0 ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-400 bg-rose-500/10 border border-rose-500/20');
                     }}
-                    if (elSig) {{
+                    if (elSig && !isNaN(chg)) {{
                         elSig.innerText = chg > 1.0 ? '🚀 Apetite a risco global firme (positivo para Bolsa)' : (chg < -1.0 ? '⚠️ Cautela com liquidez e aversão a risco' : 'Equilíbrio nas criptomoedas');
                     }}
                 }}
-            }} catch (e) {{ console.log('BTC live error:', e); }}
+            }} catch (e) {{ console.log('BTC live info:', e); }}
         }}
 
         async function fetchLiveForex() {{
@@ -896,12 +917,12 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                         const elP = document.getElementById('liveUsdPrice');
                         const elC = document.getElementById('liveUsdChange');
                         const elS = document.getElementById('liveUsdSignal');
-                        if (elP) elP.innerText = 'R$ ' + usdP.toFixed(4);
-                        if (elC) {{
+                        if (elP && !isNaN(usdP)) elP.innerText = 'R$ ' + usdP.toFixed(4);
+                        if (elC && !isNaN(usdChg)) {{
                             elC.innerText = (usdChg >= 0 ? '+' : '') + usdChg.toFixed(2) + '%';
                             elC.className = 'text-xs font-bold font-mono px-2 py-0.5 rounded ' + (usdChg >= 0 ? 'text-rose-400 bg-rose-500/10 border border-rose-500/20' : 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20');
                         }}
-                        if (elS) {{
+                        if (elS && !isNaN(usdChg)) {{
                             elS.innerText = usdChg > 0.3 ? '▲ Pressão compradora no Dólar' : (usdChg < -0.3 ? '▼ Entrada de fluxo vendedor no Dólar' : 'Dólar estável no intradiário');
                         }}
                     }}
@@ -910,14 +931,14 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                         const eurChg = parseFloat(d.EURUSD.pctChange);
                         const elP = document.getElementById('liveEurPrice');
                         const elC = document.getElementById('liveEurChange');
-                        if (elP) elP.innerText = '$ ' + eurP.toFixed(4);
-                        if (elC) {{
+                        if (elP && !isNaN(eurP)) elP.innerText = '$ ' + eurP.toFixed(4);
+                        if (elC && !isNaN(eurChg)) {{
                             elC.innerText = (eurChg >= 0 ? '+' : '') + eurChg.toFixed(2) + '%';
                             elC.className = 'text-xs font-bold font-mono px-2 py-0.5 rounded ' + (eurChg >= 0 ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-400 bg-rose-500/10 border border-rose-500/20');
                         }}
                     }}
                 }}
-            }} catch (e) {{ console.log('Forex live error:', e); }}
+            }} catch (e) {{ console.log('Forex live info:', e); }}
         }}
 
         function updateClockAndSessions() {{
