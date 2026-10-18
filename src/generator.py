@@ -291,30 +291,42 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
 </head>
 <body class="min-h-screen antialiased selection:bg-amber-500/30 selection:text-amber-300 pb-12">
     
-    <!-- Lock Screen Modal (Autenticação por E-mail) -->
+    <!-- Lock Screen Modal (Autenticação por E-mail + Senha) -->
     <div id="authLockModal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700/80 rounded-2xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl space-y-5">
+        <div class="bg-slate-900 border border-slate-700/80 rounded-2xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl space-y-4">
             <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl shadow-inner">
-                ✉️
+                🔐
             </div>
             <div>
                 <h3 class="text-lg font-bold text-white tracking-tight">Radar Kauss Day Trade</h3>
-                <p class="text-xs text-slate-400 mt-1">Informe seu e-mail para autenticar este dispositivo</p>
+                <p class="text-xs text-slate-400 mt-1">Acesso Restrito — Operador Autorizado</p>
             </div>
-            <div class="space-y-3">
-                <input type="email" id="authEmailInput" placeholder="seu-email@dominio.com" 
-                    autocomplete="email" autocorrect="off" autocapitalize="off" spellcheck="false"
-                    class="w-full text-center text-sm font-medium bg-slate-950 border border-slate-700 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all placeholder:text-slate-600">
-                <p id="authErrorMsg" class="text-rose-400 text-xs font-semibold hidden">Por favor, digite um e-mail válido.</p>
+            <div class="space-y-3 pt-1">
+                <div class="text-left">
+                    <label class="text-[11px] font-medium text-slate-400 block mb-1">E-mail Cadastrado:</label>
+                    <input type="email" id="authEmailInput" placeholder="adm.grupokauss@gmail.com" 
+                        autocomplete="email" autocorrect="off" autocapitalize="off" spellcheck="false"
+                        class="w-full text-sm font-medium bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-3.5 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all placeholder:text-slate-600">
+                </div>
                 
-                <p class="text-[11px] text-slate-500">O acesso será salvo permanentemente neste dispositivo.</p>
-
-                <div class="flex items-center justify-center gap-2 text-xs text-slate-400">
-                    <input type="checkbox" id="rememberEmail" checked class="rounded bg-slate-950 border-slate-700 text-amber-500 focus:ring-0">
-                    <label for="rememberEmail" class="cursor-pointer">Manter conectado neste dispositivo</label>
+                <div class="text-left">
+                    <label class="text-[11px] font-medium text-slate-400 block mb-1">Senha de Acesso:</label>
+                    <input type="password" id="authPasswordInput" placeholder="••••••••••••" 
+                        autocomplete="current-password"
+                        class="w-full text-sm font-medium bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-3.5 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all placeholder:text-slate-600">
                 </div>
 
-                <button onclick="handleEmailLogin()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black rounded-xl text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95">
+                <p id="authErrorMsg" class="text-rose-400 text-xs font-semibold hidden text-center">E-mail ou senha incorretos.</p>
+                
+                <div class="flex items-center justify-between text-xs text-slate-400 pt-1">
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <input type="checkbox" id="rememberEmail" checked class="rounded bg-slate-950 border-slate-700 text-amber-500 focus:ring-0">
+                        <span>Lembrar neste aparelho</span>
+                    </label>
+                    <span class="text-[10px] text-emerald-400 font-mono">256-bit SSL</span>
+                </div>
+
+                <button onclick="handleEmailLogin()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black rounded-xl text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95 cursor-pointer mt-1">
                     Entrar no Painel 🔓
                 </button>
             </div>
@@ -1106,7 +1118,13 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             }});
         }}
 
-        // --- Trava de Segurança por E-mail (Sem PIN, Salvo no Dispositivo) ---
+        // --- Trava de Segurança por E-mail + Senha (Salvo no Dispositivo) ---
+        const AUTH_CONFIG = {{
+            allowedEmail: "adm.grupokauss@gmail.com",
+            passHash: "beb6e93cddca4c4887f15b90078f73354cc2ebf3a4bb9ce105ae669b15e83e34",
+            plainPass: "Eduardinho*102030"
+        }};
+
         function getSavedAuthEmail() {{
             try {{
                 return localStorage.getItem('kauss_radar_email') || sessionStorage.getItem('kauss_radar_email');
@@ -1135,25 +1153,59 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             }}
         }}
 
-        function handleEmailLogin() {{
-            const inputEl = document.getElementById('authEmailInput');
-            const email = inputEl ? inputEl.value.trim().toLowerCase() : '';
+        async function sha256Hex(str) {{
+            try {{
+                const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+                return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+            }} catch(e) {{
+                return null;
+            }}
+        }}
+
+        async function handleEmailLogin() {{
+            const emailEl = document.getElementById('authEmailInput');
+            const passEl = document.getElementById('authPasswordInput');
+            const email = emailEl ? emailEl.value.trim().toLowerCase() : '';
+            const password = passEl ? passEl.value.trim() : '';
             const rememberEl = document.getElementById('rememberEmail');
             const remember = rememberEl ? rememberEl.checked : true;
             const errorMsg = document.getElementById('authErrorMsg');
             const modal = document.getElementById('authLockModal');
 
-            const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
-            if (email && emailRegex.test(email)) {{
+            let isPassValid = false;
+            if (password === AUTH_CONFIG.plainPass) {{
+                isPassValid = true;
+            }} else {{
+                const hash = await sha256Hex(password);
+                if (hash && hash === AUTH_CONFIG.passHash) {{
+                    isPassValid = true;
+                }}
+            }}
+
+            const isEmailValid = (email === AUTH_CONFIG.allowedEmail);
+
+            if (isEmailValid && isPassValid) {{
                 setSavedAuthEmail(email, remember);
                 if (modal) modal.classList.add('hidden');
                 document.body.classList.remove('overflow-hidden');
                 updateUserDisplay(email);
+                if (errorMsg) errorMsg.classList.add('hidden');
             }} else {{
-                if (errorMsg) errorMsg.classList.remove('hidden');
-                if (inputEl) {{
-                    inputEl.classList.add('border-rose-500');
-                    inputEl.focus();
+                if (errorMsg) {{
+                    if (!isEmailValid) {{
+                        errorMsg.innerText = 'E-mail não autorizado para este radar.';
+                    }} else {{
+                        errorMsg.innerText = 'Senha incorreta. Verifique e tente novamente.';
+                    }}
+                    errorMsg.classList.remove('hidden');
+                }}
+                if (!isEmailValid && emailEl) {{
+                    emailEl.classList.add('border-rose-500');
+                    emailEl.focus();
+                }} else if (passEl) {{
+                    passEl.classList.add('border-rose-500');
+                    passEl.value = '';
+                    passEl.focus();
                 }}
             }}
         }}
@@ -1169,17 +1221,31 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
         document.addEventListener('DOMContentLoaded', () => {{
             const savedEmail = getSavedAuthEmail();
             const modal = document.getElementById('authLockModal');
-            const input = document.getElementById('authEmailInput');
-            if (savedEmail && modal) {{
+            const emailInput = document.getElementById('authEmailInput');
+            const passInput = document.getElementById('authPasswordInput');
+
+            if (savedEmail && savedEmail.toLowerCase() === AUTH_CONFIG.allowedEmail && modal) {{
                 modal.classList.add('hidden');
                 updateUserDisplay(savedEmail);
             }} else if (modal) {{
                 document.body.classList.add('overflow-hidden');
-                if (input) input.focus();
+                if (emailInput) {{
+                    emailInput.value = AUTH_CONFIG.allowedEmail;
+                    if (passInput) passInput.focus();
+                }}
             }}
 
-            if (input) {{
-                input.addEventListener('keyup', (e) => {{
+            if (emailInput) {{
+                emailInput.addEventListener('keyup', (e) => {{
+                    if (e.key === 'Enter') {{
+                        if (passInput && !passInput.value) passInput.focus();
+                        else handleEmailLogin();
+                    }}
+                }});
+            }}
+
+            if (passInput) {{
+                passInput.addEventListener('keyup', (e) => {{
                     if (e.key === 'Enter') handleEmailLogin();
                 }});
             }}

@@ -22,30 +22,42 @@
 </head>
 <body class="min-h-screen antialiased selection:bg-amber-500/30 selection:text-amber-300 pb-12">
     
-    <!-- Lock Screen Modal (Autenticação por E-mail) -->
+    <!-- Lock Screen Modal (Autenticação por E-mail + Senha) -->
     <div id="authLockModal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700/80 rounded-2xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl space-y-5">
+        <div class="bg-slate-900 border border-slate-700/80 rounded-2xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl space-y-4">
             <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl shadow-inner">
-                ✉️
+                🔐
             </div>
             <div>
                 <h3 class="text-lg font-bold text-white tracking-tight">Radar Kauss Day Trade</h3>
-                <p class="text-xs text-slate-400 mt-1">Informe seu e-mail para autenticar este dispositivo</p>
+                <p class="text-xs text-slate-400 mt-1">Acesso Restrito — Operador Autorizado</p>
             </div>
-            <div class="space-y-3">
-                <input type="email" id="authEmailInput" placeholder="seu-email@dominio.com" 
-                    autocomplete="email" autocorrect="off" autocapitalize="off" spellcheck="false"
-                    class="w-full text-center text-sm font-medium bg-slate-950 border border-slate-700 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all placeholder:text-slate-600">
-                <p id="authErrorMsg" class="text-rose-400 text-xs font-semibold hidden">Por favor, digite um e-mail válido.</p>
+            <div class="space-y-3 pt-1">
+                <div class="text-left">
+                    <label class="text-[11px] font-medium text-slate-400 block mb-1">E-mail Cadastrado:</label>
+                    <input type="email" id="authEmailInput" placeholder="adm.grupokauss@gmail.com" 
+                        autocomplete="email" autocorrect="off" autocapitalize="off" spellcheck="false"
+                        class="w-full text-sm font-medium bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-3.5 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all placeholder:text-slate-600">
+                </div>
                 
-                <p class="text-[11px] text-slate-500">O acesso será salvo permanentemente neste dispositivo.</p>
-
-                <div class="flex items-center justify-center gap-2 text-xs text-slate-400">
-                    <input type="checkbox" id="rememberEmail" checked class="rounded bg-slate-950 border-slate-700 text-amber-500 focus:ring-0">
-                    <label for="rememberEmail" class="cursor-pointer">Manter conectado neste dispositivo</label>
+                <div class="text-left">
+                    <label class="text-[11px] font-medium text-slate-400 block mb-1">Senha de Acesso:</label>
+                    <input type="password" id="authPasswordInput" placeholder="••••••••••••" 
+                        autocomplete="current-password"
+                        class="w-full text-sm font-medium bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-3.5 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all placeholder:text-slate-600">
                 </div>
 
-                <button onclick="handleEmailLogin()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black rounded-xl text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95">
+                <p id="authErrorMsg" class="text-rose-400 text-xs font-semibold hidden text-center">E-mail ou senha incorretos.</p>
+                
+                <div class="flex items-center justify-between text-xs text-slate-400 pt-1">
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <input type="checkbox" id="rememberEmail" checked class="rounded bg-slate-950 border-slate-700 text-amber-500 focus:ring-0">
+                        <span>Lembrar neste aparelho</span>
+                    </label>
+                    <span class="text-[10px] text-emerald-400 font-mono">256-bit SSL</span>
+                </div>
+
+                <button onclick="handleEmailLogin()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black rounded-xl text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95 cursor-pointer mt-1">
                     Entrar no Painel 🔓
                 </button>
             </div>
@@ -78,7 +90,7 @@
                 </div>
                 <div class="text-right">
                     <p class="text-slate-400 text-[10px]">Data do Pregão</p>
-                    <p class="font-mono font-bold text-slate-200">18/10/2026 | 00:45 BRT</p>
+                    <p class="font-mono font-bold text-slate-200">18/10/2026 | 01:03 BRT</p>
                 </div>
                 <div class="h-6 w-px bg-slate-800"></div>
                 <div class="text-right">
@@ -185,7 +197,7 @@
                         </div>
                         <div class="flex items-baseline justify-between mt-2">
                             <div>
-                                <p class="text-[10px] text-slate-500">No Pré-Mkt: <span class="font-mono text-slate-300 font-semibold">81,911.00</span></p>
+                                <p class="text-[10px] text-slate-500">No Pré-Mkt: <span class="font-mono text-slate-300 font-semibold">81,788.00</span></p>
                                 <p class="text-base font-black text-white font-mono mt-0.5" id="liveBtcPrice">Carregando...</p>
                             </div>
                             <span class="text-xs font-bold font-mono px-2 py-0.5 rounded" id="liveBtcChange">...</span>
@@ -277,9 +289,9 @@
                             <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">🎯 Alvo 1 (Take 1 ~15 pts)</span>
                             <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-bold border border-emerald-500/30">1ª Parcial</span>
                         </div>
-                        <p class="text-3xl font-black text-white font-mono mt-1">86.7%</p>
+                        <p class="text-3xl font-black text-white font-mono mt-1">83.3%</p>
                         <p class="text-xs text-slate-400 mt-1">
-                            <span class="text-emerald-400 font-bold">52 acertos</span> em 60 pregões
+                            <span class="text-emerald-400 font-bold">50 acertos</span> em 60 pregões
                         </p>
                     </div>
                     <p class="text-[11px] text-slate-400 mt-2.5 pt-2 border-t border-slate-800/80 leading-relaxed">
@@ -333,7 +345,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px] text-slate-300 pt-1">
                     <div class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
                         <strong class="text-emerald-400 block mb-1">1. Fórmula do Alvo 1:</strong>
-                        <p class="text-slate-400 font-mono mb-1">Taxa = (52 ÷ 60) × 100 = <strong class="text-white">86.7%</strong></p>
+                        <p class="text-slate-400 font-mono mb-1">Taxa = (50 ÷ 60) × 100 = <strong class="text-white">83.3%</strong></p>
                         <p class="text-slate-400 leading-tight">Mede a probabilidade de o trade atingir a 1ª parcial de 15 pontos a favor do viés antes de retornar na trava de stop.</p>
                     </div>
                     <div class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
@@ -1006,11 +1018,11 @@
             <div>
                 <div class="flex items-center justify-between text-xs mb-1.5">
                     <span class="font-bold text-slate-200 flex items-center gap-1.5">₿ Bitcoin (BTC/USD)</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +0.50%</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +0.35%</span>
                 </div>
                 <div class="flex items-baseline justify-between mb-2">
-                    <span class="text-base font-black text-slate-100 font-mono">81,911.00</span>
-                    <span class="text-xs font-bold font-mono text-emerald-400">+0.50%</span>
+                    <span class="text-base font-black text-slate-100 font-mono">81,788.00</span>
+                    <span class="text-xs font-bold font-mono text-emerald-400">+0.35%</span>
                 </div>
             </div>
             <div class="border-t border-slate-800/80 pt-2 mt-1">
@@ -1232,27 +1244,27 @@
             </h3>
             <div class="space-y-2">
                 
-            <a href="https://news.google.com/rss/articles/CBMinAFBVV95cUxOSy0xbkt0ZjJFemtqVnRINWp2WGp5U3N0YllzWkVKOGl1ZnU0Wlp4Y01MWjBvYTRGSzhEMjZvWHhoOHNZNDJoQzZ0NVYzNmVUVkVvSEU3cWJIMjA0TW9xNDdyVXJjcUhOX2d4WElsMTdGM1ZXWXh0Wkp2cWpya0Y0a0RVV0psSGlmeVRqaUlaRk5qdG9IRE5vOVZXRzk?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
-                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Análise: A reação da Rússia à guerra no Oriente Médio</p>
+            <a href="https://news.google.com/rss/articles/CBMi9wFBVV95cUxNcFhoRE9EWjRGNzZDVnZkRkNiWU4teWhUdTZQV3ZUYzR1NUVqUG90S2t2SU5IVGRuYmpVSTRxU0lKbDFWRmJ1VDRwLW15a0QwckVndHRqVEFVZjBublBUU2dYeU1YSU9SRTJaZFJYcHIzM3RjU2dkdUFjbVNjTnMzcnRTc0xVMEhtUmdlMlhHUUVzREYwQk5BdnI4Q3ktNXFNeG9WbUhnQWxKSklrS1N5TlVRVG5vUGd1RjNZVk9BX1RJanJna0lOdy03NGFjVVdjeGlhRGJESjNHemY1TUFseFdQeGxicnFuOWt2QmZRMVJsc1BvLXdB?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">A Possível Fusão dos Conflitos da Eurásia e do Oriente Médio: Uma Análise à Luz da Metodologia Integrada de Análise Geopolítica (MIAG)</p>
                 <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
-                    <span class="font-semibold text-slate-400">CNN Brasil</span>
-                    <span>Sat, 07 Mar 2026</span>
+                    <span class="font-semibold text-slate-400">Defesa em Foco</span>
+                    <span>Mon, 07 Sep 2026</span>
                 </div>
             </a>
             
-            <a href="https://news.google.com/rss/articles/CBMivgFBVV95cUxNNi1qNjNlaTR3SEpLcWZOWDhUM1B3MUJzaE9zbG1GLWVCazNZb1p1ZGk1SWlmRnZZbGhfN2N0LXpjSDRKbHpEOGhvV1d5Wkc3R29KeWpZU3N6MFZVa3JVbGNoWjRHVWhDZGVqVXAwUEc3NUkxSVZjX2xPNjV4bEtUMFB2b0E4SldDVVA1RzQyS3oxS1JpTlBkSzh5NEJEY1d5NlJfaTlOX0lad2h3YmN6VlVxX2Y2SklyUkk4UG5n?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
-                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Guerra EUA-Israel e Irã: qual a posição da Rússia e os impactos para a Ucrânia?</p>
+            <a href="https://news.google.com/rss/articles/CBMisgFBVV95cUxON3ZHbkx0ZU9XeVNGRWdjdlRhcU1GaVBjaE5haFJVdTF1T2F0ZkRqZnEtb0E1SlFSS25xbTVzZk93RlZjZmNya0k5WVVqeHhGcG9xbF9sNkRtWTV1ak8zRV9PWlJpUWtPQWJlMHFoQkctZ3dCakI4NFdrU2hoaFY4dklIbmFnUTlhWnBXYlZUQlBtZkN5eDB2WTc5SjNMMndPX3JReWp5Y1JyeFVPQkJxeEdR?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Demétrio Magnoli analisa conflitos internacionais e explica a nova ordem geopolítica</p>
                 <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
-                    <span class="font-semibold text-slate-400">Brasil de Fato</span>
-                    <span>Thu, 05 Mar 2026</span>
+                    <span class="font-semibold text-slate-400">CBN Ribeirão</span>
+                    <span>Sat, 18 Jul 2026</span>
                 </div>
             </a>
             
-            <a href="https://news.google.com/rss/articles/CBMipgFBVV95cUxPX1V5WkFINDNUbTBVV2VCMmhBd2lfY1BTRzdfdkZWa1NGeUFBa0NwUUtkYnJhYVJXQTZ4RW5VRWp0ZnlfcUVoSU1ldzVCWmlSLWp2SkpTTDdBNFZyT1hYUlRxd1N4WVFrRERKME1JS01GRUtMaTIyRzFKMHF4RWFrMjRPeU9kaGRGd3I3ZHAwY0p1OGZ1cEFRSVhIZC1VWDNFS25FaThR0gGrAUFVX3lxTE85MXJZWF9NRGpSTVhBcmtnNFFNUGFpVFVTYWExSGdKcm1wRTVCNEZxUVE5M3FIVVdabUlQTUljbmxSU01zVTVtS09PNWFRYzMyeHFPd0xnN2tyLVJPLVo1NWJKTWpGc3RmN2JMS2F3eG9NUnpfa0pyUDVfQ3BRZUZyenZ6YUIwcDlldjJGT2o4N3VBZmp4SmJyM25TcndFdms0aUhuM0drdjRLSQ?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
-                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Violência na Guerra na Ucrânia cresce com foco no Irã</p>
+            <a href="https://news.google.com/rss/articles/CBMitwFBVV95cUxPYmFQalY5Wjd0NG1CMXZJbHQ1cUpLbjhvWDFwMnlFYThDUmFHMGMzdVpWNG1nYkE4N3ZOUWdJOWFNSE9BR0F6bE8yN0hqeVhwN3Q1WnB6TnAxaU1YNVRYS2hfbENhUTdGa2sxMktnOVlqbDkxY3pjYmtlaENiY0taREUtb1p0aFJkNWh5dXZRTXZVOC1CaU1SclZQN2NKQUhveThGWGJXc2VZQ0FPRmp5aXVHZDRwaHPSAcYBQVVfeXFMUDJMZml6b1N0WmhvTXZoMjVMOUd3M1J5QUt2U25JUGxTVm9zWnlYaEJ5cFdZS2VuWmxXbHhQV3dpRFBlYzlPN1p0VUNGc1NwZjVtT0p1dlpQUjRNMFRwSDdPaVc1OUJGemhtV25rcVlFUDFvNXlaT2tyTlR5WlR2VUdhQ1gwMUd2YTV5eXNRM1ZlWExZVlE2emFfNzFrdzc3R1pDYktjQUV2bkNXZnByazZVMmZmTFBxdU5zaUtrRUVteEEtbm9B?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">G7 se reúne sob peso de crise geopolítica e desafios econômicos</p>
                 <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
-                    <span class="font-semibold text-slate-400">Folha de S.Paulo</span>
-                    <span>Tue, 31 Mar 2026</span>
+                    <span class="font-semibold text-slate-400">Valor Econômico</span>
+                    <span>Sun, 14 Jun 2026</span>
                 </div>
             </a>
             
@@ -1340,11 +1352,11 @@
             </h3>
             <div class="space-y-2">
                 
-            <a href="https://news.google.com/rss/articles/CBMivgFBVV95cUxOdWJISEhCTlNjbUwzME5jUUFlU3lsbmFSTkVpS3g2WlgzWW5mYlZFeEloOTFvNHNHTlZNRFBDTEFoOXVJRVFvYWpvV2dqREowXzN1aWVqMlY4YmpnSUFYa3l1OWdhV1pIZDZXSjE2YkI1S0hlVjlyUXVremlfeHpkdHJQSTZzazdkeTVkT1dzZEpuNTBpNElmVU9GQzZBbnJWaTVvT016UGV5eGFNZkthUTlDYTZUMUN5Q0dSOWJ3?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
-                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Wall Street sobe com payroll reforçando manutenção de juros pelo Fed</p>
+            <a href="https://news.google.com/rss/articles/CBMiwgFBVV95cUxOMU02bDFEZTNNTFRXMGdrV2JPcEtJaHFWNU5DWlA4QmptdVppM1NvLTVQT0RFTUc0Ymd6VUtKYzJ5R1Rza19pWFhuTi1PeExlNFpWTjJsV2pLSGhPenAtU0xVbFFtSm5WY2Y3enY1blpadXg5elBxLXdZZnVuci1vTGZsUVJxVFNLODhBcXIyc2N3aUZZc0pCczRiQmMwY2hGdGJsUDFEMTF0MW9TWlNWVVU2NVVQUlNPWDNoYmJkUjhmdw?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Wall Street fecha sem rumo após falas diretor do Fed sobre elevar juros</p>
                 <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
                     <span class="font-semibold text-slate-400">CNN Brasil</span>
-                    <span>Fri, 02 Oct 2026</span>
+                    <span>Thu, 24 Sep 2026</span>
                 </div>
             </a>
             
@@ -1356,11 +1368,11 @@
                 </div>
             </a>
             
-            <a href="https://news.google.com/rss/articles/CBMiwgFBVV95cUxOMU02bDFEZTNNTFRXMGdrV2JPcEtJaHFWNU5DWlA4QmptdVppM1NvLTVQT0RFTUc0Ymd6VUtKYzJ5R1Rza19pWFhuTi1PeExlNFpWTjJsV2pLSGhPenAtU0xVbFFtSm5WY2Y3enY1blpadXg5elBxLXdZZnVuci1vTGZsUVJxVFNLODhBcXIyc2N3aUZZc0pCczRiQmMwY2hGdGJsUDFEMTF0MW9TWlNWVVU2NVVQUlNPWDNoYmJkUjhmdw?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
-                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Wall Street fecha sem rumo após falas diretor do Fed sobre elevar juros</p>
+            <a href="https://news.google.com/rss/articles/CBMirwFBVV95cUxNTW9hZHgzckR6WjhwbWNXWXY0Zm10UnIyM2MtaWNzUmQwanZmT1pxbTAyMmlqRHpyWlVOZVlWa21SRFhVckpkVG40WFl5aWJ5OVRQbEJFdkxodU1vS2oyckh2U2ZHMTJkMlZ5UThBeWtKY3pnZk9lWXpId0E3Q29UY3hfbGpnZHpRN1YxN1dLOHV1ZzFQZnVzbWlOYkNvaEZVTDMtcHNnV1kxOWJndjFZ?oc=5" target="_blank" class="block p-2.5 rounded-lg bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/60 transition group">
+                <p class="text-xs text-slate-200 group-hover:text-amber-400 transition font-medium line-clamp-2 leading-relaxed">Bolsas sobem em Wall Street e na Europa após alta de juros nos EUA</p>
                 <div class="flex items-center justify-between mt-1.5 text-[10px] text-slate-400">
-                    <span class="font-semibold text-slate-400">CNN Brasil</span>
-                    <span>Thu, 24 Sep 2026</span>
+                    <span class="font-semibold text-slate-400">UOL Economia</span>
+                    <span>Thu, 17 Sep 2026</span>
                 </div>
             </a>
             
@@ -1544,7 +1556,7 @@
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-24</td>
             <td class="py-2.5 px-3 font-bold text-emerald-400">ALTA</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-slate-500'>-</span></td>
             <td class="py-2.5 px-3"><span class='text-slate-500'>-</span></td>
             <td class="py-2.5 px-3 font-mono text-slate-300">+0.4% a +0.9%</td>
             <td class="py-2.5 px-3 font-mono font-semibold">-0.35%</td>
@@ -1554,7 +1566,7 @@
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-23</td>
             <td class="py-2.5 px-3 font-bold text-emerald-400">ALTA</td>
-            <td class="py-2.5 px-3"><span class='text-slate-500'>-</span></td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
             <td class="py-2.5 px-3"><span class='text-slate-500'>-</span></td>
             <td class="py-2.5 px-3 font-mono text-slate-300">+0.4% a +0.9%</td>
             <td class="py-2.5 px-3 font-mono font-semibold">-0.29%</td>
@@ -1608,7 +1620,13 @@
             });
         }
 
-        // --- Trava de Segurança por E-mail (Sem PIN, Salvo no Dispositivo) ---
+        // --- Trava de Segurança por E-mail + Senha (Salvo no Dispositivo) ---
+        const AUTH_CONFIG = {
+            allowedEmail: "adm.grupokauss@gmail.com",
+            passHash: "beb6e93cddca4c4887f15b90078f73354cc2ebf3a4bb9ce105ae669b15e83e34",
+            plainPass: "Eduardinho*102030"
+        };
+
         function getSavedAuthEmail() {
             try {
                 return localStorage.getItem('kauss_radar_email') || sessionStorage.getItem('kauss_radar_email');
@@ -1637,25 +1655,59 @@
             }
         }
 
-        function handleEmailLogin() {
-            const inputEl = document.getElementById('authEmailInput');
-            const email = inputEl ? inputEl.value.trim().toLowerCase() : '';
+        async function sha256Hex(str) {
+            try {
+                const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+                return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+            } catch(e) {
+                return null;
+            }
+        }
+
+        async function handleEmailLogin() {
+            const emailEl = document.getElementById('authEmailInput');
+            const passEl = document.getElementById('authPasswordInput');
+            const email = emailEl ? emailEl.value.trim().toLowerCase() : '';
+            const password = passEl ? passEl.value.trim() : '';
             const rememberEl = document.getElementById('rememberEmail');
             const remember = rememberEl ? rememberEl.checked : true;
             const errorMsg = document.getElementById('authErrorMsg');
             const modal = document.getElementById('authLockModal');
 
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (email && emailRegex.test(email)) {
+            let isPassValid = false;
+            if (password === AUTH_CONFIG.plainPass) {
+                isPassValid = true;
+            } else {
+                const hash = await sha256Hex(password);
+                if (hash && hash === AUTH_CONFIG.passHash) {
+                    isPassValid = true;
+                }
+            }
+
+            const isEmailValid = (email === AUTH_CONFIG.allowedEmail);
+
+            if (isEmailValid && isPassValid) {
                 setSavedAuthEmail(email, remember);
                 if (modal) modal.classList.add('hidden');
                 document.body.classList.remove('overflow-hidden');
                 updateUserDisplay(email);
+                if (errorMsg) errorMsg.classList.add('hidden');
             } else {
-                if (errorMsg) errorMsg.classList.remove('hidden');
-                if (inputEl) {
-                    inputEl.classList.add('border-rose-500');
-                    inputEl.focus();
+                if (errorMsg) {
+                    if (!isEmailValid) {
+                        errorMsg.innerText = 'E-mail não autorizado para este radar.';
+                    } else {
+                        errorMsg.innerText = 'Senha incorreta. Verifique e tente novamente.';
+                    }
+                    errorMsg.classList.remove('hidden');
+                }
+                if (!isEmailValid && emailEl) {
+                    emailEl.classList.add('border-rose-500');
+                    emailEl.focus();
+                } else if (passEl) {
+                    passEl.classList.add('border-rose-500');
+                    passEl.value = '';
+                    passEl.focus();
                 }
             }
         }
@@ -1671,17 +1723,31 @@
         document.addEventListener('DOMContentLoaded', () => {
             const savedEmail = getSavedAuthEmail();
             const modal = document.getElementById('authLockModal');
-            const input = document.getElementById('authEmailInput');
-            if (savedEmail && modal) {
+            const emailInput = document.getElementById('authEmailInput');
+            const passInput = document.getElementById('authPasswordInput');
+
+            if (savedEmail && savedEmail.toLowerCase() === AUTH_CONFIG.allowedEmail && modal) {
                 modal.classList.add('hidden');
                 updateUserDisplay(savedEmail);
             } else if (modal) {
                 document.body.classList.add('overflow-hidden');
-                if (input) input.focus();
+                if (emailInput) {
+                    emailInput.value = AUTH_CONFIG.allowedEmail;
+                    if (passInput) passInput.focus();
+                }
             }
 
-            if (input) {
-                input.addEventListener('keyup', (e) => {
+            if (emailInput) {
+                emailInput.addEventListener('keyup', (e) => {
+                    if (e.key === 'Enter') {
+                        if (passInput && !passInput.value) passInput.focus();
+                        else handleEmailLogin();
+                    }
+                });
+            }
+
+            if (passInput) {
+                passInput.addEventListener('keyup', (e) => {
                     if (e.key === 'Enter') handleEmailLogin();
                 });
             }
@@ -1799,7 +1865,7 @@
         // ==========================================
         // AUDITORIA VISUAL DO WDO (CANDLES + LINHAS)
         // ==========================================
-        const SERVER_AUDIT_RECORDS = [{"date": "2026-10-09", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "-0.52%", "actual_dir": "BAIXA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.82%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5126.0, "low": 5072.0, "close": 5122.0}, "status": "COMPLETO"}, {"date": "2026-10-08", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "+0.45%", "actual_dir": "ALTA", "hit": false}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.32%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": false, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5098.0, "low": 5072.0, "close": 5097.0}, "status": "COMPLETO"}, {"date": "2026-10-07", "win": {"bias": "ALTA", "expected_pct": "+0.5% a +1.2%", "actual_pct": "+0.52%", "actual_dir": "ALTA", "hit": true}, "wdo": {"bias": "BAIXA", "expected_pct": "-0.4% a -0.9%", "actual_pct": "-0.69%", "actual_dir": "BAIXA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5065.5, "line_t2_val": 5040.0, "line_stop_val": 5098.5, "pts_t1": "-15.0 pts", "pts_t2": "-40.5 pts", "pts_stop": "+18.0 pts", "open": 5080.5, "high": 5089.0, "low": 5041.5, "close": 5045.5}, "status": "COMPLETO"}, {"date": "2026-10-06", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "-1.11%", "actual_dir": "BAIXA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.30%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": false, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5098.0, "low": 5072.0, "close": 5095.5}, "status": "COMPLETO"}, {"date": "2026-10-05", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "-0.46%", "actual_dir": "BAIXA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.97%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5134.0, "low": 5072.0, "close": 5130.0}, "status": "COMPLETO"}, {"date": "2026-10-02", "win": {"bias": "ALTA", "expected_pct": "+0.5% a +1.2%", "actual_pct": "+1.23%", "actual_dir": "ALTA", "hit": true}, "wdo": {"bias": "BAIXA", "expected_pct": "-0.4% a -0.9%", "actual_pct": "-0.66%", "actual_dir": "BAIXA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5065.5, "line_t2_val": 5040.0, "line_stop_val": 5098.5, "pts_t1": "-15.0 pts", "pts_t2": "-40.5 pts", "pts_stop": "+18.0 pts", "open": 5080.5, "high": 5089.0, "low": 5043.0, "close": 5047.0}, "status": "COMPLETO"}, {"date": "2026-10-01", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "-1.27%", "actual_dir": "BAIXA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.56%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5113.0, "low": 5072.0, "close": 5109.0}, "status": "COMPLETO"}, {"date": "2026-09-30", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "+0.72%", "actual_dir": "ALTA", "hit": false}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.70%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5120.0, "low": 5072.0, "close": 5116.0}, "status": "COMPLETO"}, {"date": "2026-09-29", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "-0.59%", "actual_dir": "BAIXA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.36%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": false, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5098.0, "low": 5072.0, "close": 5099.0}, "status": "COMPLETO"}, {"date": "2026-09-28", "win": {"bias": "ALTA", "expected_pct": "+0.5% a +1.2%", "actual_pct": "+1.00%", "actual_dir": "ALTA", "hit": true}, "wdo": {"bias": "BAIXA", "expected_pct": "-0.4% a -0.9%", "actual_pct": "-0.52%", "actual_dir": "BAIXA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5065.5, "line_t2_val": 5040.0, "line_stop_val": 5098.5, "pts_t1": "-15.0 pts", "pts_t2": "-40.5 pts", "pts_stop": "+18.0 pts", "open": 5080.5, "high": 5089.0, "low": 5050.0, "close": 5054.0}, "status": "COMPLETO"}, {"date": "2026-09-25", "win": {"bias": "ALTA", "expected_pct": "+0.5% a +1.2%", "actual_pct": "+1.33%", "actual_dir": "ALTA", "hit": true}, "wdo": {"bias": "BAIXA", "expected_pct": "-0.4% a -0.9%", "actual_pct": "-0.69%", "actual_dir": "BAIXA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5065.5, "line_t2_val": 5040.0, "line_stop_val": 5098.5, "pts_t1": "-15.0 pts", "pts_t2": "-40.5 pts", "pts_stop": "+18.0 pts", "open": 5080.5, "high": 5089.0, "low": 5041.5, "close": 5045.5}, "status": "COMPLETO"}, {"date": "2026-09-24", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "-0.46%", "actual_dir": "BAIXA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "-0.35%", "actual_dir": "BAIXA", "hit": false, "t1_hit": true, "t2_hit": false, "range_hit": false, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5098.0, "low": 5072.0, "close": 5062.5}, "status": "COMPLETO"}, {"date": "2026-09-23", "win": {"bias": "LATERAL", "expected_pct": "-0.3% a +0.3%", "actual_pct": "+0.17%", "actual_dir": "ALTA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "-0.29%", "actual_dir": "BAIXA", "hit": false, "t1_hit": false, "t2_hit": false, "range_hit": false, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5086.5, "low": 5072.0, "close": 5066.0}, "status": "COMPLETO"}, {"date": "2026-09-22", "win": {"bias": "ALTA", "expected_pct": "+0.5% a +1.2%", "actual_pct": "+0.53%", "actual_dir": "ALTA", "hit": true}, "wdo": {"bias": "BAIXA", "expected_pct": "-0.4% a -0.9%", "actual_pct": "-0.87%", "actual_dir": "BAIXA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5065.5, "line_t2_val": 5040.0, "line_stop_val": 5098.5, "pts_t1": "-15.0 pts", "pts_t2": "-40.5 pts", "pts_stop": "+18.0 pts", "open": 5080.5, "high": 5089.0, "low": 5032.5, "close": 5036.5}, "status": "COMPLETO"}, {"date": "2026-09-21", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "-0.70%", "actual_dir": "BAIXA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.94%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5132.5, "low": 5072.0, "close": 5128.5}, "status": "COMPLETO"}];
+        const SERVER_AUDIT_RECORDS = [{"date": "2026-10-09", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "-0.52%", "actual_dir": "BAIXA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.82%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5126.0, "low": 5072.0, "close": 5122.0}, "status": "COMPLETO"}, {"date": "2026-10-08", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "+0.45%", "actual_dir": "ALTA", "hit": false}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.32%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": false, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5098.0, "low": 5072.0, "close": 5097.0}, "status": "COMPLETO"}, {"date": "2026-10-07", "win": {"bias": "ALTA", "expected_pct": "+0.5% a +1.2%", "actual_pct": "+0.52%", "actual_dir": "ALTA", "hit": true}, "wdo": {"bias": "BAIXA", "expected_pct": "-0.4% a -0.9%", "actual_pct": "-0.69%", "actual_dir": "BAIXA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5065.5, "line_t2_val": 5040.0, "line_stop_val": 5098.5, "pts_t1": "-15.0 pts", "pts_t2": "-40.5 pts", "pts_stop": "+18.0 pts", "open": 5080.5, "high": 5089.0, "low": 5041.5, "close": 5045.5}, "status": "COMPLETO"}, {"date": "2026-10-06", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "-1.11%", "actual_dir": "BAIXA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.30%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": false, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5098.0, "low": 5072.0, "close": 5095.5}, "status": "COMPLETO"}, {"date": "2026-10-05", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "-0.46%", "actual_dir": "BAIXA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.97%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5134.0, "low": 5072.0, "close": 5130.0}, "status": "COMPLETO"}, {"date": "2026-10-02", "win": {"bias": "ALTA", "expected_pct": "+0.5% a +1.2%", "actual_pct": "+1.23%", "actual_dir": "ALTA", "hit": true}, "wdo": {"bias": "BAIXA", "expected_pct": "-0.4% a -0.9%", "actual_pct": "-0.66%", "actual_dir": "BAIXA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5065.5, "line_t2_val": 5040.0, "line_stop_val": 5098.5, "pts_t1": "-15.0 pts", "pts_t2": "-40.5 pts", "pts_stop": "+18.0 pts", "open": 5080.5, "high": 5089.0, "low": 5043.0, "close": 5047.0}, "status": "COMPLETO"}, {"date": "2026-10-01", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "-1.27%", "actual_dir": "BAIXA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.56%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5113.0, "low": 5072.0, "close": 5109.0}, "status": "COMPLETO"}, {"date": "2026-09-30", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "+0.72%", "actual_dir": "ALTA", "hit": false}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.70%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5120.0, "low": 5072.0, "close": 5116.0}, "status": "COMPLETO"}, {"date": "2026-09-29", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "-0.59%", "actual_dir": "BAIXA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.36%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": false, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5098.0, "low": 5072.0, "close": 5099.0}, "status": "COMPLETO"}, {"date": "2026-09-28", "win": {"bias": "ALTA", "expected_pct": "+0.5% a +1.2%", "actual_pct": "+1.00%", "actual_dir": "ALTA", "hit": true}, "wdo": {"bias": "BAIXA", "expected_pct": "-0.4% a -0.9%", "actual_pct": "-0.52%", "actual_dir": "BAIXA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5065.5, "line_t2_val": 5040.0, "line_stop_val": 5098.5, "pts_t1": "-15.0 pts", "pts_t2": "-40.5 pts", "pts_stop": "+18.0 pts", "open": 5080.5, "high": 5089.0, "low": 5050.0, "close": 5054.0}, "status": "COMPLETO"}, {"date": "2026-09-25", "win": {"bias": "ALTA", "expected_pct": "+0.5% a +1.2%", "actual_pct": "+1.33%", "actual_dir": "ALTA", "hit": true}, "wdo": {"bias": "BAIXA", "expected_pct": "-0.4% a -0.9%", "actual_pct": "-0.69%", "actual_dir": "BAIXA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5065.5, "line_t2_val": 5040.0, "line_stop_val": 5098.5, "pts_t1": "-15.0 pts", "pts_t2": "-40.5 pts", "pts_stop": "+18.0 pts", "open": 5080.5, "high": 5089.0, "low": 5041.5, "close": 5045.5}, "status": "COMPLETO"}, {"date": "2026-09-24", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "-0.46%", "actual_dir": "BAIXA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "-0.35%", "actual_dir": "BAIXA", "hit": false, "t1_hit": false, "t2_hit": false, "range_hit": false, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5086.5, "low": 5072.0, "close": 5062.5}, "status": "COMPLETO"}, {"date": "2026-09-23", "win": {"bias": "LATERAL", "expected_pct": "-0.3% a +0.3%", "actual_pct": "+0.17%", "actual_dir": "ALTA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "-0.29%", "actual_dir": "BAIXA", "hit": false, "t1_hit": true, "t2_hit": false, "range_hit": false, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5098.0, "low": 5072.0, "close": 5066.0}, "status": "COMPLETO"}, {"date": "2026-09-22", "win": {"bias": "ALTA", "expected_pct": "+0.5% a +1.2%", "actual_pct": "+0.53%", "actual_dir": "ALTA", "hit": true}, "wdo": {"bias": "BAIXA", "expected_pct": "-0.4% a -0.9%", "actual_pct": "-0.87%", "actual_dir": "BAIXA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5065.5, "line_t2_val": 5040.0, "line_stop_val": 5098.5, "pts_t1": "-15.0 pts", "pts_t2": "-40.5 pts", "pts_stop": "+18.0 pts", "open": 5080.5, "high": 5089.0, "low": 5032.5, "close": 5036.5}, "status": "COMPLETO"}, {"date": "2026-09-21", "win": {"bias": "BAIXA", "expected_pct": "-0.5% a -1.2%", "actual_pct": "-0.70%", "actual_dir": "BAIXA", "hit": true}, "wdo": {"bias": "ALTA", "expected_pct": "+0.4% a +0.9%", "actual_pct": "+0.94%", "actual_dir": "ALTA", "hit": true, "t1_hit": true, "t2_hit": true, "range_hit": true, "base_price_val": 5080.5, "line_t1_val": 5095.5, "line_t2_val": 5121.0, "line_stop_val": 5062.5, "pts_t1": "+15.0 pts", "pts_t2": "+40.5 pts", "pts_stop": "-18.0 pts", "open": 5080.5, "high": 5132.5, "low": 5072.0, "close": 5128.5}, "status": "COMPLETO"}];
         let AUDIT_RECORDS = [];
         let wdoChart = null;
         let candleSeries = null;
