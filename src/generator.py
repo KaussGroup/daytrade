@@ -1807,10 +1807,26 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
 
             if (colOpen === -1 || colHigh === -1 || colLow === -1 || colClose === -1) {{
                 const testCols = rawLines[dataStartIdx].split(delim);
-                if (testCols.length >= 6) {{
-                    colDate = 0; colTime = 1; colOpen = 2; colHigh = 3; colLow = 4; colClose = 5;
-                }} else if (testCols.length === 5) {{
-                    colDate = 0; colTime = 0; colOpen = 1; colHigh = 2; colLow = 3; colClose = 4;
+                const firstIsTicker = isNaN(parseFloat(testCols[0])) && !testCols[0].includes('/') && !testCols[0].includes('-');
+                const offset = firstIsTicker ? 1 : 0;
+                
+                const colAfterDate = testCols[offset + 1] || "";
+                const hasSeparateTimeCol = colAfterDate.includes(':');
+
+                if (hasSeparateTimeCol) {{
+                    colDate = offset;
+                    colTime = offset + 1;
+                    colOpen = offset + 2;
+                    colHigh = offset + 3;
+                    colLow = offset + 4;
+                    colClose = offset + 5;
+                }} else {{
+                    colDate = offset;
+                    colTime = -1;
+                    colOpen = offset + 1;
+                    colHigh = offset + 2;
+                    colLow = offset + 3;
+                    colClose = offset + 4;
                 }}
             }}
 
