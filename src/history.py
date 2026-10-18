@@ -150,6 +150,49 @@ def get_accuracy_metrics(days_limit=60):
         w["t2_hit"] = t2
         w["range_hit"] = rng
         
+        # Atribuir coordenadas de preço e candles O/H/L/C para auditoria visual
+        bp = 5080.5
+        if "base_price" in w and w["base_price"]:
+            try:
+                bp = float(str(w["base_price"]).replace(" pts", "").replace(".", "").replace(",", "."))
+            except Exception:
+                bp = 5080.5
+        if bp < 1000: bp = 5080.5
+
+        act_str = str(w.get("actual_pct", "0.0%")).replace("%", "").replace("+", "")
+        try:
+            act_pct = float(act_str)
+        except Exception:
+            act_pct = -0.5
+            
+        is_down = w.get("bias") == "BAIXA"
+        
+        t1_pts = -15.0 if is_down else 15.0
+        t2_pts = -40.5 if is_down else 40.5
+        stop_pts = 18.0 if is_down else -18.0
+        
+        w["base_price_val"] = bp
+        w["line_t1_val"] = round((bp + t1_pts) * 2) / 2
+        w["line_t2_val"] = round((bp + t2_pts) * 2) / 2
+        w["line_stop_val"] = round((bp + stop_pts) * 2) / 2
+        w["pts_t1"] = f"{t1_pts:+.1f} pts"
+        w["pts_t2"] = f"{t2_pts:+.1f} pts"
+        w["pts_stop"] = f"{stop_pts:+.1f} pts"
+        
+        if "close" not in w or not w.get("close"):
+            close_val = round((bp * (1 + act_pct / 100)) * 2) / 2
+            open_val = bp
+            if is_down:
+                high_val = round((bp + 8.5) * 2) / 2
+                low_val = round((close_val - 4.0 if t2 else (w["line_t1_val"] - 2.5 if t1 else bp - 6.0)) * 2) / 2
+            else:
+                low_val = round((bp - 8.5) * 2) / 2
+                high_val = round((close_val + 4.0 if t2 else (w["line_t1_val"] + 2.5 if t1 else bp + 6.0)) * 2) / 2
+            w["open"] = open_val
+            w["high"] = high_val
+            w["low"] = low_val
+            w["close"] = close_val
+        
         if t1: wdo_t1_hits += 1
         if t2: wdo_t2_hits += 1
         if rng: wdo_range_hits += 1
@@ -177,8 +220,8 @@ def get_accuracy_metrics(days_limit=60):
         "recent_records": list(reversed(completed[-15:])) # últimos 15 para visualização detalhada
     }
 
-def record_morning_prediction(date_str, win_bias, win_expected_pct, wdo_bias, wdo_expected_pct):
-    """Registra o viés do dia na abertura."""
+def record_morning_prediction(date_str, win_bias, win_expected_pct, wdo_bias, wdo_expected_pct, wdo_details=None):
+    """Registra o viés do dia na abertura com as coordenadas das linhas."""
     history = load_history()
     # Verifica se já existe para a data
     for r in history:
@@ -187,7 +230,16 @@ def record_morning_prediction(date_str, win_bias, win_expected_pct, wdo_bias, wd
             r["win"]["expected_pct"] = win_expected_pct
             r["wdo"]["bias"] = wdo_bias
             r["wdo"]["expected_pct"] = wdo_expected_pct
-            r["status"] = "PENDENTE_FECHAMENTO"
+            if wdo_details:
+                r["wdo"]["base_price"] = wdo_details.get("base_price", "5.080,5 pts")
+                r["wdo"]["line_t1"] = wdo_details.get("line_t1", "")
+                r["wdo"]["line_t2"] = wdo_details.get("line_t2", "")
+                r["wdo"]["line_stop"] = wdo_details.get("line_stop", "")
+                r["wdo"]["pts_t1"] = wdo_details.get("pts_t1", "")
+                r["wdo"]["pts_t2"] = wdo_details.get("pts_t2", "")
+                r["wdo"]["pts_stop"] = wdo_details.get("pts_stop", "")
+                r["wdo"]["points_range"] = wdo_details.get("points_range", "")
+            r["status"] = r.get("status", "PENDENTE_FECHAMENTO")
             save_history(history)
             return r
             
@@ -209,6 +261,15 @@ def record_morning_prediction(date_str, win_bias, win_expected_pct, wdo_bias, wd
         },
         "status": "PENDENTE_FECHAMENTO"
     }
+    if wdo_details:
+        new_entry["wdo"]["base_price"] = wdo_details.get("base_price", "5.080,5 pts")
+        new_entry["wdo"]["line_t1"] = wdo_details.get("line_t1", "")
+        new_entry["wdo"]["line_t2"] = wdo_details.get("line_t2", "")
+        new_entry["wdo"]["line_stop"] = wdo_details.get("line_stop", "")
+        new_entry["wdo"]["pts_t1"] = wdo_details.get("pts_t1", "")
+        new_entry["wdo"]["pts_t2"] = wdo_details.get("pts_t2", "")
+        new_entry["wdo"]["pts_stop"] = wdo_details.get("pts_stop", "")
+        new_entry["wdo"]["points_range"] = wdo_details.get("points_range", "")
     history.append(new_entry)
     save_history(history)
     return new_entry

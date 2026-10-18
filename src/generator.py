@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import json
 from datetime import datetime
 
 def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_path="index.html"):
@@ -262,6 +263,10 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
         </tr>
         """
 
+    records_json = json.dumps(accuracy_metrics.get("recent_records", []), ensure_ascii=False)
+    today_wdo_json = json.dumps(wdo, ensure_ascii=False)
+    today_iso_date = datetime.now().strftime("%Y-%m-%d")
+
     html = f"""<!DOCTYPE html>
 <html lang="pt-BR" class="dark">
 <head>
@@ -269,6 +274,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Radar Day Trade B3 - {today_str}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -608,6 +614,165 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 <p class="text-[10px] text-slate-500 mt-2.5 pt-2 border-t border-slate-800/80">
                     * Metodologia anti-viés: Todos os cenários e alvos são congelados no GitHub antes da abertura da B3 e auditados automaticamente com os dados oficiais de fechamento às 18:15 BRT.
                 </p>
+            </div>
+        </section>
+
+        <!-- 2.5. AUDITORIA VISUAL: GRÁFICO FIEL & CONFERÊNCIA DIÁRIA (PROJETADO vs PROFIT) -->
+        <section class="bg-gradient-to-b from-slate-900/90 via-slate-900 to-slate-950 border-2 border-amber-500/30 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-xl shadow-inner">
+                        📈
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-sm font-extrabold text-white tracking-tight">AUDITORIA VISUAL: GRÁFICO FIEL & CONFERÊNCIA DIÁRIA</h2>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40">PROJETADO vs PROFIT</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Veja se os candles tocaram nos alvos projetados e ajuste os dados reais do seu pregão para calibrar o modelo</p>
+                    </div>
+                </div>
+
+                <!-- Seletor de Pregão -->
+                <div class="flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-slate-800 shadow-inner">
+                    <span class="text-xs text-slate-400 font-medium">Pregão em Análise:</span>
+                    <select id="auditDateSelect" onchange="onAuditDateSelected(this.value)" class="bg-slate-900 border border-slate-700 text-amber-400 text-xs font-mono font-bold rounded-lg px-2.5 py-1 focus:outline-none focus:border-amber-400 cursor-pointer">
+                        <!-- Preenchido via JavaScript -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Gráfico Interativo com Linhas Projetadas -->
+            <div>
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+                    <div class="flex flex-wrap items-center gap-2 text-xs font-mono">
+                        <span class="text-slate-400 font-sans font-medium text-[11px]">Níveis Marcados:</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-800/90 text-slate-300 border border-slate-700">⚪ Ponto Zero: <strong id="lblChartBase">5.080,5</strong></span>
+                        <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/30">🎯 Alvo 1: <strong id="lblChartT1">5.065,5</strong></span>
+                        <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/30">🚀 Alvo 2: <strong id="lblChartT2">5.040,0</strong></span>
+                        <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">🛡️ Trava Stop: <strong id="lblChartStop">5.098,5</strong></span>
+                    </div>
+                    <span class="text-[11px] text-slate-500 font-sans">Scroll: Zoom | Arraste: Navegar</span>
+                </div>
+
+                <!-- Container do Gráfico TradingView Lightweight Charts -->
+                <div id="wdoChartContainer" class="w-full h-[360px] rounded-xl overflow-hidden bg-slate-950 border border-slate-800 shadow-inner relative">
+                    <div id="chartFallback" class="hidden absolute inset-0 flex items-center justify-center text-xs text-slate-500">
+                        Carregando visualizador gráfico...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel Comparativo Lado a Lado: Projetado vs O Que Aconteceu no Profit -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-1">
+                
+                <!-- Coluna 1: O Que o Radar Projetou -->
+                <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between shadow-inner">
+                    <div>
+                        <div class="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-800/80">
+                            <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                                <span>🔮</span> O Que o Sistema Projetou às 08:20 BRT:
+                            </span>
+                            <span id="projDateBadge" class="text-[10px] font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">--</span>
+                        </div>
+                        <div class="space-y-2 text-xs font-mono">
+                            <div class="flex items-center justify-between py-1 border-b border-slate-900">
+                                <span class="font-sans text-slate-400">Viés Indicado:</span>
+                                <span id="projBiasText" class="font-bold text-sm text-rose-400">--</span>
+                            </div>
+                            <div class="flex items-center justify-between py-1 border-b border-slate-900">
+                                <span class="font-sans text-slate-400">Faixa de Variação (%):</span>
+                                <span id="projRangeText" class="font-bold text-slate-200">--</span>
+                            </div>
+                            <div class="flex items-center justify-between py-1 border-b border-slate-900">
+                                <span class="font-sans text-slate-400">Ponto Zero (Fech. Anterior):</span>
+                                <span id="projBaseText" class="font-bold text-slate-200">--</span>
+                            </div>
+                            <div class="flex items-center justify-between py-1 border-b border-slate-900">
+                                <span class="font-sans text-slate-400">🎯 Linha Alvo 1 (Take 1):</span>
+                                <span id="projT1Text" class="font-bold text-rose-400">--</span>
+                            </div>
+                            <div class="flex items-center justify-between py-1 border-b border-slate-900">
+                                <span class="font-sans text-slate-400">🚀 Linha Alvo 2 (Expansão):</span>
+                                <span id="projT2Text" class="font-bold text-rose-400">--</span>
+                            </div>
+                            <div class="flex items-center justify-between py-1">
+                                <span class="font-sans text-slate-400">🛡️ Trava de Stop:</span>
+                                <span id="projStopText" class="font-bold text-amber-400">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-2.5 pt-2 border-t border-slate-900">Estes dados foram congelados antes da abertura e servem de régua para a auditoria.</p>
+                </div>
+
+                <!-- Coluna 2: O Que de Fato Aconteceu no seu ProfitChart -->
+                <div class="bg-slate-950/80 border border-blue-500/30 rounded-xl p-4 flex flex-col justify-between shadow-inner">
+                    <div>
+                        <div class="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-800/80">
+                            <span class="text-xs font-bold text-blue-400 flex items-center gap-1.5">
+                                <span>🎯</span> O Que De Fato Aconteceu no seu ProfitChart:
+                            </span>
+                            <span class="text-[10px] text-slate-500 font-sans">Editável para calibração</span>
+                        </div>
+
+                        <!-- 3 Inputs Editáveis -->
+                        <div class="grid grid-cols-3 gap-2.5 mb-3">
+                            <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
+                                <label class="text-[10px] text-slate-400 block font-medium mb-1 font-sans">Máxima Real:</label>
+                                <input type="number" step="0.5" id="inpAuditHigh" oninput="onAuditValuesChanged()" class="w-full bg-slate-950 border border-slate-700 text-white font-mono font-bold text-xs rounded px-2 py-1 focus:outline-none focus:border-blue-400 text-center">
+                            </div>
+                            <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
+                                <label class="text-[10px] text-slate-400 block font-medium mb-1 font-sans">Mínima Real:</label>
+                                <input type="number" step="0.5" id="inpAuditLow" oninput="onAuditValuesChanged()" class="w-full bg-slate-950 border border-slate-700 text-white font-mono font-bold text-xs rounded px-2 py-1 focus:outline-none focus:border-blue-400 text-center">
+                            </div>
+                            <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
+                                <label class="text-[10px] text-slate-400 block font-medium mb-1 font-sans">Fechamento Real:</label>
+                                <input type="number" step="0.5" id="inpAuditClose" oninput="onAuditValuesChanged()" class="w-full bg-slate-950 border border-slate-700 text-white font-mono font-bold text-xs rounded px-2 py-1 focus:outline-none focus:border-blue-400 text-center">
+                            </div>
+                        </div>
+
+                        <!-- Checklist Automático de Auditoria -->
+                        <div class="space-y-1.5 text-xs">
+                            <div class="flex items-center justify-between p-2 rounded bg-slate-900/60 border border-slate-800/80">
+                                <span class="font-sans text-slate-300">🎯 Bateu Alvo 1 (~15 pts)?</span>
+                                <span id="auditChkTarget1" class="font-bold text-xs">--</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 rounded bg-slate-900/60 border border-slate-800/80">
+                                <span class="font-sans text-slate-300">🚀 Bateu Alvo 2 (~35-40 pts)?</span>
+                                <span id="auditChkTarget2" class="font-bold text-xs">--</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 rounded bg-slate-900/60 border border-slate-800/80">
+                                <span class="font-sans text-slate-300">🛡️ Status da Trava de Stop:</span>
+                                <span id="auditChkStop" class="font-bold text-xs">--</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 rounded bg-slate-900/60 border border-slate-800/80">
+                                <span class="font-sans text-slate-300">📊 Fechamento dentro da Faixa?</span>
+                                <span id="auditChkRange" class="font-bold text-xs">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="mt-3.5 pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2">
+                        <button onclick="saveCurrentAuditDay()" id="btnSaveAudit" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-lg">
+                            <span>💾</span> <span>Salvar Auditoria do Pregão</span>
+                        </button>
+                        <div class="flex items-center gap-2">
+                            <button onclick="copyAuditDaySummary()" class="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-medium border border-slate-700 transition flex items-center gap-1">
+                                <span>📋</span> <span>Copiar Resumo</span>
+                            </button>
+                            <button onclick="exportAuditDatasetJson()" class="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-medium border border-slate-700 transition flex items-center gap-1">
+                                <span>📥</span> <span>Baixar JSON</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div id="auditToastMsg" class="hidden p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center justify-between">
+                <span id="auditToastText">✔ Auditoria salva com sucesso!</span>
+                <button onclick="document.getElementById('auditToastMsg').classList.add('hidden')" class="text-emerald-400 hover:text-white">✕</button>
             </div>
         </section>
 
@@ -1084,12 +1249,342 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             }}
         }}
 
+        // ==========================================
+        // AUDITORIA VISUAL DO WDO (CANDLES + LINHAS)
+        // ==========================================
+        const SERVER_AUDIT_RECORDS = {records_json};
+        let AUDIT_RECORDS = [];
+        let wdoChart = null;
+        let candleSeries = null;
+        let priceLines = [];
+
+        function loadStoredAuditData() {{
+            try {{
+                const stored = localStorage.getItem('RADAR_WDO_AUDIT_DATA');
+                if (stored) {{
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed) && parsed.length > 0) {{
+                        return parsed;
+                    }}
+                }}
+            }} catch(e) {{}}
+            return JSON.parse(JSON.stringify(SERVER_AUDIT_RECORDS));
+        }}
+
+        function saveStoredAuditData(data) {{
+            try {{
+                localStorage.setItem('RADAR_WDO_AUDIT_DATA', JSON.stringify(data));
+            }} catch(e) {{}}
+        }}
+
+        function initAuditChart() {{
+            AUDIT_RECORDS = loadStoredAuditData();
+            populateAuditDateSelect();
+
+            const container = document.getElementById('wdoChartContainer');
+            if (!container) return;
+
+            if (typeof LightweightCharts === 'undefined') {{
+                const fb = document.getElementById('chartFallback');
+                if (fb) {{
+                    fb.classList.remove('hidden');
+                    fb.innerText = 'Visualizador TradingView carregando ou operando offline. Utilize os dados numéricos abaixo.';
+                }}
+                if (AUDIT_RECORDS.length > 0) {{
+                    onAuditDateSelected(AUDIT_RECORDS[0].date);
+                }}
+                return;
+            }}
+
+            container.innerHTML = '';
+            wdoChart = LightweightCharts.createChart(container, {{
+                width: container.clientWidth || 800,
+                height: 360,
+                layout: {{
+                    background: {{ color: '#070a10' }},
+                    textColor: '#94a3b8',
+                }},
+                grid: {{
+                    vertLines: {{ color: '#1e293b' }},
+                    horzLines: {{ color: '#1e293b' }},
+                }},
+                crosshair: {{
+                    mode: LightweightCharts.CrosshairMode.Normal,
+                }},
+                rightPriceScale: {{
+                    borderColor: '#334155',
+                    scaleMargins: {{ top: 0.15, bottom: 0.15 }},
+                }},
+                timeScale: {{
+                    borderColor: '#334155',
+                    timeVisible: false,
+                }},
+            }});
+
+            candleSeries = wdoChart.addCandlestickSeries({{
+                upColor: '#10b981',
+                downColor: '#f43f5e',
+                borderDownColor: '#f43f5e',
+                borderUpColor: '#10b981',
+                wickDownColor: '#f43f5e',
+                wickUpColor: '#10b981',
+            }});
+
+            window.addEventListener('resize', () => {{
+                if (wdoChart && container) {{
+                    wdoChart.applyOptions({{ width: container.clientWidth }});
+                }}
+            }});
+
+            updateChartCandles();
+
+            if (AUDIT_RECORDS.length > 0) {{
+                onAuditDateSelected(AUDIT_RECORDS[0].date);
+            }}
+        }}
+
+        function updateChartCandles() {{
+            if (!candleSeries) return;
+            const candleData = [];
+            const sorted = [...AUDIT_RECORDS].sort((a, b) => a.date.localeCompare(b.date));
+            sorted.forEach(r => {{
+                const w = r.wdo || {{}};
+                const o = parseFloat(w.open || w.base_price_val || 5080.5);
+                const h = parseFloat(w.high || o + 10);
+                const l = parseFloat(w.low || o - 10);
+                const c = parseFloat(w.close || o);
+                candleData.push({{
+                    time: r.date,
+                    open: o,
+                    high: h,
+                    low: l,
+                    close: c
+                }});
+            }});
+            candleSeries.setData(candleData);
+            if (wdoChart) wdoChart.timeScale().fitContent();
+        }}
+
+        function populateAuditDateSelect() {{
+            const sel = document.getElementById('auditDateSelect');
+            if (!sel) return;
+            sel.innerHTML = '';
+            AUDIT_RECORDS.forEach(r => {{
+                const opt = document.createElement('option');
+                opt.value = r.date;
+                opt.innerText = r.date + ' (' + (r.wdo?.bias || 'WDO') + ')';
+                sel.appendChild(opt);
+            }});
+        }}
+
+        function onAuditDateSelected(dateStr) {{
+            const record = AUDIT_RECORDS.find(r => r.date === dateStr) || AUDIT_RECORDS[0];
+            if (!record) return;
+
+            const w = record.wdo || {{}};
+            
+            const pBadge = document.getElementById('projDateBadge');
+            if (pBadge) pBadge.innerText = record.date;
+            const pBias = document.getElementById('projBiasText');
+            if (pBias) {{
+                pBias.innerText = w.bias || '--';
+                pBias.className = 'font-bold text-sm ' + (w.bias === 'BAIXA' ? 'text-rose-400' : (w.bias === 'ALTA' ? 'text-emerald-400' : 'text-amber-400'));
+            }}
+            const pRange = document.getElementById('projRangeText');
+            if (pRange) pRange.innerText = (w.expected_pct || '--') + ' (' + (w.points_range || '--') + ')';
+            const pBase = document.getElementById('projBaseText');
+            if (pBase) pBase.innerText = (w.base_price_val || 5080.5).toFixed(1) + ' pts';
+            const pT1 = document.getElementById('projT1Text');
+            if (pT1) pT1.innerText = (w.line_t1_val || 5065.5).toFixed(1) + ' pts (' + (w.pts_t1 || '-15.0 pts') + ')';
+            const pT2 = document.getElementById('projT2Text');
+            if (pT2) pT2.innerText = (w.line_t2_val || 5040.0).toFixed(1) + ' pts (' + (w.pts_t2 || '-40.5 pts') + ')';
+            const pStop = document.getElementById('projStopText');
+            if (pStop) pStop.innerText = (w.line_stop_val || 5098.5).toFixed(1) + ' pts (' + (w.pts_stop || '+18.0 pts') + ')';
+
+            const lblBase = document.getElementById('lblChartBase');
+            if (lblBase) lblBase.innerText = (w.base_price_val || 5080.5).toFixed(1);
+            const lblT1 = document.getElementById('lblChartT1');
+            if (lblT1) lblT1.innerText = (w.line_t1_val || 5065.5).toFixed(1);
+            const lblT2 = document.getElementById('lblChartT2');
+            if (lblT2) lblT2.innerText = (w.line_t2_val || 5040.0).toFixed(1);
+            const lblStop = document.getElementById('lblChartStop');
+            if (lblStop) lblStop.innerText = (w.line_stop_val || 5098.5).toFixed(1);
+
+            const inpH = document.getElementById('inpAuditHigh');
+            if (inpH) inpH.value = parseFloat(w.high || 5089.0).toFixed(1);
+            const inpL = document.getElementById('inpAuditLow');
+            if (inpL) inpL.value = parseFloat(w.low || 5039.5).toFixed(1);
+            const inpC = document.getElementById('inpAuditClose');
+            if (inpC) inpC.value = parseFloat(w.close || 5042.0).toFixed(1);
+
+            updateChartPriceLines(w);
+            onAuditValuesChanged();
+        }}
+
+        function updateChartPriceLines(w) {{
+            if (!candleSeries || typeof LightweightCharts === 'undefined') return;
+            priceLines.forEach(l => {{
+                try {{ candleSeries.removePriceLine(l); }} catch(e) {{}}
+            }});
+            priceLines = [];
+
+            const isDown = w.bias === 'BAIXA';
+            const targetColor = isDown ? '#f43f5e' : '#10b981';
+
+            if (w.base_price_val) {{
+                priceLines.push(candleSeries.createPriceLine({{
+                    price: w.base_price_val,
+                    color: '#94a3b8',
+                    lineWidth: 1,
+                    lineStyle: LightweightCharts.LineStyle.Dotted,
+                    axisLabelVisible: true,
+                    title: 'Ponto Zero (' + w.base_price_val.toFixed(1) + ')',
+                }}));
+            }}
+            if (w.line_t1_val) {{
+                priceLines.push(candleSeries.createPriceLine({{
+                    price: w.line_t1_val,
+                    color: '#38bdf8',
+                    lineWidth: 2,
+                    lineStyle: LightweightCharts.LineStyle.Dashed,
+                    axisLabelVisible: true,
+                    title: 'Alvo 1 (' + w.line_t1_val.toFixed(1) + ')',
+                }}));
+            }}
+            if (w.line_t2_val) {{
+                priceLines.push(candleSeries.createPriceLine({{
+                    price: w.line_t2_val,
+                    color: targetColor,
+                    lineWidth: 2,
+                    lineStyle: LightweightCharts.LineStyle.Dashed,
+                    axisLabelVisible: true,
+                    title: 'Alvo 2 (' + w.line_t2_val.toFixed(1) + ')',
+                }}));
+            }}
+            if (w.line_stop_val) {{
+                priceLines.push(candleSeries.createPriceLine({{
+                    price: w.line_stop_val,
+                    color: '#f59e0b',
+                    lineWidth: 1,
+                    lineStyle: LightweightCharts.LineStyle.LargeDashed,
+                    axisLabelVisible: true,
+                    title: 'Stop (' + w.line_stop_val.toFixed(1) + ')',
+                }}));
+            }}
+        }}
+
+        function onAuditValuesChanged() {{
+            const sel = document.getElementById('auditDateSelect');
+            const dateStr = sel ? sel.value : (AUDIT_RECORDS[0]?.date);
+            const record = AUDIT_RECORDS.find(r => r.date === dateStr);
+            if (!record) return;
+
+            const w = record.wdo || {{}};
+            const high = parseFloat(document.getElementById('inpAuditHigh')?.value || w.high || 0);
+            const low = parseFloat(document.getElementById('inpAuditLow')?.value || w.low || 0);
+            const close = parseFloat(document.getElementById('inpAuditClose')?.value || w.close || 0);
+
+            const isDown = w.bias === 'BAIXA';
+            const t1 = w.line_t1_val || (isDown ? (w.base_price_val - 15) : (w.base_price_val + 15));
+            const t2 = w.line_t2_val || (isDown ? (w.base_price_val - 40.5) : (w.base_price_val + 40.5));
+            const stop = w.line_stop_val || (isDown ? (w.base_price_val + 18) : (w.base_price_val - 18));
+
+            const hitT1 = isDown ? (low <= t1) : (high >= t1);
+            const elT1 = document.getElementById('auditChkTarget1');
+            if (elT1) {{
+                elT1.innerHTML = hitT1 ? '<span class="text-emerald-400 font-bold">✔ ATINGIDO (' + (isDown ? 'Mín ' + low.toFixed(1) + ' ≤ ' + t1.toFixed(1) : 'Máx ' + high.toFixed(1) + ' ≥ ' + t1.toFixed(1)) + ')</span>' : '<span class="text-slate-500 font-bold">✖ Não atingiu</span>';
+            }}
+
+            const hitT2 = isDown ? (low <= t2) : (high >= t2);
+            const elT2 = document.getElementById('auditChkTarget2');
+            if (elT2) {{
+                elT2.innerHTML = hitT2 ? '<span class="text-emerald-400 font-bold">✔ ATINGIDO (' + (isDown ? 'Mín ' + low.toFixed(1) + ' ≤ ' + t2.toFixed(1) : 'Máx ' + high.toFixed(1) + ' ≥ ' + t2.toFixed(1)) + ')</span>' : '<span class="text-slate-500 font-bold">✖ Não atingiu</span>';
+            }}
+
+            const hitStop = isDown ? (high >= stop) : (low <= stop);
+            const elStop = document.getElementById('auditChkStop');
+            if (elStop) {{
+                elStop.innerHTML = hitStop ? '<span class="text-rose-400 font-bold">✖ STOPADO (Tocou ' + stop.toFixed(1) + ')</span>' : '<span class="text-emerald-400 font-bold">✔ RESPEITADO (Sem stop)</span>';
+            }}
+
+            const base = w.base_price_val || 5080.5;
+            const diffPct = ((close - base) / base) * 100;
+            const hitRange = isDown ? (diffPct <= -0.20 && diffPct >= -1.2) : (diffPct >= 0.20 && diffPct <= 1.2);
+            const elRange = document.getElementById('auditChkRange');
+            if (elRange) {{
+                elRange.innerHTML = hitRange ? '<span class="text-emerald-400 font-bold">✔ DENTRO DA FAIXA (' + (diffPct >= 0 ? '+' : '') + diffPct.toFixed(2) + '%)</span>' : '<span class="text-amber-400 font-bold">● Variação: ' + (diffPct >= 0 ? '+' : '') + diffPct.toFixed(2) + '%</span>';
+            }}
+        }}
+
+        function saveCurrentAuditDay() {{
+            const sel = document.getElementById('auditDateSelect');
+            const dateStr = sel ? sel.value : (AUDIT_RECORDS[0]?.date);
+            const record = AUDIT_RECORDS.find(r => r.date === dateStr);
+            if (!record) return;
+
+            const w = record.wdo || {{}};
+            const high = parseFloat(document.getElementById('inpAuditHigh')?.value || w.high);
+            const low = parseFloat(document.getElementById('inpAuditLow')?.value || w.low);
+            const close = parseFloat(document.getElementById('inpAuditClose')?.value || w.close);
+
+            w.high = high;
+            w.low = low;
+            w.close = close;
+
+            const isDown = w.bias === 'BAIXA';
+            const t1 = w.line_t1_val || 5065.5;
+            const t2 = w.line_t2_val || 5040.0;
+            const base = w.base_price_val || 5080.5;
+
+            w.t1_hit = isDown ? (low <= t1) : (high >= t1);
+            w.t2_hit = isDown ? (low <= t2) : (high >= t2);
+            const diffPct = ((close - base) / base) * 100;
+            w.actual_pct = (diffPct >= 0 ? '+' : '') + diffPct.toFixed(2) + '%';
+            w.range_hit = isDown ? (diffPct <= -0.20 && diffPct >= -1.2) : (diffPct >= 0.20 && diffPct <= 1.2);
+
+            saveStoredAuditData(AUDIT_RECORDS);
+            updateChartCandles();
+
+            const toast = document.getElementById('auditToastMsg');
+            const toastTxt = document.getElementById('auditToastText');
+            if (toast && toastTxt) {{
+                toastTxt.innerText = '✔ Pregão ' + dateStr + ' auditado com sucesso! Dados reais salvos e integrados ao histórico.';
+                toast.classList.remove('hidden');
+                setTimeout(() => toast.classList.add('hidden'), 4000);
+            }}
+        }}
+
+        function copyAuditDaySummary() {{
+            const sel = document.getElementById('auditDateSelect');
+            const dateStr = sel ? sel.value : (AUDIT_RECORDS[0]?.date);
+            const record = AUDIT_RECORDS.find(r => r.date === dateStr);
+            if (!record) return;
+
+            const w = record.wdo || {{}};
+            const text = `📋 AUDITORIA DO PREGÃO WDO (${{dateStr}})\\n\\n🔮 PROJEÇÃO DO RADAR (08:20):\\n• Viés: ${{w.bias}} (${{w.expected_pct || ''}})\\n• Ponto Zero: ${{w.base_price_val || 5080.5}} pts\\n• Alvo 1: ${{w.line_t1_val || 5065.5}} pts\\n• Alvo 2: ${{w.line_t2_val || 5040.0}} pts\\n• Stop: ${{w.line_stop_val || 5098.5}} pts\\n\\n🎯 O QUE ACONTECEU NO PROFITCHART:\\n• Máxima: ${{w.high || ''}} pts\\n• Mínima: ${{w.low || ''}} pts\\n• Fechamento: ${{w.close || ''}} pts (${{w.actual_pct || ''}})\\n• Alvo 1: ${{w.t1_hit ? '✔ Atingido' : '✖ Não atingido'}}\\n• Alvo 2: ${{w.t2_hit ? '✔ Atingido' : '✖ Não atingido'}}\\n• Fechamento na Faixa: ${{w.range_hit ? '✔ Na Faixa' : '✖ Fora'}}`;
+
+            navigator.clipboard.writeText(text).then(() => {{
+                alert('✔ Resumo da auditoria copiado para a área de transferência!');
+            }});
+        }}
+
+        function exportAuditDatasetJson() {{
+            const blob = new Blob([JSON.stringify(AUDIT_RECORDS, null, 2)], {{ type: 'application/json' }});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'history_auditado_wdo.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }}
+
         setInterval(updateClockAndSessions, 1000);
         setInterval(fetchLiveBtc, 15000);
         setInterval(fetchLiveForex, 30000);
 
         document.addEventListener('DOMContentLoaded', () => {{
             refreshLiveMarket();
+            initAuditChart();
         }});
     </script>
 

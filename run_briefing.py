@@ -43,7 +43,8 @@ def main():
         win_bias=win["direction"],
         win_expected_pct=win["expected_range"],
         wdo_bias=wdo["direction"],
-        wdo_expected_pct=wdo["expected_range"]
+        wdo_expected_pct=wdo["expected_range"],
+        wdo_details=wdo
     )
     accuracy = get_accuracy_metrics(days_limit=60)
     print(f"✔ Assertividade acumulada (60 dias): {accuracy['overall_accuracy']}% geral (WIN: {accuracy['win_accuracy']}% | WDO: {accuracy['wdo_accuracy']}%)")

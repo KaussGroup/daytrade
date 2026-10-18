@@ -1129,7 +1129,15 @@
       "expected_pct": "-0.8% a -0.3%",
       "actual_pct": "-",
       "actual_dir": "-",
-      "hit": null
+      "hit": null,
+      "base_price": "5.080.5 pts",
+      "line_t1": "5.065.5 pts",
+      "line_t2": "5.040.0 pts",
+      "line_stop": "5.098.5 pts",
+      "pts_t1": "-15.0 pts",
+      "pts_t2": "-40.5 pts",
+      "pts_stop": "+18.0 pts",
+      "points_range": "-40.5 a -15.0 pts"
     },
     "status": "PENDENTE_FECHAMENTO"
   }
