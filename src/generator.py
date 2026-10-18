@@ -320,7 +320,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             <div class="space-y-3 pt-1">
                 <div class="text-left">
                     <label class="text-[11px] font-medium text-slate-400 block mb-1">E-mail Cadastrado:</label>
-                    <input type="email" id="authEmailInput" placeholder="adm.grupokauss@gmail.com" 
+                    <input type="email" id="authEmailInput" placeholder="seu-email@exemplo.com" value=""
                         autocomplete="email" autocorrect="off" autocapitalize="off" spellcheck="false"
                         class="w-full text-sm font-medium bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-3.5 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all placeholder:text-slate-600">
                 </div>
@@ -801,7 +801,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                         <div class="flex items-center justify-between gap-2 mb-2">
                             <span class="text-[11px] font-bold text-slate-300">Entrada Rápida de Valores:</span>
                             <button type="button" onclick="pasteProfitMobileValues()" class="px-2.5 py-1 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/40 text-[11px] font-bold flex items-center gap-1 active:scale-95 transition cursor-pointer shadow-sm">
-                                <span>📋 Colar do Profit Mobile</span>
+                                <span>📋 Colar do Profit (1 Dia ou Semana)</span>
                             </button>
                         </div>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
@@ -1173,14 +1173,13 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             }});
         }}
 
-        // --- Trava de Segurança por E-mail + Senha (Salvo no Dispositivo) ---
+        // --- Trava de Segurança Criptográfica SHA-256 por E-mail + Senha ---
         const AUTH_CONFIG = {{
-            allowedEmail: "adm.grupokauss@gmail.com",
-            passHash: "beb6e93cddca4c4887f15b90078f73354cc2ebf3a4bb9ce105ae669b15e83e34",
-            plainPass: "Eduardinho*102030"
+            emailHash: "0ea55b8ef1cb10ba95753f513b5ff78279ad75f9d117e76abee90ebd40fd2282",
+            passHash: "beb6e93cddca4c4887f15b90078f73354cc2ebf3a4bb9ce105ae669b15e83e34"
         }};
 
-        const AUTH_SESSION_KEY = 'kauss_auth_verified_v3';
+        const AUTH_SESSION_KEY = 'kauss_auth_verified_v4';
 
         function isSessionVerified() {{
             try {{
@@ -1191,14 +1190,14 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             }}
         }}
 
-        function setSessionVerified(remember) {{
+        function setSessionVerified(email, remember) {{
             try {{
                 if (remember) {{
                     localStorage.setItem(AUTH_SESSION_KEY, 'VERIFIED_SESSION_2026');
-                    localStorage.setItem('kauss_radar_email', AUTH_CONFIG.allowedEmail);
+                    if (email) localStorage.setItem('kauss_radar_email', email);
                 }} else {{
                     sessionStorage.setItem(AUTH_SESSION_KEY, 'VERIFIED_SESSION_2026');
-                    sessionStorage.setItem('kauss_radar_email', AUTH_CONFIG.allowedEmail);
+                    if (email) sessionStorage.setItem('kauss_radar_email', email);
                 }}
             }} catch(e) {{}}
         }}
@@ -1212,11 +1211,19 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             }} catch(e) {{}}
         }}
 
+        function getStoredEmail() {{
+            try {{
+                return localStorage.getItem('kauss_radar_email') || sessionStorage.getItem('kauss_radar_email') || '';
+            }} catch(e) {{
+                return '';
+            }}
+        }}
+
         function updateUserDisplay(email) {{
             const badge = document.getElementById('userAuthBadge');
             const span = document.getElementById('userEmailSpan');
-            if (badge && span && email) {{
-                span.innerText = email;
+            if (badge && span) {{
+                span.innerText = email || 'Operador Autorizado';
                 badge.classList.remove('hidden');
                 badge.classList.add('flex');
             }}
@@ -1241,20 +1248,24 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             const errorMsg = document.getElementById('authErrorMsg');
             const modal = document.getElementById('authLockModal');
 
-            let isPassValid = false;
-            if (password === AUTH_CONFIG.plainPass) {{
-                isPassValid = true;
-            }} else {{
-                const hash = await sha256Hex(password);
-                if (hash && hash === AUTH_CONFIG.passHash) {{
-                    isPassValid = true;
+            if (!email || !password) {{
+                if (errorMsg) {{
+                    errorMsg.innerText = 'Preencha o e-mail e a senha cadastrados.';
+                    errorMsg.classList.remove('hidden');
                 }}
+                if (!email && emailEl) emailEl.focus();
+                else if (passEl) passEl.focus();
+                return;
             }}
 
-            const isEmailValid = (email === AUTH_CONFIG.allowedEmail);
+            const emailH = await sha256Hex(email);
+            const passH = await sha256Hex(password);
+
+            const isEmailValid = (emailH === AUTH_CONFIG.emailHash);
+            const isPassValid = (passH === AUTH_CONFIG.passHash);
 
             if (isEmailValid && isPassValid) {{
-                setSessionVerified(remember);
+                setSessionVerified(email, remember);
                 if (modal) modal.classList.add('hidden');
                 document.body.classList.remove('overflow-hidden');
                 updateUserDisplay(email);
@@ -1293,15 +1304,16 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             if (verified && modal) {{
                 modal.classList.add('hidden');
                 document.body.classList.remove('overflow-hidden');
-                updateUserDisplay(AUTH_CONFIG.allowedEmail);
+                const storedEmail = getStoredEmail();
+                updateUserDisplay(storedEmail || 'Operador Autorizado');
             }} else if (modal) {{
                 document.body.classList.add('overflow-hidden');
                 if (emailInput) {{
-                    emailInput.value = AUTH_CONFIG.allowedEmail;
+                    emailInput.value = '';
+                    setTimeout(() => emailInput.focus(), 150);
                 }}
                 if (passInput) {{
                     passInput.value = '';
-                    setTimeout(() => passInput.focus(), 150);
                 }}
             }}
 
@@ -1849,6 +1861,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             if (firstLine.includes(';')) delim = ';';
             else if (firstLine.includes('\\t')) delim = '\\t';
             else if (firstLine.includes(',')) delim = ',';
+            else if (firstLine.includes(' ')) delim = /\\s+/;
 
             let colDate = -1, colTime = -1, colOpen = -1, colHigh = -1, colLow = -1, colClose = -1;
             let dataStartIdx = 0;
@@ -1986,6 +1999,16 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 rec.wdo.close = dClose;
                 rec.wdo.open = dOpen;
                 rec.wdo.has_profit_file = true;
+
+                // Cálculo automático de auditoria para cada pregão da semana
+                const l = getWdoLineValues(rec.wdo);
+                const isDown = l.isDown;
+                rec.wdo.t1_hit = isDown ? (dLow <= l.t1) : (dHigh >= l.t1);
+                rec.wdo.t2_hit = isDown ? (dLow <= l.t2) : (dHigh >= l.t2);
+                const base = l.base;
+                const diffPct = ((dClose - base) / base) * 100;
+                rec.wdo.actual_pct = (diffPct >= 0 ? '+' : '') + diffPct.toFixed(2) + '%';
+                rec.wdo.range_hit = isDown ? (diffPct <= -0.20 && diffPct >= -1.2) : (diffPct >= 0.20 && diffPct <= 1.2);
             }});
 
             AUDIT_RECORDS.sort((a, b) => b.date.localeCompare(a.date));
@@ -2024,7 +2047,11 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             const toast = document.getElementById('auditToastMsg');
             const toastTxt = document.getElementById('auditToastText');
             if (toast && toastTxt) {{
-                toastTxt.innerText = '✔ ' + targetBars.length + ' candles reais de ' + targetDate + ' carregados com sucesso! Máx: ' + sessionHigh.toFixed(1) + ' | Mín: ' + sessionLow.toFixed(1) + ' | Fch: ' + sessionClose.toFixed(1);
+                if (allDates.length > 1) {{
+                    toastTxt.innerText = '✔ ' + allDates.length + ' pregões atualizados com sucesso (Semana de ' + allDates[allDates.length - 1] + ' a ' + allDates[0] + ')! Exibindo ' + targetDate + '.';
+                }} else {{
+                    toastTxt.innerText = '✔ ' + targetBars.length + ' candles reais de ' + targetDate + ' carregados com sucesso! Máx: ' + sessionHigh.toFixed(1) + ' | Mín: ' + sessionLow.toFixed(1) + ' | Fch: ' + sessionClose.toFixed(1);
+                }}
                 toast.classList.remove('hidden');
                 setTimeout(() => toast.classList.add('hidden'), 5000);
             }}
@@ -2361,15 +2388,30 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 const toast = document.getElementById('auditToastMsg');
                 const toastTxt = document.getElementById('auditToastText');
                 if (toast && toastTxt) {{
-                    toastTxt.innerText = '✔ Dados do Profit Mobile aplicados e salvos com sucesso!';
+                    toastTxt.innerText = '✔ Dados do Profit aplicados e salvos com sucesso no pregão!';
                     toast.classList.remove('hidden');
                     setTimeout(() => toast.classList.add('hidden'), 4000);
                 }}
             }};
 
             const extractFromText = (raw) => {{
-                if (!raw) return;
-                const tokens = raw.split(/[\\s;|\t,]+/);
+                if (!raw || !raw.trim()) return;
+                const clean = raw.trim();
+                const lines = clean.split(/\\r?\\n/).map(l => l.trim()).filter(l => l.length > 0);
+
+                // Caso 1: Lote de dados com múltiplas linhas (Semana inteira ou tabela do Profit)
+                const hasDateOrHeader = clean.includes('/') || clean.includes('-') || clean.toLowerCase().includes('data') || clean.toLowerCase().includes('fech');
+                if (lines.length > 1 && hasDateOrHeader) {{
+                    try {{
+                        parseAndApplyProfitData(clean, 'Profit-Clipboard');
+                        return;
+                    }} catch(e) {{
+                        console.warn('Tentando extração linha a linha para pregão único:', e);
+                    }}
+                }}
+
+                // Caso 2: Linha individual ou pregão atual
+                const tokens = clean.split(/[\\s;|\t,]+/);
                 const nums = [];
                 tokens.forEach(tok => {{
                     const n = parseProfitNumber(tok);
@@ -2378,10 +2420,12 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 if (nums.length >= 3) {{
                     applyNumbers(nums);
                 }} else {{
-                    const matches = raw.match(/\\d+[\\.,]?\\d*/g);
+                    const matches = clean.match(/\\d+[\\.,]?\\d*/g);
                     if (matches) {{
                         const parsed = matches.map(parseProfitNumber).filter(n => !isNaN(n) && n > 1000);
                         applyNumbers(parsed);
+                    }} else {{
+                        alert('Não foi possível identificar as cotações. Verifique o texto copiado do Profit.');
                     }}
                 }}
             }};
@@ -2391,15 +2435,15 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                     if (text && text.trim().length > 0) {{
                         extractFromText(text);
                     }} else {{
-                        const manual = prompt('Cole aqui os dados copiados do Profit Mobile (ex: 5100; 5110.5; 5073; 5080.5):');
+                        const manual = prompt('Cole aqui os dados copiados do Profit (1 pregão ou tabela da semana inteira):');
                         if (manual) extractFromText(manual);
                     }}
                 }}).catch(() => {{
-                    const manual = prompt('Cole aqui os dados copiados do Profit Mobile (ex: 5100; 5110.5; 5073; 5080.5):');
+                    const manual = prompt('Cole aqui os dados copiados do Profit (1 pregão ou tabela da semana inteira):');
                     if (manual) extractFromText(manual);
                 }});
             }} else {{
-                const manual = prompt('Cole aqui os dados copiados do Profit Mobile (ex: 5100; 5110.5; 5073; 5080.5):');
+                const manual = prompt('Cole aqui os dados copiados do Profit (1 pregão ou tabela da semana inteira):');
                 if (manual) extractFromText(manual);
             }}
         }}
