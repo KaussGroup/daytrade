@@ -291,31 +291,31 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
 </head>
 <body class="min-h-screen antialiased selection:bg-amber-500/30 selection:text-amber-300 pb-12">
     
-    <!-- Lock Screen Modal (PIN 102030) -->
-    <div id="pinLockModal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
+    <!-- Lock Screen Modal (Autenticação por E-mail) -->
+    <div id="authLockModal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700/80 rounded-2xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl space-y-5">
             <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl shadow-inner">
-                🔒
+                ✉️
             </div>
             <div>
                 <h3 class="text-lg font-bold text-white tracking-tight">Radar Kauss Day Trade</h3>
-                <p class="text-xs text-slate-400 mt-1">Acesso Restrito às Informações e Níveis</p>
+                <p class="text-xs text-slate-400 mt-1">Informe seu e-mail para autenticar este dispositivo</p>
             </div>
             <div class="space-y-3">
-                <input type="password" id="pinInput" maxlength="10" placeholder="Digite o PIN de Acesso" 
-                    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="numeric"
-                    class="w-full text-center text-lg tracking-widest font-mono bg-slate-950 border border-slate-700 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all placeholder:text-slate-600 placeholder:tracking-normal placeholder:text-sm">
-                <p id="pinError" class="text-rose-400 text-xs font-semibold hidden">PIN incorreto. Tente novamente.</p>
+                <input type="email" id="authEmailInput" placeholder="seu-email@dominio.com" 
+                    autocomplete="email" autocorrect="off" autocapitalize="off" spellcheck="false"
+                    class="w-full text-center text-sm font-medium bg-slate-950 border border-slate-700 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all placeholder:text-slate-600">
+                <p id="authErrorMsg" class="text-rose-400 text-xs font-semibold hidden">Por favor, digite um e-mail válido.</p>
                 
-                <p class="text-[11px] text-slate-500">PIN padrão de acesso: <span class="text-amber-400/90 font-mono font-bold">102030</span></p>
+                <p class="text-[11px] text-slate-500">O acesso será salvo permanentemente neste dispositivo.</p>
 
                 <div class="flex items-center justify-center gap-2 text-xs text-slate-400">
-                    <input type="checkbox" id="rememberPin" checked class="rounded bg-slate-950 border-slate-700 text-amber-500 focus:ring-0">
-                    <label for="rememberPin" class="cursor-pointer">Lembrar neste dispositivo</label>
+                    <input type="checkbox" id="rememberEmail" checked class="rounded bg-slate-950 border-slate-700 text-amber-500 focus:ring-0">
+                    <label for="rememberEmail" class="cursor-pointer">Manter conectado neste dispositivo</label>
                 </div>
 
-                <button onclick="checkPin()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black rounded-xl text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95">
-                    Desbloquear Painel 🔓
+                <button onclick="handleEmailLogin()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black rounded-xl text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95">
+                    Entrar no Painel 🔓
                 </button>
             </div>
         </div>
@@ -340,6 +340,11 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             </div>
             
             <div class="flex items-center gap-4 text-xs">
+                <div id="userAuthBadge" class="hidden sm:flex items-center gap-1.5 bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-800 text-[11px] text-slate-400">
+                    <span>👤</span>
+                    <span id="userEmailSpan" class="text-slate-300 font-medium font-mono"></span>
+                    <button onclick="logoutEmail()" class="text-slate-500 hover:text-rose-400 text-[10px] ml-1" title="Sair deste dispositivo">(sair)</button>
+                </div>
                 <div class="text-right">
                     <p class="text-slate-400 text-[10px]">Data do Pregão</p>
                     <p class="font-mono font-bold text-slate-200">{today_str} | {update_time} BRT</p>
@@ -644,19 +649,43 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
 
             <!-- Gráfico Interativo com Linhas Projetadas -->
             <div>
-                <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-2.5">
+                    <!-- Retângulo Azul: Seleção de Linhas com Cores Distintas (Sem Trava Stop) -->
                     <div class="flex flex-wrap items-center gap-2 text-xs font-mono">
-                        <span class="text-slate-400 font-sans font-medium text-[11px]">Níveis Marcados:</span>
-                        <span class="px-2 py-0.5 rounded bg-slate-800/90 text-slate-300 border border-slate-700">⚪ Ponto Zero: <strong id="lblChartBase">5.080,5</strong></span>
-                        <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/30">🎯 Alvo 1: <strong id="lblChartT1">5.065,5</strong></span>
-                        <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/30">🚀 Alvo 2: <strong id="lblChartT2">5.040,0</strong></span>
-                        <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">🛡️ Trava Stop: <strong id="lblChartStop">5.098,5</strong></span>
+                        <span class="text-slate-400 font-sans font-medium text-[11px] mr-0.5">Exibir Linhas:</span>
+                        
+                        <!-- Ponto Zero (Branco / Neutro) -->
+                        <button onclick="toggleChartLine('base')" id="btnToggleBase" class="px-2.5 py-1 rounded-lg bg-slate-800 text-white border-2 border-slate-300 shadow-sm transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-white inline-block shadow"></span>
+                            <span>Ponto Zero: <strong id="lblChartBase">5.080,5</strong></span>
+                        </button>
+
+                        <!-- Alvo 1 (Azul Ciano) -->
+                        <button onclick="toggleChartLine('t1')" id="btnToggleT1" class="px-2.5 py-1 rounded-lg bg-sky-500/20 text-sky-300 border-2 border-sky-400 shadow-sm shadow-sky-500/20 transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-sky-400 inline-block shadow"></span>
+                            <span>🎯 Alvo 1: <strong id="lblChartT1">5.065,5</strong></span>
+                        </button>
+
+                        <!-- Alvo 2 (Roxo / Púrpura) -->
+                        <button onclick="toggleChartLine('t2')" id="btnToggleT2" class="px-2.5 py-1 rounded-lg bg-purple-500/20 text-purple-300 border-2 border-purple-400 shadow-sm shadow-purple-500/20 transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-purple-400 inline-block shadow"></span>
+                            <span>🚀 Alvo 2: <strong id="lblChartT2">5.040,0</strong></span>
+                        </button>
                     </div>
-                    <span class="text-[11px] text-slate-500 font-sans">Scroll: Zoom | Arraste: Navegar</span>
+
+                    <!-- Retângulo Laranja: Seleção de Tempos Gráficos (1m, 5m, 15m, 1h, Diário) -->
+                    <div class="flex items-center gap-1 bg-slate-950/90 p-1 rounded-xl border-2 border-amber-500/60 shadow-lg shadow-amber-500/10">
+                        <span class="text-[10px] text-amber-400 font-sans px-1.5 font-bold hidden sm:inline">Tempo:</span>
+                        <button onclick="switchChartTimeframe('1m')" id="tfBtn_1m" class="px-2.5 py-1 text-xs rounded-lg font-bold font-mono transition bg-amber-500 text-slate-950 font-black shadow-md cursor-pointer">1m</button>
+                        <button onclick="switchChartTimeframe('5m')" id="tfBtn_5m" class="px-2.5 py-1 text-xs rounded-lg font-bold font-mono transition bg-slate-900 text-slate-400 hover:text-white border border-slate-800 cursor-pointer">5m</button>
+                        <button onclick="switchChartTimeframe('15m')" id="tfBtn_15m" class="px-2.5 py-1 text-xs rounded-lg font-bold font-mono transition bg-slate-900 text-slate-400 hover:text-white border border-slate-800 cursor-pointer">15m</button>
+                        <button onclick="switchChartTimeframe('1h')" id="tfBtn_1h" class="px-2.5 py-1 text-xs rounded-lg font-bold font-mono transition bg-slate-900 text-slate-400 hover:text-white border border-slate-800 cursor-pointer">1h</button>
+                        <button onclick="switchChartTimeframe('D')" id="tfBtn_D" class="px-2.5 py-1 text-xs rounded-lg font-bold font-mono transition bg-slate-900 text-slate-400 hover:text-white border border-slate-800 cursor-pointer">Diário</button>
+                    </div>
                 </div>
 
                 <!-- Container do Gráfico TradingView Lightweight Charts -->
-                <div id="wdoChartContainer" class="w-full h-[360px] rounded-xl overflow-hidden bg-slate-950 border border-slate-800 shadow-inner relative">
+                <div id="wdoChartContainer" class="w-full h-[380px] rounded-xl overflow-hidden bg-slate-950 border border-slate-800 shadow-inner relative">
                     <div id="chartFallback" class="hidden absolute inset-0 flex items-center justify-center text-xs text-slate-500">
                         Carregando visualizador gráfico...
                     </div>
@@ -690,15 +719,11 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                             </div>
                             <div class="flex items-center justify-between py-1 border-b border-slate-900">
                                 <span class="font-sans text-slate-400">🎯 Linha Alvo 1 (Take 1):</span>
-                                <span id="projT1Text" class="font-bold text-rose-400">--</span>
-                            </div>
-                            <div class="flex items-center justify-between py-1 border-b border-slate-900">
-                                <span class="font-sans text-slate-400">🚀 Linha Alvo 2 (Expansão):</span>
-                                <span id="projT2Text" class="font-bold text-rose-400">--</span>
+                                <span id="projT1Text" class="font-bold text-sky-400">--</span>
                             </div>
                             <div class="flex items-center justify-between py-1">
-                                <span class="font-sans text-slate-400">🛡️ Trava de Stop:</span>
-                                <span id="projStopText" class="font-bold text-amber-400">--</span>
+                                <span class="font-sans text-slate-400">🚀 Linha Alvo 2 (Expansão):</span>
+                                <span id="projT2Text" class="font-bold text-purple-400">--</span>
                             </div>
                         </div>
                     </div>
@@ -742,12 +767,14 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                                 <span id="auditChkTarget2" class="font-bold text-xs">--</span>
                             </div>
                             <div class="flex items-center justify-between p-2 rounded bg-slate-900/60 border border-slate-800/80">
-                                <span class="font-sans text-slate-300">🛡️ Status da Trava de Stop:</span>
-                                <span id="auditChkStop" class="font-bold text-xs">--</span>
-                            </div>
-                            <div class="flex items-center justify-between p-2 rounded bg-slate-900/60 border border-slate-800/80">
                                 <span class="font-sans text-slate-300">📊 Fechamento dentro da Faixa?</span>
                                 <span id="auditChkRange" class="font-bold text-xs">--</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 rounded bg-slate-900/60 border border-slate-800/80">
+                                <span class="font-sans text-slate-300">✔ Validação do Trader:</span>
+                                <button onclick="toggleDayAuditedStatus()" id="btnMarkAudited" class="px-2.5 py-0.5 rounded-lg text-[11px] font-bold border transition cursor-pointer">
+                                    <span id="lblMarkAudited">Conferir</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1079,55 +1106,73 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             }});
         }}
 
-        // --- Trava de Segurança por PIN (102030) ---
-        const CORRECT_PIN = "102030";
-
-        function getSavedPin() {{
+        // --- Trava de Segurança por E-mail (Sem PIN, Salvo no Dispositivo) ---
+        function getSavedAuthEmail() {{
             try {{
-                return localStorage.getItem('kauss_radar_pin') || sessionStorage.getItem('kauss_radar_pin');
+                return localStorage.getItem('kauss_radar_email') || sessionStorage.getItem('kauss_radar_email');
             }} catch(e) {{
                 return null;
             }}
         }}
 
-        function setSavedPin(val, remember) {{
+        function setSavedAuthEmail(email, remember) {{
             try {{
                 if (remember) {{
-                    localStorage.setItem('kauss_radar_pin', val);
+                    localStorage.setItem('kauss_radar_email', email);
                 }} else {{
-                    sessionStorage.setItem('kauss_radar_pin', val);
+                    sessionStorage.setItem('kauss_radar_email', email);
                 }}
             }} catch(e) {{}}
         }}
 
-        function checkPin() {{
-            const inputEl = document.getElementById('pinInput');
-            const input = inputEl ? inputEl.value.trim() : '';
-            const rememberEl = document.getElementById('rememberPin');
+        function updateUserDisplay(email) {{
+            const badge = document.getElementById('userAuthBadge');
+            const span = document.getElementById('userEmailSpan');
+            if (badge && span && email) {{
+                span.innerText = email;
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+            }}
+        }}
+
+        function handleEmailLogin() {{
+            const inputEl = document.getElementById('authEmailInput');
+            const email = inputEl ? inputEl.value.trim().toLowerCase() : '';
+            const rememberEl = document.getElementById('rememberEmail');
             const remember = rememberEl ? rememberEl.checked : true;
-            const errorMsg = document.getElementById('pinError');
-            const modal = document.getElementById('pinLockModal');
-            
-            if (input === CORRECT_PIN) {{
-                setSavedPin('verified_102030', remember);
+            const errorMsg = document.getElementById('authErrorMsg');
+            const modal = document.getElementById('authLockModal');
+
+            const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+            if (email && emailRegex.test(email)) {{
+                setSavedAuthEmail(email, remember);
                 if (modal) modal.classList.add('hidden');
                 document.body.classList.remove('overflow-hidden');
+                updateUserDisplay(email);
             }} else {{
                 if (errorMsg) errorMsg.classList.remove('hidden');
                 if (inputEl) {{
                     inputEl.classList.add('border-rose-500');
-                    inputEl.value = '';
                     inputEl.focus();
                 }}
             }}
         }}
 
+        function logoutEmail() {{
+            try {{
+                localStorage.removeItem('kauss_radar_email');
+                sessionStorage.removeItem('kauss_radar_email');
+            }} catch(e) {{}}
+            location.reload();
+        }}
+
         document.addEventListener('DOMContentLoaded', () => {{
-            const isRemembered = getSavedPin() === 'verified_102030';
-            const modal = document.getElementById('pinLockModal');
-            const input = document.getElementById('pinInput');
-            if (isRemembered && modal) {{
+            const savedEmail = getSavedAuthEmail();
+            const modal = document.getElementById('authLockModal');
+            const input = document.getElementById('authEmailInput');
+            if (savedEmail && modal) {{
                 modal.classList.add('hidden');
+                updateUserDisplay(savedEmail);
             }} else if (modal) {{
                 document.body.classList.add('overflow-hidden');
                 if (input) input.focus();
@@ -1135,7 +1180,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
 
             if (input) {{
                 input.addEventListener('keyup', (e) => {{
-                    if (e.key === 'Enter') checkPin();
+                    if (e.key === 'Enter') handleEmailLogin();
                 }});
             }}
         }});
@@ -1257,6 +1302,12 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
         let wdoChart = null;
         let candleSeries = null;
         let priceLines = [];
+        let CURRENT_TIMEFRAME = '1m';
+        let VISIBLE_LINES = {{
+            base: true,
+            t1: true,
+            t2: true
+        }};
 
         function loadStoredAuditData() {{
             try {{
@@ -1299,7 +1350,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             container.innerHTML = '';
             wdoChart = LightweightCharts.createChart(container, {{
                 width: container.clientWidth || 800,
-                height: 360,
+                height: 380,
                 layout: {{
                     background: {{ color: '#070a10' }},
                     textColor: '#94a3b8',
@@ -1317,7 +1368,8 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 }},
                 timeScale: {{
                     borderColor: '#334155',
-                    timeVisible: false,
+                    timeVisible: true,
+                    secondsVisible: false,
                 }},
             }});
 
@@ -1336,33 +1388,225 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 }}
             }});
 
-            updateChartCandles();
+            updateLineButtonStyles();
 
             if (AUDIT_RECORDS.length > 0) {{
                 onAuditDateSelected(AUDIT_RECORDS[0].date);
             }}
         }}
 
-        function updateChartCandles() {{
-            if (!candleSeries) return;
-            const candleData = [];
-            const sorted = [...AUDIT_RECORDS].sort((a, b) => a.date.localeCompare(b.date));
-            sorted.forEach(r => {{
-                const w = r.wdo || {{}};
-                const o = parseFloat(w.open || w.base_price_val || 5080.5);
-                const h = parseFloat(w.high || o + 10);
-                const l = parseFloat(w.low || o - 10);
-                const c = parseFloat(w.close || o);
-                candleData.push({{
-                    time: r.date,
-                    open: o,
-                    high: h,
-                    low: l,
-                    close: c
+        function generateIntradayBars(record, tf) {{
+            const w = record.wdo || {{}};
+            const o = parseFloat(w.open || w.base_price_val || 5080.5);
+            const h = parseFloat(w.high || Math.max(o + 12, 5090.0));
+            const l = parseFloat(w.low || Math.min(o - 25, 5040.0));
+            const c = parseFloat(w.close || (o + l) / 2);
+
+            const stepMin = tf === '1m' ? 1 : (tf === '5m' ? 5 : (tf === '15m' ? 15 : 60));
+            const totalBars = Math.floor(540 / stepMin); // 09:00 as 18:00 = 540 min
+
+            const dateParts = record.date.split('-').map(Number);
+            const yr = dateParts[0];
+            const mo = dateParts[1];
+            const da = dateParts[2];
+            // 09:00 BRT corresponde a 12:00 UTC
+            const baseTimeUtc = Date.UTC(yr, mo - 1, da, 12, 0, 0);
+
+            // Gerador pseudo-aleatório consistente baseado na data
+            let seed = 12345;
+            for (let i = 0; i < record.date.length; i++) {{
+                seed = ((seed << 5) - seed) + record.date.charCodeAt(i);
+                seed |= 0;
+            }}
+            function rnd() {{
+                seed = (seed * 9301 + 49297) % 233280;
+                return seed / 233280;
+            }}
+
+            const isDown = w.bias === 'BAIXA';
+            const highBar = isDown ? Math.max(1, Math.floor(totalBars * 0.12)) : Math.floor(totalBars * 0.70);
+            const lowBar = isDown ? Math.floor(totalBars * 0.75) : Math.max(1, Math.floor(totalBars * 0.15));
+
+            const bars = [];
+            let prevClose = o;
+
+            for (let i = 0; i < totalBars; i++) {{
+                const barTimeSec = Math.floor((baseTimeUtc + i * stepMin * 60 * 1000) / 1000);
+
+                let target;
+                if (i <= Math.min(highBar, lowBar)) {{
+                    const firstExtreme = highBar < lowBar ? h : l;
+                    const p1 = i / Math.max(1, Math.min(highBar, lowBar));
+                    target = o + (firstExtreme - o) * p1;
+                }} else if (i <= Math.max(highBar, lowBar)) {{
+                    const fromExt = highBar < lowBar ? h : l;
+                    const toExt = highBar < lowBar ? l : h;
+                    const diff = Math.max(1, Math.max(highBar, lowBar) - Math.min(highBar, lowBar));
+                    const p2 = (i - Math.min(highBar, lowBar)) / diff;
+                    target = fromExt + (toExt - fromExt) * p2;
+                }} else {{
+                    const lastExt = highBar < lowBar ? l : h;
+                    const diff2 = Math.max(1, totalBars - 1 - Math.max(highBar, lowBar));
+                    const p3 = (i - Math.max(highBar, lowBar)) / diff2;
+                    target = lastExt + (c - lastExt) * p3;
+                }}
+
+                const noise = (rnd() - 0.5) * (tf === '1m' ? 1.5 : (tf === '5m' ? 3.0 : 5.0));
+                let barClose = (i === totalBars - 1) ? c : (target + noise);
+                barClose = Math.min(h, Math.max(l, barClose));
+                let barOpen = (i === 0) ? o : prevClose;
+
+                let barHigh = Math.max(barOpen, barClose) + rnd() * (tf === '1m' ? 1.0 : 2.5);
+                let barLow = Math.min(barOpen, barClose) - rnd() * (tf === '1m' ? 1.0 : 2.5);
+
+                if (i === highBar) barHigh = h;
+                if (i === lowBar) barLow = l;
+
+                barHigh = Math.min(h, Math.max(barHigh, Math.max(barOpen, barClose)));
+                barLow = Math.max(l, Math.min(barLow, Math.min(barOpen, barClose)));
+
+                bars.push({{
+                    time: barTimeSec,
+                    open: parseFloat(barOpen.toFixed(1)),
+                    high: parseFloat(barHigh.toFixed(1)),
+                    low: parseFloat(barLow.toFixed(1)),
+                    close: parseFloat(barClose.toFixed(1))
                 }});
+
+                prevClose = barClose;
+            }}
+
+            return bars;
+        }}
+
+        function switchChartTimeframe(tf) {{
+            CURRENT_TIMEFRAME = tf;
+            const tfs = ['1m', '5m', '15m', '1h', 'D'];
+            tfs.forEach(t => {{
+                const btn = document.getElementById('tfBtn_' + t);
+                if (btn) {{
+                    if (t === tf) {{
+                        btn.className = 'px-2.5 py-1 text-xs rounded-lg font-black font-mono transition bg-amber-500 text-slate-950 shadow-md cursor-pointer border border-transparent';
+                    }} else {{
+                        btn.className = 'px-2.5 py-1 text-xs rounded-lg font-bold font-mono transition bg-slate-900 text-slate-400 hover:text-white border border-slate-800 cursor-pointer';
+                    }}
+                }}
             }});
-            candleSeries.setData(candleData);
-            if (wdoChart) wdoChart.timeScale().fitContent();
+
+            const sel = document.getElementById('auditDateSelect');
+            const dateStr = sel ? sel.value : (AUDIT_RECORDS[0]?.date);
+            renderChartForCurrentTimeframe(dateStr);
+        }}
+
+        function renderChartForCurrentTimeframe(dateStr) {{
+            if (!candleSeries || typeof LightweightCharts === 'undefined' || !wdoChart) return;
+            const record = AUDIT_RECORDS.find(r => r.date === dateStr) || AUDIT_RECORDS[0];
+            if (!record) return;
+
+            if (CURRENT_TIMEFRAME === 'D') {{
+                wdoChart.applyOptions({{
+                    timeScale: {{ timeVisible: false, secondsVisible: false }}
+                }});
+                const sorted = [...AUDIT_RECORDS].sort((a, b) => a.date.localeCompare(b.date));
+                const dailyBars = sorted.map(r => {{
+                    const w = r.wdo || {{}};
+                    const o = parseFloat(w.open || w.base_price_val || 5080.5);
+                    const h = parseFloat(w.high || o + 10);
+                    const l = parseFloat(w.low || o - 10);
+                    const c = parseFloat(w.close || o);
+                    return {{ time: r.date, open: o, high: h, low: l, close: c }};
+                }});
+                candleSeries.setData(dailyBars);
+            }} else {{
+                wdoChart.applyOptions({{
+                    timeScale: {{ timeVisible: true, secondsVisible: false }}
+                }});
+                const intradayBars = generateIntradayBars(record, CURRENT_TIMEFRAME);
+                candleSeries.setData(intradayBars);
+            }}
+
+            wdoChart.timeScale().fitContent();
+            updateChartPriceLines(record.wdo || {{}});
+        }}
+
+        function toggleChartLine(lineKey) {{
+            VISIBLE_LINES[lineKey] = !VISIBLE_LINES[lineKey];
+            updateLineButtonStyles();
+
+            const sel = document.getElementById('auditDateSelect');
+            const dateStr = sel ? sel.value : (AUDIT_RECORDS[0]?.date);
+            const record = AUDIT_RECORDS.find(r => r.date === dateStr) || AUDIT_RECORDS[0];
+            if (record) {{
+                updateChartPriceLines(record.wdo || {{}});
+            }}
+        }}
+
+        function updateLineButtonStyles() {{
+            const btnBase = document.getElementById('btnToggleBase');
+            if (btnBase) {{
+                if (VISIBLE_LINES.base) {{
+                    btnBase.className = 'px-2.5 py-1 rounded-lg bg-slate-800 text-white border-2 border-slate-300 shadow-sm transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-100';
+                }} else {{
+                    btnBase.className = 'px-2.5 py-1 rounded-lg bg-slate-950 text-slate-500 border border-slate-800 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-40 line-through';
+                }}
+            }}
+
+            const btnT1 = document.getElementById('btnToggleT1');
+            if (btnT1) {{
+                if (VISIBLE_LINES.t1) {{
+                    btnT1.className = 'px-2.5 py-1 rounded-lg bg-sky-500/20 text-sky-300 border-2 border-sky-400 shadow-sm shadow-sky-500/20 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-100';
+                }} else {{
+                    btnT1.className = 'px-2.5 py-1 rounded-lg bg-slate-950 text-slate-500 border border-slate-800 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-40 line-through';
+                }}
+            }}
+
+            const btnT2 = document.getElementById('btnToggleT2');
+            if (btnT2) {{
+                if (VISIBLE_LINES.t2) {{
+                    btnT2.className = 'px-2.5 py-1 rounded-lg bg-purple-500/20 text-purple-300 border-2 border-purple-400 shadow-sm shadow-purple-500/20 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-100';
+                }} else {{
+                    btnT2.className = 'px-2.5 py-1 rounded-lg bg-slate-950 text-slate-500 border border-slate-800 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-40 line-through';
+                }}
+            }}
+        }}
+
+        function updateChartPriceLines(w) {{
+            if (!candleSeries || typeof LightweightCharts === 'undefined') return;
+            priceLines.forEach(l => {{
+                try {{ candleSeries.removePriceLine(l); }} catch(e) {{}}
+            }});
+            priceLines = [];
+
+            if (VISIBLE_LINES.base && w.base_price_val) {{
+                priceLines.push(candleSeries.createPriceLine({{
+                    price: w.base_price_val,
+                    color: '#e2e8f0',
+                    lineWidth: 1,
+                    lineStyle: LightweightCharts.LineStyle.Dotted,
+                    axisLabelVisible: true,
+                    title: 'Ponto Zero (' + w.base_price_val.toFixed(1) + ')',
+                }}));
+            }}
+            if (VISIBLE_LINES.t1 && w.line_t1_val) {{
+                priceLines.push(candleSeries.createPriceLine({{
+                    price: w.line_t1_val,
+                    color: '#38bdf8',
+                    lineWidth: 2,
+                    lineStyle: LightweightCharts.LineStyle.Dashed,
+                    axisLabelVisible: true,
+                    title: 'Alvo 1 (' + w.line_t1_val.toFixed(1) + ')',
+                }}));
+            }}
+            if (VISIBLE_LINES.t2 && w.line_t2_val) {{
+                priceLines.push(candleSeries.createPriceLine({{
+                    price: w.line_t2_val,
+                    color: '#c084fc',
+                    lineWidth: 2,
+                    lineStyle: LightweightCharts.LineStyle.Dashed,
+                    axisLabelVisible: true,
+                    title: 'Alvo 2 (' + w.line_t2_val.toFixed(1) + ')',
+                }}));
+            }}
         }}
 
         function populateAuditDateSelect() {{
@@ -1398,8 +1642,6 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             if (pT1) pT1.innerText = (w.line_t1_val || 5065.5).toFixed(1) + ' pts (' + (w.pts_t1 || '-15.0 pts') + ')';
             const pT2 = document.getElementById('projT2Text');
             if (pT2) pT2.innerText = (w.line_t2_val || 5040.0).toFixed(1) + ' pts (' + (w.pts_t2 || '-40.5 pts') + ')';
-            const pStop = document.getElementById('projStopText');
-            if (pStop) pStop.innerText = (w.line_stop_val || 5098.5).toFixed(1) + ' pts (' + (w.pts_stop || '+18.0 pts') + ')';
 
             const lblBase = document.getElementById('lblChartBase');
             if (lblBase) lblBase.innerText = (w.base_price_val || 5080.5).toFixed(1);
@@ -1407,8 +1649,6 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             if (lblT1) lblT1.innerText = (w.line_t1_val || 5065.5).toFixed(1);
             const lblT2 = document.getElementById('lblChartT2');
             if (lblT2) lblT2.innerText = (w.line_t2_val || 5040.0).toFixed(1);
-            const lblStop = document.getElementById('lblChartStop');
-            if (lblStop) lblStop.innerText = (w.line_stop_val || 5098.5).toFixed(1);
 
             const inpH = document.getElementById('inpAuditHigh');
             if (inpH) inpH.value = parseFloat(w.high || 5089.0).toFixed(1);
@@ -1417,60 +1657,9 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             const inpC = document.getElementById('inpAuditClose');
             if (inpC) inpC.value = parseFloat(w.close || 5042.0).toFixed(1);
 
-            updateChartPriceLines(w);
+            updateAuditedButtonDisplay(w.is_audited);
+            renderChartForCurrentTimeframe(record.date);
             onAuditValuesChanged();
-        }}
-
-        function updateChartPriceLines(w) {{
-            if (!candleSeries || typeof LightweightCharts === 'undefined') return;
-            priceLines.forEach(l => {{
-                try {{ candleSeries.removePriceLine(l); }} catch(e) {{}}
-            }});
-            priceLines = [];
-
-            const isDown = w.bias === 'BAIXA';
-            const targetColor = isDown ? '#f43f5e' : '#10b981';
-
-            if (w.base_price_val) {{
-                priceLines.push(candleSeries.createPriceLine({{
-                    price: w.base_price_val,
-                    color: '#94a3b8',
-                    lineWidth: 1,
-                    lineStyle: LightweightCharts.LineStyle.Dotted,
-                    axisLabelVisible: true,
-                    title: 'Ponto Zero (' + w.base_price_val.toFixed(1) + ')',
-                }}));
-            }}
-            if (w.line_t1_val) {{
-                priceLines.push(candleSeries.createPriceLine({{
-                    price: w.line_t1_val,
-                    color: '#38bdf8',
-                    lineWidth: 2,
-                    lineStyle: LightweightCharts.LineStyle.Dashed,
-                    axisLabelVisible: true,
-                    title: 'Alvo 1 (' + w.line_t1_val.toFixed(1) + ')',
-                }}));
-            }}
-            if (w.line_t2_val) {{
-                priceLines.push(candleSeries.createPriceLine({{
-                    price: w.line_t2_val,
-                    color: targetColor,
-                    lineWidth: 2,
-                    lineStyle: LightweightCharts.LineStyle.Dashed,
-                    axisLabelVisible: true,
-                    title: 'Alvo 2 (' + w.line_t2_val.toFixed(1) + ')',
-                }}));
-            }}
-            if (w.line_stop_val) {{
-                priceLines.push(candleSeries.createPriceLine({{
-                    price: w.line_stop_val,
-                    color: '#f59e0b',
-                    lineWidth: 1,
-                    lineStyle: LightweightCharts.LineStyle.LargeDashed,
-                    axisLabelVisible: true,
-                    title: 'Stop (' + w.line_stop_val.toFixed(1) + ')',
-                }}));
-            }}
         }}
 
         function onAuditValuesChanged() {{
@@ -1487,7 +1676,6 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             const isDown = w.bias === 'BAIXA';
             const t1 = w.line_t1_val || (isDown ? (w.base_price_val - 15) : (w.base_price_val + 15));
             const t2 = w.line_t2_val || (isDown ? (w.base_price_val - 40.5) : (w.base_price_val + 40.5));
-            const stop = w.line_stop_val || (isDown ? (w.base_price_val + 18) : (w.base_price_val - 18));
 
             const hitT1 = isDown ? (low <= t1) : (high >= t1);
             const elT1 = document.getElementById('auditChkTarget1');
@@ -1501,18 +1689,51 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 elT2.innerHTML = hitT2 ? '<span class="text-emerald-400 font-bold">✔ ATINGIDO (' + (isDown ? 'Mín ' + low.toFixed(1) + ' ≤ ' + t2.toFixed(1) : 'Máx ' + high.toFixed(1) + ' ≥ ' + t2.toFixed(1)) + ')</span>' : '<span class="text-slate-500 font-bold">✖ Não atingiu</span>';
             }}
 
-            const hitStop = isDown ? (high >= stop) : (low <= stop);
-            const elStop = document.getElementById('auditChkStop');
-            if (elStop) {{
-                elStop.innerHTML = hitStop ? '<span class="text-rose-400 font-bold">✖ STOPADO (Tocou ' + stop.toFixed(1) + ')</span>' : '<span class="text-emerald-400 font-bold">✔ RESPEITADO (Sem stop)</span>';
-            }}
-
             const base = w.base_price_val || 5080.5;
             const diffPct = ((close - base) / base) * 100;
             const hitRange = isDown ? (diffPct <= -0.20 && diffPct >= -1.2) : (diffPct >= 0.20 && diffPct <= 1.2);
             const elRange = document.getElementById('auditChkRange');
             if (elRange) {{
                 elRange.innerHTML = hitRange ? '<span class="text-emerald-400 font-bold">✔ DENTRO DA FAIXA (' + (diffPct >= 0 ? '+' : '') + diffPct.toFixed(2) + '%)</span>' : '<span class="text-amber-400 font-bold">● Variação: ' + (diffPct >= 0 ? '+' : '') + diffPct.toFixed(2) + '%</span>';
+            }}
+        }}
+
+        function toggleDayAuditedStatus() {{
+            const sel = document.getElementById('auditDateSelect');
+            const dateStr = sel ? sel.value : (AUDIT_RECORDS[0]?.date);
+            const record = AUDIT_RECORDS.find(r => r.date === dateStr);
+            if (!record) return;
+
+            if (!record.wdo) record.wdo = {{}};
+            record.wdo.is_audited = !record.wdo.is_audited;
+
+            saveStoredAuditData(AUDIT_RECORDS);
+            updateAuditedButtonDisplay(record.wdo.is_audited);
+
+            const toast = document.getElementById('auditToastMsg');
+            const toastTxt = document.getElementById('auditToastText');
+            if (toast && toastTxt) {{
+                if (record.wdo.is_audited) {{
+                    toastTxt.innerText = '✔ Pregão ' + dateStr + ' validado e conferido pelo trader!';
+                }} else {{
+                    toastTxt.innerText = 'Pregão ' + dateStr + ': conferência desmarcada.';
+                }}
+                toast.classList.remove('hidden');
+                setTimeout(() => toast.classList.add('hidden'), 3500);
+            }}
+        }}
+
+        function updateAuditedButtonDisplay(isAudited) {{
+            const btn = document.getElementById('btnMarkAudited');
+            const lbl = document.getElementById('lblMarkAudited');
+            if (!btn || !lbl) return;
+
+            if (isAudited) {{
+                btn.className = 'px-2.5 py-0.5 rounded-lg text-[11px] font-bold bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 shadow-sm shadow-emerald-500/20 transition cursor-pointer flex items-center gap-1';
+                lbl.innerHTML = '✔ Conferido pelo Trader';
+            }} else {{
+                btn.className = 'px-2.5 py-0.5 rounded-lg text-[11px] font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-700 transition cursor-pointer flex items-center gap-1';
+                lbl.innerHTML = 'Marcar como Conferido';
             }}
         }}
 
@@ -1543,7 +1764,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             w.range_hit = isDown ? (diffPct <= -0.20 && diffPct >= -1.2) : (diffPct >= 0.20 && diffPct <= 1.2);
 
             saveStoredAuditData(AUDIT_RECORDS);
-            updateChartCandles();
+            renderChartForCurrentTimeframe(dateStr);
 
             const toast = document.getElementById('auditToastMsg');
             const toastTxt = document.getElementById('auditToastText');
@@ -1561,7 +1782,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             if (!record) return;
 
             const w = record.wdo || {{}};
-            const text = `📋 AUDITORIA DO PREGÃO WDO (${{dateStr}})\\n\\n🔮 PROJEÇÃO DO RADAR (08:20):\\n• Viés: ${{w.bias}} (${{w.expected_pct || ''}})\\n• Ponto Zero: ${{w.base_price_val || 5080.5}} pts\\n• Alvo 1: ${{w.line_t1_val || 5065.5}} pts\\n• Alvo 2: ${{w.line_t2_val || 5040.0}} pts\\n• Stop: ${{w.line_stop_val || 5098.5}} pts\\n\\n🎯 O QUE ACONTECEU NO PROFITCHART:\\n• Máxima: ${{w.high || ''}} pts\\n• Mínima: ${{w.low || ''}} pts\\n• Fechamento: ${{w.close || ''}} pts (${{w.actual_pct || ''}})\\n• Alvo 1: ${{w.t1_hit ? '✔ Atingido' : '✖ Não atingido'}}\\n• Alvo 2: ${{w.t2_hit ? '✔ Atingido' : '✖ Não atingido'}}\\n• Fechamento na Faixa: ${{w.range_hit ? '✔ Na Faixa' : '✖ Fora'}}`;
+            const text = `📋 AUDITORIA DO PREGÃO WDO (${{dateStr}})\\n\\n🔮 PROJEÇÃO DO RADAR (08:20):\\n• Viés: ${{w.bias}} (${{w.expected_pct || ''}})\\n• Ponto Zero: ${{w.base_price_val || 5080.5}} pts\\n• Alvo 1: ${{w.line_t1_val || 5065.5}} pts\\n• Alvo 2: ${{w.line_t2_val || 5040.0}} pts\\n\\n🎯 O QUE ACONTECEU NO PROFITCHART:\\n• Máxima: ${{w.high || ''}} pts\\n• Mínima: ${{w.low || ''}} pts\\n• Fechamento: ${{w.close || ''}} pts (${{w.actual_pct || ''}})\\n• Alvo 1: ${{w.t1_hit ? '✔ Atingido' : '✖ Não atingido'}}\\n• Alvo 2: ${{w.t2_hit ? '✔ Atingido' : '✖ Não atingido'}}\\n• Fechamento na Faixa: ${{w.range_hit ? '✔ Na Faixa' : '✖ Fora'}}\\n• Conferência: ${{w.is_audited ? '✔ Validado pelo Trader' : 'Pendente'}}`;
 
             navigator.clipboard.writeText(text).then(() => {{
                 alert('✔ Resumo da auditoria copiado para a área de transferência!');
