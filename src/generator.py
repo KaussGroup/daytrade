@@ -267,6 +267,15 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
     today_wdo_json = json.dumps(wdo, ensure_ascii=False)
     today_iso_date = datetime.now().strftime("%Y-%m-%d")
 
+    real_candles_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "real_candles.json")
+    embedded_candles_json = "{}"
+    if os.path.exists(real_candles_path):
+        try:
+            with open(real_candles_path, "r", encoding="utf-8") as f:
+                embedded_candles_json = f.read().strip() or "{}"
+        except Exception:
+            embedded_candles_json = "{}"
+
     html = f"""<!DOCTYPE html>
 <html lang="pt-BR" class="dark">
 <head>
@@ -1402,6 +1411,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
         // AUDITORIA VISUAL DO WDO (CANDLES + LINHAS)
         // ==========================================
         const SERVER_AUDIT_RECORDS = {records_json};
+        const SERVER_EMBEDDED_CANDLES = {embedded_candles_json};
         let AUDIT_RECORDS = [];
         let wdoChart = null;
         let candleSeries = null;
@@ -1415,11 +1425,20 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
 
         function loadStoredAuditData() {{
             try {{
+                // Remover vestígios e artefatos de versões anteriores
+                localStorage.removeItem('RADAR_PROFIT_CANDLES_2026-01-01');
+                localStorage.removeItem('RADAR_PROFIT_CANDLES_0000-00-00');
+
                 const stored = localStorage.getItem('RADAR_WDO_AUDIT_DATA');
                 if (stored) {{
-                    const parsed = JSON.parse(stored);
+                    let parsed = JSON.parse(stored);
                     if (Array.isArray(parsed) && parsed.length > 0) {{
-                        return parsed;
+                        // Filtrar qualquer registro inválido ou corrompido
+                        parsed = parsed.filter(r => r && r.date && r.date !== '2026-01-01' && r.date !== '0000-00-00' && !r.date.includes('undefined'));
+                        if (parsed.length > 0) {{
+                            saveStoredAuditData(parsed);
+                            return parsed;
+                        }}
                     }}
                 }}
             }} catch(e) {{}}
@@ -1495,7 +1514,10 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             updateLineButtonStyles();
 
             if (AUDIT_RECORDS.length > 0) {{
-                onAuditDateSelected(AUDIT_RECORDS[0].date);
+                const defaultDate = AUDIT_RECORDS.find(r => r.date === '2026-10-16')?.date || AUDIT_RECORDS[0].date;
+                const sel = document.getElementById('auditDateSelect');
+                if (sel) sel.value = defaultDate;
+                onAuditDateSelected(defaultDate);
             }}
         }}
 
@@ -1634,6 +1656,9 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                     if (Array.isArray(parsed) && parsed.length > 0) return parsed;
                 }}
             }} catch(e) {{}}
+            if (typeof SERVER_EMBEDDED_CANDLES !== 'undefined' && SERVER_EMBEDDED_CANDLES && SERVER_EMBEDDED_CANDLES[dateStr]) {{
+                return SERVER_EMBEDDED_CANDLES[dateStr];
+            }}
             return null;
         }}
 
@@ -1753,7 +1778,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             const min = tp[1] || 0;
             const sec = tp[2] || 0;
 
-            const utcSec = Math.floor(Date.UTC(year, month - 1, day, hour + 3, min, sec) / 1000);
+            const utcSec = Math.floor(Date.UTC(year, month - 1, day, hour, min, sec) / 1000);
             const isoDate = `${{year}}-${{String(month).padStart(2, '0')}}-${{String(day).padStart(2, '0')}}`;
             return {{ utcSec, isoDate }};
         }}
@@ -1830,8 +1855,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 }}
             }}
 
-            const parsedBars = [];
-            let detectedIsoDate = "";
+            const barsByDate = {{}};
 
             for (let i = dataStartIdx; i < rawLines.length; i++) {{
                 const cols = rawLines[i].split(delim);
@@ -1841,15 +1865,20 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 const tStr = (colTime !== -1 && colTime !== colDate) ? cols[colTime] : "";
                 const dt = parseProfitDateTime(dStr, tStr);
 
+                // Descartar datas corrompidas ou sem sentido
+                if (!dt.isoDate || dt.isoDate === '2026-01-01' || dt.isoDate === '0000-00-00') continue;
+
                 const o = parseProfitNumber(cols[colOpen]);
                 const h = parseProfitNumber(cols[colHigh]);
                 const l = parseProfitNumber(cols[colLow]);
                 const c = parseProfitNumber(cols[colClose]);
 
                 if (isNaN(o) || isNaN(h) || isNaN(l) || isNaN(c)) continue;
-                if (!detectedIsoDate && dt.isoDate) detectedIsoDate = dt.isoDate;
 
-                parsedBars.push({{
+                if (!barsByDate[dt.isoDate]) {{
+                    barsByDate[dt.isoDate] = [];
+                }}
+                barsByDate[dt.isoDate].push({{
                     time: dt.utcSec,
                     open: o,
                     high: h,
@@ -1858,47 +1887,71 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 }});
             }}
 
-            if (parsedBars.length === 0) {{
+            const allDates = Object.keys(barsByDate).sort();
+            if (allDates.length === 0) {{
                 alert("Não foi possível extrair candles válidos do arquivo. Verifique o formato exportado pelo Profit.");
                 return;
             }}
 
-            parsedBars.sort((a, b) => a.time - b.time);
-            const uniqueBars = [];
-            const seenTimes = new Set();
-            parsedBars.forEach(b => {{
-                if (!seenTimes.has(b.time)) {{
-                    seenTimes.add(b.time);
-                    uniqueBars.push(b);
+            // Organizar e persistir cada data separadamente
+            allDates.forEach(d => {{
+                const rawDateBars = barsByDate[d];
+                rawDateBars.sort((a, b) => a.time - b.time);
+                const uniqueDateBars = [];
+                const seenTimes = new Set();
+                rawDateBars.forEach(b => {{
+                    if (!seenTimes.has(b.time)) {{
+                        seenTimes.add(b.time);
+                        uniqueDateBars.push(b);
+                    }}
+                }});
+                barsByDate[d] = uniqueDateBars;
+                try {{
+                    localStorage.setItem('RADAR_PROFIT_CANDLES_' + d, JSON.stringify(uniqueDateBars));
+                }} catch(e) {{
+                    console.warn('LocalStorage limit for ' + d, e);
                 }}
             }});
 
-            const targetDate = detectedIsoDate || (document.getElementById('auditDateSelect')?.value) || '2026-10-16';
-            localStorage.setItem('RADAR_PROFIT_CANDLES_' + targetDate, JSON.stringify(uniqueBars));
+            // Atualizar o histórico de auditoria para cada pregão presente no arquivo
+            allDates.forEach(d => {{
+                const dBars = barsByDate[d];
+                if (!dBars || dBars.length === 0) return;
+                const dHigh = Math.max(...dBars.map(b => b.high));
+                const dLow = Math.min(...dBars.map(b => b.low));
+                const dOpen = dBars[0].open;
+                const dClose = dBars[dBars.length - 1].close;
 
-            const sessionHigh = Math.max(...uniqueBars.map(b => b.high));
-            const sessionLow = Math.min(...uniqueBars.map(b => b.low));
-            const sessionClose = uniqueBars[uniqueBars.length - 1].close;
-            const sessionOpen = uniqueBars[0].open;
+                let rec = AUDIT_RECORDS.find(r => r.date === d);
+                if (!rec) {{
+                    rec = {{
+                        date: d,
+                        win: {{ bias: 'ALTA', expected_pct: '+0.4% a +1.0%' }},
+                        wdo: {{ bias: 'BAIXA', expected_pct: '-0.8% a -0.3%', base_price_val: dOpen }}
+                    }};
+                    AUDIT_RECORDS.push(rec);
+                }}
+                if (!rec.wdo) rec.wdo = {{}};
+                rec.wdo.high = dHigh;
+                rec.wdo.low = dLow;
+                rec.wdo.close = dClose;
+                rec.wdo.open = dOpen;
+                rec.wdo.has_profit_file = true;
+            }});
 
-            let record = AUDIT_RECORDS.find(r => r.date === targetDate);
-            if (!record) {{
-                record = {{
-                    date: targetDate,
-                    win: {{ bias: 'ALTA', expected_pct: '+0.4% a +1.0%' }},
-                    wdo: {{ bias: 'BAIXA', expected_pct: '-0.8% a -0.3%', base_price_val: sessionOpen }}
-                }};
-                AUDIT_RECORDS.unshift(record);
-                populateAuditDateSelect();
-            }}
-            if (!record.wdo) record.wdo = {{}};
-            record.wdo.high = sessionHigh;
-            record.wdo.low = sessionLow;
-            record.wdo.close = sessionClose;
-            record.wdo.open = sessionOpen;
-            record.wdo.has_profit_file = true;
-
+            AUDIT_RECORDS.sort((a, b) => b.date.localeCompare(a.date));
             saveStoredAuditData(AUDIT_RECORDS);
+            populateAuditDateSelect();
+
+            // Definir o pregão a exibir na tela:
+            // Preferência para 2026-10-16 (último pregão oficial com dados completos), ou a data atualmente selecionada
+            const currentSelVal = document.getElementById('auditDateSelect')?.value;
+            let targetDate = (currentSelVal && barsByDate[currentSelVal]) ? currentSelVal : (barsByDate['2026-10-16'] ? '2026-10-16' : allDates[allDates.length - 1]);
+
+            const targetBars = barsByDate[targetDate];
+            const sessionHigh = Math.max(...targetBars.map(b => b.high));
+            const sessionLow = Math.min(...targetBars.map(b => b.low));
+            const sessionClose = targetBars[targetBars.length - 1].close;
 
             const sel = document.getElementById('auditDateSelect');
             if (sel) sel.value = targetDate;
@@ -1912,7 +1965,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
 
             const statusBadge = document.getElementById('profitLoadedStatus');
             if (statusBadge) {{
-                statusBadge.innerText = '✔ ' + uniqueBars.length + ' candles reais (' + targetDate + ')';
+                statusBadge.innerText = '✔ ' + targetBars.length + ' candles reais (' + targetDate + ')';
                 statusBadge.classList.remove('hidden');
             }}
 
@@ -1922,7 +1975,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             const toast = document.getElementById('auditToastMsg');
             const toastTxt = document.getElementById('auditToastText');
             if (toast && toastTxt) {{
-                toastTxt.innerText = '✔ ' + uniqueBars.length + ' candles do ProfitChart importados com sucesso! Máx: ' + sessionHigh.toFixed(1) + ' | Mín: ' + sessionLow.toFixed(1) + ' | Fch: ' + sessionClose.toFixed(1);
+                toastTxt.innerText = '✔ ' + targetBars.length + ' candles reais de ' + targetDate + ' carregados com sucesso! Máx: ' + sessionHigh.toFixed(1) + ' | Mín: ' + sessionLow.toFixed(1) + ' | Fch: ' + sessionClose.toFixed(1);
                 toast.classList.remove('hidden');
                 setTimeout(() => toast.classList.add('hidden'), 5000);
             }}
