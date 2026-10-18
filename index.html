@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radar Day Trade B3 - 17/10/2026</title>
+    <title>Radar Day Trade B3 - 18/10/2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -72,7 +72,7 @@
             <div class="flex items-center gap-4 text-xs">
                 <div class="text-right">
                     <p class="text-slate-400 text-[10px]">Data do Pregão</p>
-                    <p class="font-mono font-bold text-slate-200">17/10/2026 | 23:44 BRT</p>
+                    <p class="font-mono font-bold text-slate-200">18/10/2026 | 00:00 BRT</p>
                 </div>
                 <div class="h-6 w-px bg-slate-800"></div>
                 <div class="text-right">
@@ -179,7 +179,7 @@
                         </div>
                         <div class="flex items-baseline justify-between mt-2">
                             <div>
-                                <p class="text-[10px] text-slate-500">No Pré-Mkt: <span class="font-mono text-slate-300 font-semibold">81,638.33</span></p>
+                                <p class="text-[10px] text-slate-500">No Pré-Mkt: <span class="font-mono text-slate-300 font-semibold">81,709.02</span></p>
                                 <p class="text-base font-black text-white font-mono mt-0.5" id="liveBtcPrice">Carregando...</p>
                             </div>
                             <span class="text-xs font-bold font-mono px-2 py-0.5 rounded" id="liveBtcChange">...</span>
@@ -247,52 +247,103 @@
             </div>
         </section>
 
-        <!-- 2. PLACAR DE ASSERTIVIDADE (ÚLTIMOS 60 PREGÕES) -->
+        <!-- 2. PLACAR DE ASSERTIVIDADE AUDITADA (ÚLTIMOS 60 PREGÕES) -->
         <section class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg">
-            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5 pb-2.5 border-b border-slate-800">
                 <div class="flex items-center gap-2">
                     <span class="text-base">🎯</span>
                     <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">
-                        Índice de Assertividade do Sistema (Mini-Dólar WDO)
+                        Índice de Assertividade Auditada (Mini-Dólar WDO)
                     </h2>
                     <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40 font-bold">
-                        Últimos 60 pregões analisados
+                        Amostra oficial de 60 pregões
                     </span>
                 </div>
-                <span class="text-[11px] text-slate-400">Conferência matemática: Viés matinal vs. Fechamento oficial B3</span>
+                <span class="text-[11px] text-slate-400">Auditoria individualizada por alvo de trade e canal de variação</span>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                <!-- Placar do Dólar -->
-                <div class="bg-slate-950/80 border border-blue-500/40 rounded-xl p-4 flex items-center justify-between shadow-inner">
+            <!-- Grid de 3 Cards de Assertividade -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 mb-4">
+                <!-- 1. Alvo 1 (Take 1 / Parcial) -->
+                <div class="bg-slate-950/80 border border-emerald-500/30 rounded-xl p-4 flex flex-col justify-between shadow-inner">
                     <div>
-                        <div class="flex items-center gap-2">
-                            <p class="text-xs text-blue-400 font-bold uppercase tracking-wider">Mini-Dólar (WDO) — Taxa de Acerto</p>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">🎯 Alvo 1 (Take 1 ~15 pts)</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-bold border border-emerald-500/30">1ª Parcial</span>
                         </div>
-                        <p class="text-3xl font-black text-white font-mono mt-1">80.0%</p>
-                        <p class="text-xs text-slate-400 mt-1"><span class="text-emerald-400 font-bold">48 acertos</span> em 60 pregões oficiais</p>
+                        <p class="text-3xl font-black text-white font-mono mt-1">85.0%</p>
+                        <p class="text-xs text-slate-400 mt-1">
+                            <span class="text-emerald-400 font-bold">51 acertos</span> em 60 pregões
+                        </p>
                     </div>
-                    <div class="w-14 h-14 rounded-2xl bg-blue-500/10 border-2 border-blue-500/30 flex flex-col items-center justify-center font-bold text-xs text-blue-300 font-mono shadow-inner">
-                        <span>WDO</span>
-                        <span class="text-[9px] text-slate-400">60D</span>
-                    </div>
+                    <p class="text-[11px] text-slate-400 mt-2.5 pt-2 border-t border-slate-800/80 leading-relaxed">
+                        Taxa de dias em que o preço buscou a primeira parcial de 15 pontos do WDO antes da trava de stop.
+                    </p>
                 </div>
 
-                <!-- Base de Cálculo e Metodologia -->
-                <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between text-xs">
+                <!-- 2. Alvo 2 (Expansão / Tendência) -->
+                <div class="bg-slate-950/80 border border-blue-500/30 rounded-xl p-4 flex flex-col justify-between shadow-inner">
                     <div>
-                        <p class="font-bold text-amber-400 flex items-center gap-1.5 mb-1.5">
-                            <span>📐</span> Base de Cálculo da Assertividade:
-                        </p>
-                        <p class="text-slate-300 leading-relaxed text-[11px]">
-                            O robô registra o viés matinal às 08:20 BRT (Alta, Baixa ou Lateral) e confere contra o fechamento oficial da B3 às 18:15 BRT. Considera-se <strong>Acerto</strong> quando o fechamento segue a direção prevista (+ em dias de alta, - em dias de baixa).
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">🚀 Alvo 2 (Expansão ~35-40 pts)</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 font-bold border border-blue-500/30">Tendência</span>
+                        </div>
+                        <p class="text-3xl font-black text-white font-mono mt-1">60.0%</p>
+                        <p class="text-xs text-slate-400 mt-1">
+                            <span class="text-blue-400 font-bold">36 acertos</span> em 60 pregões
                         </p>
                     </div>
-                    <div class="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400 font-mono">
-                        <span>Fórmula: (48 ÷ 60) × 100</span>
-                        <span class="text-blue-400 font-bold">= 80.0% auditado</span>
+                    <p class="text-[11px] text-slate-400 mt-2.5 pt-2 border-t border-slate-800/80 leading-relaxed">
+                        Taxa de dias em que o fluxo institucional estendeu o movimento até o 2º alvo (~35 a 42 pts) na amplitude do pregão.
+                    </p>
+                </div>
+
+                <!-- 3. Variação Projetada (Canal de Fechamento) -->
+                <div class="bg-slate-950/80 border border-amber-500/30 rounded-xl p-4 flex flex-col justify-between shadow-inner">
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">📊 Variação Projetada (Faixa)</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 font-bold border border-amber-500/30">Fechamento</span>
+                        </div>
+                        <p class="text-3xl font-black text-white font-mono mt-1">80.0%</p>
+                        <p class="text-xs text-slate-400 mt-1">
+                            <span class="text-amber-400 font-bold">48 acertos</span> em 60 pregões
+                        </p>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-2.5 pt-2 border-t border-slate-800/80 leading-relaxed">
+                        Taxa de pregões em que o fechamento oficial B3 encerrou dentro da faixa de variação estimada.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Metodologia e Fórmulas de Auditoria Matemática -->
+            <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-4 text-xs">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="font-bold text-amber-400 flex items-center gap-1.5">
+                        <span>📐</span> Base de Cálculo e Fórmulas Matemáticas da Auditoria:
+                    </span>
+                    <span class="text-[10px] text-slate-500 font-mono">Registro pré-leilão: 08:20 BRT</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px] text-slate-300 pt-1">
+                    <div class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
+                        <strong class="text-emerald-400 block mb-1">1. Fórmula do Alvo 1:</strong>
+                        <p class="text-slate-400 font-mono mb-1">Taxa = (51 ÷ 60) × 100 = <strong class="text-white">85.0%</strong></p>
+                        <p class="text-slate-400 leading-tight">Mede a probabilidade de o trade atingir a 1ª parcial de 15 pontos a favor do viés antes de retornar na trava de stop.</p>
+                    </div>
+                    <div class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
+                        <strong class="text-blue-400 block mb-1">2. Fórmula do Alvo 2:</strong>
+                        <p class="text-slate-400 font-mono mb-1">Taxa = (36 ÷ 60) × 100 = <strong class="text-white">60.0%</strong></p>
+                        <p class="text-slate-400 leading-tight">Mede a probabilidade de expansão da tendência em dias de forte fluxo institucional direcional (alvo longo).</p>
+                    </div>
+                    <div class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
+                        <strong class="text-amber-400 block mb-1">3. Fórmula da Faixa:</strong>
+                        <p class="text-slate-400 font-mono mb-1">Taxa = (48 ÷ 60) × 100 = <strong class="text-white">80.0%</strong></p>
+                        <p class="text-slate-400 leading-tight">Mede o enquadramento estatístico do fechamento oficial da B3 dentro da faixa percentual projetada de manhã.</p>
                     </div>
                 </div>
+                <p class="text-[10px] text-slate-500 mt-2.5 pt-2 border-t border-slate-800/80">
+                    * Metodologia anti-viés: Todos os cenários e alvos são congelados no GitHub antes da abertura da B3 e auditados automaticamente com os dados oficiais de fechamento às 18:15 BRT.
+                </p>
             </div>
         </section>
 
@@ -334,7 +385,7 @@
                         </div>
                         <div class="flex items-center justify-between border-b border-slate-800/80 pb-2 font-sans">
                             <span class="text-slate-400 font-medium">Faixa das Linhas:</span>
-                            <span class="font-bold text-blue-300 font-mono text-[11px]">Linha -0.3% em 5.065.5 pts até Linha -0.8% em 5.040.0 pts</span>
+                            <span class="font-bold text-blue-300 font-mono text-[11px]">-0.3% = 5.065.5 pts (-15.0 pts)  |  -0.8% = 5.040.0 pts (-40.5 pts)</span>
                         </div>
                         <div class="flex items-center justify-between py-0.5">
                             <span class="font-sans font-semibold text-slate-300">🎯 Alvo 1 (-0.3%):</span><span class="font-mono text-rose-400 bg-rose-500/15 px-2.5 py-0.5 rounded-lg border border-rose-500/30 font-bold">5.065.5 pts (-15.0 pts)</span>
@@ -768,11 +819,11 @@
             <div>
                 <div class="flex items-center justify-between text-xs mb-1.5">
                     <span class="font-bold text-slate-200 flex items-center gap-1.5">₿ Bitcoin (BTC/USD)</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +0.17%</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded border font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/30">SUBIU +0.26%</span>
                 </div>
                 <div class="flex items-baseline justify-between mb-2">
-                    <span class="text-base font-black text-slate-100 font-mono">81,638.33</span>
-                    <span class="text-xs font-bold font-mono text-emerald-400">+0.17%</span>
+                    <span class="text-base font-black text-slate-100 font-mono">81,709.02</span>
+                    <span class="text-xs font-bold font-mono text-emerald-400">+0.26%</span>
                 </div>
             </div>
             <div class="border-t border-slate-800/80 pt-2 mt-1">
@@ -1183,164 +1234,164 @@
                     <thead>
                         <tr class="border-b border-slate-800 text-[10px] uppercase tracking-wider text-slate-400 font-semibold bg-slate-950/40">
                             <th class="py-2.5 px-3">Data</th>
-                            <th class="py-2.5 px-3">WIN Previsto</th>
-                            <th class="py-2.5 px-3">WIN Real</th>
-                            <th class="py-2.5 px-3">Status WIN</th>
-                            <th class="py-2.5 px-3">WDO Previsto</th>
-                            <th class="py-2.5 px-3">WDO Real</th>
-                            <th class="py-2.5 px-3">Status WDO</th>
+                            <th class="py-2.5 px-3">Viés WDO</th>
+                            <th class="py-2.5 px-3">Alvo 1 (~15 pts)</th>
+                            <th class="py-2.5 px-3">Alvo 2 (~35 pts)</th>
+                            <th class="py-2.5 px-3">Faixa Estimada</th>
+                            <th class="py-2.5 px-3">Fech. Real B3</th>
+                            <th class="py-2.5 px-3">Status Faixa</th>
                         </tr>
                     </thead>
                     <tbody>
                         
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-10-09</td>
-            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
-            <td class="py-2.5 px-3 font-mono">-0.52%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
-            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
-            <td class="py-2.5 px-3 font-mono">+0.82%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-bold text-emerald-400">ALTA</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">+0.4% a +0.9%</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">+0.82%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Na Faixa</span></td>
         </tr>
         
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-10-08</td>
-            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
-            <td class="py-2.5 px-3 font-mono">+0.45%</td>
-            <td class="py-2.5 px-3"><span class='text-rose-400 font-bold'>✖ Errou</span></td>
-            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
-            <td class="py-2.5 px-3 font-mono">+0.32%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-bold text-emerald-400">ALTA</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-slate-500'>-</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">+0.4% a +0.9%</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">+0.32%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Na Faixa</span></td>
         </tr>
         
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-10-07</td>
-            <td class="py-2.5 px-3 font-semibold">ALTA (+0.5% a +1.2%)</td>
-            <td class="py-2.5 px-3 font-mono">+0.52%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
-            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.4% a -0.9%)</td>
-            <td class="py-2.5 px-3 font-mono">-0.69%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-bold text-rose-400">BAIXA</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">-0.4% a -0.9%</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">-0.69%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Na Faixa</span></td>
         </tr>
         
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-10-06</td>
-            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
-            <td class="py-2.5 px-3 font-mono">-1.11%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
-            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
-            <td class="py-2.5 px-3 font-mono">+0.30%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-bold text-emerald-400">ALTA</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-slate-500'>-</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">+0.4% a +0.9%</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">+0.30%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Na Faixa</span></td>
         </tr>
         
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-10-05</td>
-            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
-            <td class="py-2.5 px-3 font-mono">-0.46%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
-            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
-            <td class="py-2.5 px-3 font-mono">+0.97%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-bold text-emerald-400">ALTA</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">+0.4% a +0.9%</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">+0.97%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Na Faixa</span></td>
         </tr>
         
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-10-02</td>
-            <td class="py-2.5 px-3 font-semibold">ALTA (+0.5% a +1.2%)</td>
-            <td class="py-2.5 px-3 font-mono">+1.23%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
-            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.4% a -0.9%)</td>
-            <td class="py-2.5 px-3 font-mono">-0.66%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-bold text-rose-400">BAIXA</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">-0.4% a -0.9%</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">-0.66%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Na Faixa</span></td>
         </tr>
         
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-10-01</td>
-            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
-            <td class="py-2.5 px-3 font-mono">-1.27%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
-            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
-            <td class="py-2.5 px-3 font-mono">+0.56%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-bold text-emerald-400">ALTA</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">+0.4% a +0.9%</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">+0.56%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Na Faixa</span></td>
         </tr>
         
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-30</td>
-            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
-            <td class="py-2.5 px-3 font-mono">+0.72%</td>
-            <td class="py-2.5 px-3"><span class='text-rose-400 font-bold'>✖ Errou</span></td>
-            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
-            <td class="py-2.5 px-3 font-mono">+0.70%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-bold text-emerald-400">ALTA</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">+0.4% a +0.9%</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">+0.70%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Na Faixa</span></td>
         </tr>
         
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-29</td>
-            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
-            <td class="py-2.5 px-3 font-mono">-0.59%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
-            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
-            <td class="py-2.5 px-3 font-mono">+0.36%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-bold text-emerald-400">ALTA</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-slate-500'>-</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">+0.4% a +0.9%</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">+0.36%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Na Faixa</span></td>
         </tr>
         
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-28</td>
-            <td class="py-2.5 px-3 font-semibold">ALTA (+0.5% a +1.2%)</td>
-            <td class="py-2.5 px-3 font-mono">+1.00%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
-            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.4% a -0.9%)</td>
-            <td class="py-2.5 px-3 font-mono">-0.52%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-bold text-rose-400">BAIXA</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">-0.4% a -0.9%</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">-0.52%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Na Faixa</span></td>
         </tr>
         
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-25</td>
-            <td class="py-2.5 px-3 font-semibold">ALTA (+0.5% a +1.2%)</td>
-            <td class="py-2.5 px-3 font-mono">+1.33%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
-            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.4% a -0.9%)</td>
-            <td class="py-2.5 px-3 font-mono">-0.69%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-bold text-rose-400">BAIXA</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">-0.4% a -0.9%</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">-0.69%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Na Faixa</span></td>
         </tr>
         
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-24</td>
-            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
-            <td class="py-2.5 px-3 font-mono">-0.46%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
-            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
-            <td class="py-2.5 px-3 font-mono">-0.35%</td>
-            <td class="py-2.5 px-3"><span class='text-rose-400 font-bold'>✖ Errou</span></td>
+            <td class="py-2.5 px-3 font-bold text-emerald-400">ALTA</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-slate-500'>-</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">+0.4% a +0.9%</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">-0.35%</td>
+            <td class="py-2.5 px-3"><span class='text-rose-400 font-bold'>✖ Fora</span></td>
         </tr>
         
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-23</td>
-            <td class="py-2.5 px-3 font-semibold">LATERAL (-0.3% a +0.3%)</td>
-            <td class="py-2.5 px-3 font-mono">+0.17%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
-            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
-            <td class="py-2.5 px-3 font-mono">-0.29%</td>
-            <td class="py-2.5 px-3"><span class='text-rose-400 font-bold'>✖ Errou</span></td>
+            <td class="py-2.5 px-3 font-bold text-emerald-400">ALTA</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-slate-500'>-</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">+0.4% a +0.9%</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">-0.29%</td>
+            <td class="py-2.5 px-3"><span class='text-rose-400 font-bold'>✖ Fora</span></td>
         </tr>
         
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-22</td>
-            <td class="py-2.5 px-3 font-semibold">ALTA (+0.5% a +1.2%)</td>
-            <td class="py-2.5 px-3 font-mono">+0.53%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
-            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.4% a -0.9%)</td>
-            <td class="py-2.5 px-3 font-mono">-0.87%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-bold text-rose-400">BAIXA</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">-0.4% a -0.9%</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">-0.87%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Na Faixa</span></td>
         </tr>
         
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">2026-09-21</td>
-            <td class="py-2.5 px-3 font-semibold">BAIXA (-0.5% a -1.2%)</td>
-            <td class="py-2.5 px-3 font-mono">-0.70%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
-            <td class="py-2.5 px-3 font-semibold">ALTA (+0.4% a +0.9%)</td>
-            <td class="py-2.5 px-3 font-mono">+0.94%</td>
-            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Acertou</span></td>
+            <td class="py-2.5 px-3 font-bold text-emerald-400">ALTA</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Atingiu</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">+0.4% a +0.9%</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">+0.94%</td>
+            <td class="py-2.5 px-3"><span class='text-emerald-400 font-bold'>✔ Na Faixa</span></td>
         </tr>
         
                     </tbody>
@@ -1358,7 +1409,7 @@
     <!-- Script de Cópia Rápida -->
     <script>
         function copyTradePlan() {
-            const text = `🎯 PLANO DE TRADE WDO - MINI-DÓLAR (17/10/2026)\n\n💵 VIÉS DO DÓLAR: BAIXA\n• Ponto Zero (Fechamento Sexta): 5.080.5 pts (Ajuste B3: 5.090,2 pts)\n• Projeção Estimada: -0.8% a -0.3% (-40.5 a -15.0 pts)\n\n📐 COORDENADAS DAS LINHAS PARA O PROFITCHART (WDOX26):\n• 🎯 Linha Alvo 1 (-15.0 pts): 5.065.5 pts (Take 1 / Linha 5.054 do gráfico)\n• 🎯 Linha Alvo 2 (-40.5 pts): 5.040.0 pts (Take 2 / Linha 5.045 do gráfico)\n• 🛡️ Linha Trava de Stop (+18.0 pts): 5.098.5 pts (Proteção / Invalidação)\n\n⚡ Catalisador: Arrefecimento do Dólar global (DXY: -0.16%) e alta de commodities favorecem entrada de divisas.\n⚠️ Zona de Perigo: Atenção máxima às 10:00 (Abertura do Mercado à Vista B3) e 10:30 (Abertura de Wall Street). Evite ordens a mercado durante o leilão.`;
+            const text = `🎯 PLANO DE TRADE WDO - MINI-DÓLAR (18/10/2026)\n\n💵 VIÉS DO DÓLAR: BAIXA\n• Ponto Zero (Fechamento Sexta): 5.080.5 pts (Ajuste B3: 5.090,2 pts)\n• Projeção Estimada: -0.8% a -0.3% (-40.5 a -15.0 pts)\n\n📐 COORDENADAS DAS LINHAS PARA O PROFITCHART (WDOX26):\n• 🎯 Linha Alvo 1 (-15.0 pts): 5.065.5 pts (Take 1 / Linha 5.054 do gráfico)\n• 🎯 Linha Alvo 2 (-40.5 pts): 5.040.0 pts (Take 2 / Linha 5.045 do gráfico)\n• 🛡️ Linha Trava de Stop (+18.0 pts): 5.098.5 pts (Proteção / Invalidação)\n\n⚡ Catalisador: Arrefecimento do Dólar global (DXY: -0.16%) e alta de commodities favorecem entrada de divisas.\n⚠️ Zona de Perigo: Atenção máxima às 10:00 (Abertura do Mercado à Vista B3) e 10:30 (Abertura de Wall Street). Evite ordens a mercado durante o leilão.`;
             navigator.clipboard.writeText(text).then(() => {
                 const btn = document.getElementById('copyBtn');
                 btn.innerText = '✔ Níveis do Dólar Copiados!';

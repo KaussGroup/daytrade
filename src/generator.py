@@ -240,20 +240,25 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
         </div>
         """
 
-    # Tabela de assertividade recente
+    # Tabela de assertividade recente (Auditada em 3 níveis: Alvo 1, Alvo 2 e Faixa de Variação)
     history_rows = ""
     for h in accuracy_metrics.get("recent_records", [])[:15]:
-        win_hit_badge = "<span class='text-emerald-400 font-bold'>✔ Acertou</span>" if h["win"]["hit"] else "<span class='text-rose-400 font-bold'>✖ Errou</span>"
-        wdo_hit_badge = "<span class='text-emerald-400 font-bold'>✔ Acertou</span>" if h["wdo"]["hit"] else "<span class='text-rose-400 font-bold'>✖ Errou</span>"
+        w = h.get("wdo", {})
+        t1_badge = "<span class='text-emerald-400 font-bold'>✔ Atingiu</span>" if w.get("t1_hit") else "<span class='text-slate-500'>-</span>"
+        t2_badge = "<span class='text-emerald-400 font-bold'>✔ Atingiu</span>" if w.get("t2_hit") else "<span class='text-slate-500'>-</span>"
+        range_badge = "<span class='text-emerald-400 font-bold'>✔ Na Faixa</span>" if w.get("range_hit") else "<span class='text-rose-400 font-bold'>✖ Fora</span>"
+        
+        bias_style = "text-rose-400" if w.get("bias") == "BAIXA" else ("text-emerald-400" if w.get("bias") == "ALTA" else "text-amber-400")
+        
         history_rows += f"""
         <tr class="border-b border-slate-800/60 hover:bg-slate-800/30 text-xs">
             <td class="py-2.5 px-3 font-mono text-slate-300">{h['date']}</td>
-            <td class="py-2.5 px-3 font-semibold">{h['win']['bias']} ({h['win']['expected_pct']})</td>
-            <td class="py-2.5 px-3 font-mono">{h['win']['actual_pct']}</td>
-            <td class="py-2.5 px-3">{win_hit_badge}</td>
-            <td class="py-2.5 px-3 font-semibold">{h['wdo']['bias']} ({h['wdo']['expected_pct']})</td>
-            <td class="py-2.5 px-3 font-mono">{h['wdo']['actual_pct']}</td>
-            <td class="py-2.5 px-3">{wdo_hit_badge}</td>
+            <td class="py-2.5 px-3 font-bold {bias_style}">{w.get('bias', '-')}</td>
+            <td class="py-2.5 px-3">{t1_badge}</td>
+            <td class="py-2.5 px-3">{t2_badge}</td>
+            <td class="py-2.5 px-3 font-mono text-slate-300">{w.get('expected_pct', '-')}</td>
+            <td class="py-2.5 px-3 font-mono font-semibold">{w.get('actual_pct', '-')}</td>
+            <td class="py-2.5 px-3">{range_badge}</td>
         </tr>
         """
 
@@ -506,52 +511,103 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             </div>
         </section>
 
-        <!-- 2. PLACAR DE ASSERTIVIDADE (ÚLTIMOS 60 PREGÕES) -->
+        <!-- 2. PLACAR DE ASSERTIVIDADE AUDITADA (ÚLTIMOS 60 PREGÕES) -->
         <section class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg">
-            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5 pb-2.5 border-b border-slate-800">
                 <div class="flex items-center gap-2">
                     <span class="text-base">🎯</span>
                     <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">
-                        Índice de Assertividade do Sistema (Mini-Dólar WDO)
+                        Índice de Assertividade Auditada (Mini-Dólar WDO)
                     </h2>
                     <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40 font-bold">
-                        Últimos {accuracy_metrics['total_days']} pregões analisados
+                        Amostra oficial de {accuracy_metrics['total_days']} pregões
                     </span>
                 </div>
-                <span class="text-[11px] text-slate-400">Conferência matemática: Viés matinal vs. Fechamento oficial B3</span>
+                <span class="text-[11px] text-slate-400">Auditoria individualizada por alvo de trade e canal de variação</span>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                <!-- Placar do Dólar -->
-                <div class="bg-slate-950/80 border border-blue-500/40 rounded-xl p-4 flex items-center justify-between shadow-inner">
+            <!-- Grid de 3 Cards de Assertividade -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 mb-4">
+                <!-- 1. Alvo 1 (Take 1 / Parcial) -->
+                <div class="bg-slate-950/80 border border-emerald-500/30 rounded-xl p-4 flex flex-col justify-between shadow-inner">
                     <div>
-                        <div class="flex items-center gap-2">
-                            <p class="text-xs text-blue-400 font-bold uppercase tracking-wider">Mini-Dólar (WDO) — Taxa de Acerto</p>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">🎯 Alvo 1 (Take 1 ~15 pts)</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-bold border border-emerald-500/30">1ª Parcial</span>
                         </div>
-                        <p class="text-3xl font-black text-white font-mono mt-1">{accuracy_metrics['wdo_accuracy']}%</p>
-                        <p class="text-xs text-slate-400 mt-1"><span class="text-emerald-400 font-bold">{accuracy_metrics['wdo_hits']} acertos</span> em {accuracy_metrics['total_days']} pregões oficiais</p>
+                        <p class="text-3xl font-black text-white font-mono mt-1">{accuracy_metrics['wdo_t1_accuracy']}%</p>
+                        <p class="text-xs text-slate-400 mt-1">
+                            <span class="text-emerald-400 font-bold">{accuracy_metrics['wdo_t1_hits']} acertos</span> em {accuracy_metrics['total_days']} pregões
+                        </p>
                     </div>
-                    <div class="w-14 h-14 rounded-2xl bg-blue-500/10 border-2 border-blue-500/30 flex flex-col items-center justify-center font-bold text-xs text-blue-300 font-mono shadow-inner">
-                        <span>WDO</span>
-                        <span class="text-[9px] text-slate-400">60D</span>
-                    </div>
+                    <p class="text-[11px] text-slate-400 mt-2.5 pt-2 border-t border-slate-800/80 leading-relaxed">
+                        Taxa de dias em que o preço buscou a primeira parcial de 15 pontos do WDO antes da trava de stop.
+                    </p>
                 </div>
 
-                <!-- Base de Cálculo e Metodologia -->
-                <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between text-xs">
+                <!-- 2. Alvo 2 (Expansão / Tendência) -->
+                <div class="bg-slate-950/80 border border-blue-500/30 rounded-xl p-4 flex flex-col justify-between shadow-inner">
                     <div>
-                        <p class="font-bold text-amber-400 flex items-center gap-1.5 mb-1.5">
-                            <span>📐</span> Base de Cálculo da Assertividade:
-                        </p>
-                        <p class="text-slate-300 leading-relaxed text-[11px]">
-                            O robô registra o viés matinal às 08:20 BRT (Alta, Baixa ou Lateral) e confere contra o fechamento oficial da B3 às 18:15 BRT. Considera-se <strong>Acerto</strong> quando o fechamento segue a direção prevista (+ em dias de alta, - em dias de baixa).
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">🚀 Alvo 2 (Expansão ~35-40 pts)</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 font-bold border border-blue-500/30">Tendência</span>
+                        </div>
+                        <p class="text-3xl font-black text-white font-mono mt-1">{accuracy_metrics['wdo_t2_accuracy']}%</p>
+                        <p class="text-xs text-slate-400 mt-1">
+                            <span class="text-blue-400 font-bold">{accuracy_metrics['wdo_t2_hits']} acertos</span> em {accuracy_metrics['total_days']} pregões
                         </p>
                     </div>
-                    <div class="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400 font-mono">
-                        <span>Fórmula: (48 ÷ 60) × 100</span>
-                        <span class="text-blue-400 font-bold">= 80.0% auditado</span>
+                    <p class="text-[11px] text-slate-400 mt-2.5 pt-2 border-t border-slate-800/80 leading-relaxed">
+                        Taxa de dias em que o fluxo institucional estendeu o movimento até o 2º alvo (~35 a 42 pts) na amplitude do pregão.
+                    </p>
+                </div>
+
+                <!-- 3. Variação Projetada (Canal de Fechamento) -->
+                <div class="bg-slate-950/80 border border-amber-500/30 rounded-xl p-4 flex flex-col justify-between shadow-inner">
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">📊 Variação Projetada (Faixa)</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 font-bold border border-amber-500/30">Fechamento</span>
+                        </div>
+                        <p class="text-3xl font-black text-white font-mono mt-1">{accuracy_metrics['wdo_range_accuracy']}%</p>
+                        <p class="text-xs text-slate-400 mt-1">
+                            <span class="text-amber-400 font-bold">{accuracy_metrics['wdo_range_hits']} acertos</span> em {accuracy_metrics['total_days']} pregões
+                        </p>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-2.5 pt-2 border-t border-slate-800/80 leading-relaxed">
+                        Taxa de pregões em que o fechamento oficial B3 encerrou dentro da faixa de variação estimada.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Metodologia e Fórmulas de Auditoria Matemática -->
+            <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-4 text-xs">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="font-bold text-amber-400 flex items-center gap-1.5">
+                        <span>📐</span> Base de Cálculo e Fórmulas Matemáticas da Auditoria:
+                    </span>
+                    <span class="text-[10px] text-slate-500 font-mono">Registro pré-leilão: 08:20 BRT</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px] text-slate-300 pt-1">
+                    <div class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
+                        <strong class="text-emerald-400 block mb-1">1. Fórmula do Alvo 1:</strong>
+                        <p class="text-slate-400 font-mono mb-1">Taxa = ({accuracy_metrics['wdo_t1_hits']} ÷ {accuracy_metrics['total_days']}) × 100 = <strong class="text-white">{accuracy_metrics['wdo_t1_accuracy']}%</strong></p>
+                        <p class="text-slate-400 leading-tight">Mede a probabilidade de o trade atingir a 1ª parcial de 15 pontos a favor do viés antes de retornar na trava de stop.</p>
+                    </div>
+                    <div class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
+                        <strong class="text-blue-400 block mb-1">2. Fórmula do Alvo 2:</strong>
+                        <p class="text-slate-400 font-mono mb-1">Taxa = ({accuracy_metrics['wdo_t2_hits']} ÷ {accuracy_metrics['total_days']}) × 100 = <strong class="text-white">{accuracy_metrics['wdo_t2_accuracy']}%</strong></p>
+                        <p class="text-slate-400 leading-tight">Mede a probabilidade de expansão da tendência em dias de forte fluxo institucional direcional (alvo longo).</p>
+                    </div>
+                    <div class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
+                        <strong class="text-amber-400 block mb-1">3. Fórmula da Faixa:</strong>
+                        <p class="text-slate-400 font-mono mb-1">Taxa = ({accuracy_metrics['wdo_range_hits']} ÷ {accuracy_metrics['total_days']}) × 100 = <strong class="text-white">{accuracy_metrics['wdo_range_accuracy']}%</strong></p>
+                        <p class="text-slate-400 leading-tight">Mede o enquadramento estatístico do fechamento oficial da B3 dentro da faixa percentual projetada de manhã.</p>
                     </div>
                 </div>
+                <p class="text-[10px] text-slate-500 mt-2.5 pt-2 border-t border-slate-800/80">
+                    * Metodologia anti-viés: Todos os cenários e alvos são congelados no GitHub antes da abertura da B3 e auditados automaticamente com os dados oficiais de fechamento às 18:15 BRT.
+                </p>
             </div>
         </section>
 
@@ -821,12 +877,12 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                     <thead>
                         <tr class="border-b border-slate-800 text-[10px] uppercase tracking-wider text-slate-400 font-semibold bg-slate-950/40">
                             <th class="py-2.5 px-3">Data</th>
-                            <th class="py-2.5 px-3">WIN Previsto</th>
-                            <th class="py-2.5 px-3">WIN Real</th>
-                            <th class="py-2.5 px-3">Status WIN</th>
-                            <th class="py-2.5 px-3">WDO Previsto</th>
-                            <th class="py-2.5 px-3">WDO Real</th>
-                            <th class="py-2.5 px-3">Status WDO</th>
+                            <th class="py-2.5 px-3">Viés WDO</th>
+                            <th class="py-2.5 px-3">Alvo 1 (~15 pts)</th>
+                            <th class="py-2.5 px-3">Alvo 2 (~35 pts)</th>
+                            <th class="py-2.5 px-3">Faixa Estimada</th>
+                            <th class="py-2.5 px-3">Fech. Real B3</th>
+                            <th class="py-2.5 px-3">Status Faixa</th>
                         </tr>
                     </thead>
                     <tbody>

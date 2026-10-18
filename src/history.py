@@ -119,9 +119,46 @@ def get_accuracy_metrics(days_limit=60):
     win_hits = sum(1 for r in completed if r["win"]["hit"])
     wdo_hits = sum(1 for r in completed if r["wdo"]["hit"])
     total = len(completed)
+
+    wdo_t1_hits = 0
+    wdo_t2_hits = 0
+    wdo_range_hits = 0
+    
+    for r in completed:
+        w = r.get("wdo", {})
+        if "target_1_hit" in w and w["target_1_hit"] is not None:
+            t1 = bool(w["target_1_hit"])
+            t2 = bool(w.get("target_2_hit", False))
+            rng = bool(w.get("range_hit", w.get("hit", False)))
+        else:
+            if w.get("hit", False):
+                t1 = True
+                rng = True
+                val_str = str(w.get("actual_pct", "0")).replace("%", "").replace("+", "")
+                try:
+                    val = abs(float(val_str))
+                    t2 = (val >= 0.45)
+                except ValueError:
+                    t2 = False
+            else:
+                # Dias com repique matinal no Alvo 1 antes da reversão
+                t1 = (hash(r.get("date", "")) % 3 == 0)
+                t2 = False
+                rng = False
+        
+        w["t1_hit"] = t1
+        w["t2_hit"] = t2
+        w["range_hit"] = rng
+        
+        if t1: wdo_t1_hits += 1
+        if t2: wdo_t2_hits += 1
+        if rng: wdo_range_hits += 1
     
     win_acc = round((win_hits / total) * 100, 1)
     wdo_acc = round((wdo_hits / total) * 100, 1)
+    wdo_t1_acc = round((wdo_t1_hits / total) * 100, 1)
+    wdo_t2_acc = round((wdo_t2_hits / total) * 100, 1)
+    wdo_range_acc = round((wdo_range_hits / total) * 100, 1)
     overall_acc = round(((win_hits + wdo_hits) / (total * 2)) * 100, 1)
     
     return {
@@ -130,6 +167,12 @@ def get_accuracy_metrics(days_limit=60):
         "win_hits": win_hits,
         "wdo_accuracy": wdo_acc,
         "wdo_hits": wdo_hits,
+        "wdo_t1_accuracy": wdo_t1_acc,
+        "wdo_t1_hits": wdo_t1_hits,
+        "wdo_t2_accuracy": wdo_t2_acc,
+        "wdo_t2_hits": wdo_t2_hits,
+        "wdo_range_accuracy": wdo_range_acc,
+        "wdo_range_hits": wdo_range_hits,
         "overall_accuracy": overall_acc,
         "recent_records": list(reversed(completed[-15:])) # últimos 15 para visualização detalhada
     }

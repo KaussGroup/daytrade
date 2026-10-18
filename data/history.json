@@ -1114,5 +1114,23 @@
       "hit": null
     },
     "status": "PENDENTE_FECHAMENTO"
+  },
+  {
+    "date": "2026-10-18",
+    "win": {
+      "bias": "ALTA",
+      "expected_pct": "+0.4% a +1.0%",
+      "actual_pct": "-",
+      "actual_dir": "-",
+      "hit": null
+    },
+    "wdo": {
+      "bias": "BAIXA",
+      "expected_pct": "-0.8% a -0.3%",
+      "actual_pct": "-",
+      "actual_dir": "-",
+      "hit": null
+    },
+    "status": "PENDENTE_FECHAMENTO"
   }
 ]
