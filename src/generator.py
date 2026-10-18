@@ -659,6 +659,29 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 </div>
             </div>
 
+            <!-- Importador Fiel Direto do ProfitChart (Arraste ou Selecione) -->
+            <div id="profitDropZone" ondragover="handleProfitDragOver(event)" ondragleave="handleProfitDragLeave(event)" ondrop="handleProfitFileDrop(event)" class="bg-slate-950/80 border-2 border-dashed border-slate-700/80 hover:border-amber-400 rounded-xl p-3 transition flex flex-wrap items-center justify-between gap-3 shadow-inner">
+                <div class="flex items-center gap-2.5 text-left">
+                    <div class="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-lg shadow-sm">
+                        ⚡
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-white">Importar Gráfico Oficial do ProfitChart (1 Minuto)</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-bold border border-emerald-500/30">Opção 1 Ativa</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400">Arraste aqui o arquivo exportado do seu Profit (.csv ou .txt) ou clique no botão ao lado para carregar</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="file" id="profitFileInput" accept=".csv,.txt,.prt" onchange="handleProfitFileSelect(event)" class="hidden">
+                    <button onclick="document.getElementById('profitFileInput').click()" class="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black text-xs transition shadow-md shadow-amber-500/20 active:scale-95 flex items-center gap-1.5 cursor-pointer">
+                        <span>📂 Carregar CSV/TXT do Profit</span>
+                    </button>
+                    <span id="profitLoadedStatus" class="hidden text-[10px] font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-lg"></span>
+                </div>
+            </div>
+
             <!-- Gráfico Interativo com Linhas Projetadas -->
             <div>
                 <div class="flex flex-wrap items-center justify-between gap-3 mb-2.5">
@@ -1603,6 +1626,292 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             renderChartForCurrentTimeframe(dateStr);
         }}
 
+        function getStoredProfitCandles(dateStr) {{
+            try {{
+                const stored = localStorage.getItem('RADAR_PROFIT_CANDLES_' + dateStr);
+                if (stored) {{
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }}
+            }} catch(e) {{}}
+            return null;
+        }}
+
+        function aggregateBars(bars1m, periodMin) {{
+            if (periodMin <= 1) return bars1m;
+            const periodSec = periodMin * 60;
+            const agg = [];
+            let cur = null;
+
+            bars1m.forEach(b => {{
+                const bucketTime = Math.floor(b.time / periodSec) * periodSec;
+                if (!cur || cur.time !== bucketTime) {{
+                    if (cur) agg.push(cur);
+                    cur = {{
+                        time: bucketTime,
+                        open: b.open,
+                        high: b.high,
+                        low: b.low,
+                        close: b.close
+                    }};
+                }} else {{
+                    cur.high = Math.max(cur.high, b.high);
+                    cur.low = Math.min(cur.low, b.low);
+                    cur.close = b.close;
+                }}
+            }});
+            if (cur) agg.push(cur);
+            return agg;
+        }}
+
+        function handleProfitDragOver(e) {{
+            e.preventDefault();
+            e.stopPropagation();
+            const zone = document.getElementById('profitDropZone');
+            if (zone) {{
+                zone.classList.add('border-amber-400', 'bg-amber-500/10');
+            }}
+        }}
+
+        function handleProfitDragLeave(e) {{
+            e.preventDefault();
+            e.stopPropagation();
+            const zone = document.getElementById('profitDropZone');
+            if (zone) {{
+                zone.classList.remove('border-amber-400', 'bg-amber-500/10');
+            }}
+        }}
+
+        function handleProfitFileDrop(e) {{
+            e.preventDefault();
+            e.stopPropagation();
+            const zone = document.getElementById('profitDropZone');
+            if (zone) {{
+                zone.classList.remove('border-amber-400', 'bg-amber-500/10');
+            }}
+            if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {{
+                processProfitFile(e.dataTransfer.files[0]);
+            }}
+        }}
+
+        function handleProfitFileSelect(e) {{
+            if (e.target && e.target.files && e.target.files.length > 0) {{
+                processProfitFile(e.target.files[0]);
+            }}
+        }}
+
+        function processProfitFile(file) {{
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {{
+                const text = evt.target.result;
+                parseAndApplyProfitData(text, file.name);
+            }};
+            reader.readAsText(file, "UTF-8");
+        }}
+
+        function parseProfitNumber(valStr) {{
+            if (valStr === undefined || valStr === null) return NaN;
+            let s = valStr.toString().trim();
+            if (!s) return NaN;
+            if (s.includes(',') && s.includes('.')) {{
+                s = s.replace(/\\./g, '').replace(',', '.');
+            }} else if (s.includes(',')) {{
+                s = s.replace(',', '.');
+            }}
+            return parseFloat(s);
+        }}
+
+        function parseProfitDateTime(dateStr, timeStr) {{
+            let dStr = (dateStr || '').trim();
+            let tStr = (timeStr || '').trim();
+
+            if (dStr.includes(' ')) {{
+                const parts = dStr.split(' ');
+                dStr = parts[0];
+                if (!tStr && parts[1]) tStr = parts[1];
+            }}
+            if (!tStr) tStr = "09:00:00";
+
+            let day = 1, month = 1, year = 2026;
+            if (dStr.includes('/')) {{
+                const dp = dStr.split('/').map(Number);
+                day = dp[0];
+                month = dp[1];
+                year = dp[2] < 100 ? (2000 + dp[2]) : dp[2];
+            }} else if (dStr.includes('-')) {{
+                const dp = dStr.split('-').map(Number);
+                if (dp[0] > 1000) {{
+                    year = dp[0]; month = dp[1]; day = dp[2];
+                }} else {{
+                    day = dp[0]; month = dp[1]; year = dp[2];
+                }}
+            }}
+
+            const tp = tStr.split(':').map(Number);
+            const hour = tp[0] || 0;
+            const min = tp[1] || 0;
+            const sec = tp[2] || 0;
+
+            const utcSec = Math.floor(Date.UTC(year, month - 1, day, hour + 3, min, sec) / 1000);
+            const isoDate = `${{year}}-${{String(month).padStart(2, '0')}}-${{String(day).padStart(2, '0')}}`;
+            return {{ utcSec, isoDate }};
+        }}
+
+        function parseAndApplyProfitData(text, fileName) {{
+            if (!text || text.length < 10) {{
+                alert("O arquivo selecionado está vazio ou ilegível.");
+                return;
+            }}
+
+            const rawLines = text.split(/\\r?\\n/).map(l => l.trim()).filter(l => l.length > 0);
+            if (rawLines.length < 2) {{
+                alert("O arquivo não contém linhas suficientes de candles.");
+                return;
+            }}
+
+            let delim = ';';
+            const firstLine = rawLines[0];
+            if (firstLine.includes(';')) delim = ';';
+            else if (firstLine.includes('\\t')) delim = '\\t';
+            else if (firstLine.includes(',')) delim = ',';
+
+            let colDate = -1, colTime = -1, colOpen = -1, colHigh = -1, colLow = -1, colClose = -1;
+            let dataStartIdx = 0;
+
+            const headerCols = firstLine.split(delim).map(c => c.trim().toLowerCase());
+            const hasHeader = headerCols.some(c => c.includes('data') || c.includes('date') || c.includes('abert') || c.includes('open') || c.includes('fech'));
+
+            if (hasHeader) {{
+                dataStartIdx = 1;
+                headerCols.forEach((col, idx) => {{
+                    if (col.includes('data') || col.includes('date')) {{
+                        if (col.includes('hora') || col.includes('time')) {{
+                            colDate = idx; colTime = idx;
+                        }} else if (colDate === -1) {{
+                            colDate = idx;
+                        }}
+                    }} else if (col.includes('hora') || col.includes('time')) {{
+                        colTime = idx;
+                    }} else if (col.includes('abert') || col.includes('open') || col === 'abe') {{
+                        colOpen = idx;
+                    }} else if (col.includes('max') || col.includes('high')) {{
+                        colHigh = idx;
+                    }} else if (col.includes('min') || col.includes('low')) {{
+                        colLow = idx;
+                    }} else if (col.includes('fech') || col.includes('close') || col.includes('ult') || col === 'fch') {{
+                        colClose = idx;
+                    }}
+                }});
+            }}
+
+            if (colOpen === -1 || colHigh === -1 || colLow === -1 || colClose === -1) {{
+                const testCols = rawLines[dataStartIdx].split(delim);
+                if (testCols.length >= 6) {{
+                    colDate = 0; colTime = 1; colOpen = 2; colHigh = 3; colLow = 4; colClose = 5;
+                }} else if (testCols.length === 5) {{
+                    colDate = 0; colTime = 0; colOpen = 1; colHigh = 2; colLow = 3; colClose = 4;
+                }}
+            }}
+
+            const parsedBars = [];
+            let detectedIsoDate = "";
+
+            for (let i = dataStartIdx; i < rawLines.length; i++) {{
+                const cols = rawLines[i].split(delim);
+                if (cols.length < 4) continue;
+
+                const dStr = cols[colDate] || "";
+                const tStr = (colTime !== -1 && colTime !== colDate) ? cols[colTime] : "";
+                const dt = parseProfitDateTime(dStr, tStr);
+
+                const o = parseProfitNumber(cols[colOpen]);
+                const h = parseProfitNumber(cols[colHigh]);
+                const l = parseProfitNumber(cols[colLow]);
+                const c = parseProfitNumber(cols[colClose]);
+
+                if (isNaN(o) || isNaN(h) || isNaN(l) || isNaN(c)) continue;
+                if (!detectedIsoDate && dt.isoDate) detectedIsoDate = dt.isoDate;
+
+                parsedBars.push({{
+                    time: dt.utcSec,
+                    open: o,
+                    high: h,
+                    low: l,
+                    close: c
+                }});
+            }}
+
+            if (parsedBars.length === 0) {{
+                alert("Não foi possível extrair candles válidos do arquivo. Verifique o formato exportado pelo Profit.");
+                return;
+            }}
+
+            parsedBars.sort((a, b) => a.time - b.time);
+            const uniqueBars = [];
+            const seenTimes = new Set();
+            parsedBars.forEach(b => {{
+                if (!seenTimes.has(b.time)) {{
+                    seenTimes.add(b.time);
+                    uniqueBars.push(b);
+                }}
+            }});
+
+            const targetDate = detectedIsoDate || (document.getElementById('auditDateSelect')?.value) || '2026-10-16';
+            localStorage.setItem('RADAR_PROFIT_CANDLES_' + targetDate, JSON.stringify(uniqueBars));
+
+            const sessionHigh = Math.max(...uniqueBars.map(b => b.high));
+            const sessionLow = Math.min(...uniqueBars.map(b => b.low));
+            const sessionClose = uniqueBars[uniqueBars.length - 1].close;
+            const sessionOpen = uniqueBars[0].open;
+
+            let record = AUDIT_RECORDS.find(r => r.date === targetDate);
+            if (!record) {{
+                record = {{
+                    date: targetDate,
+                    win: {{ bias: 'ALTA', expected_pct: '+0.4% a +1.0%' }},
+                    wdo: {{ bias: 'BAIXA', expected_pct: '-0.8% a -0.3%', base_price_val: sessionOpen }}
+                }};
+                AUDIT_RECORDS.unshift(record);
+                populateAuditDateSelect();
+            }}
+            if (!record.wdo) record.wdo = {{}};
+            record.wdo.high = sessionHigh;
+            record.wdo.low = sessionLow;
+            record.wdo.close = sessionClose;
+            record.wdo.open = sessionOpen;
+            record.wdo.has_profit_file = true;
+
+            saveStoredAuditData(AUDIT_RECORDS);
+
+            const sel = document.getElementById('auditDateSelect');
+            if (sel) sel.value = targetDate;
+
+            const inpH = document.getElementById('inpAuditHigh');
+            if (inpH) inpH.value = sessionHigh.toFixed(1);
+            const inpL = document.getElementById('inpAuditLow');
+            if (inpL) inpL.value = sessionLow.toFixed(1);
+            const inpC = document.getElementById('inpAuditClose');
+            if (inpC) inpC.value = sessionClose.toFixed(1);
+
+            const statusBadge = document.getElementById('profitLoadedStatus');
+            if (statusBadge) {{
+                statusBadge.innerText = '✔ ' + uniqueBars.length + ' candles reais (' + targetDate + ')';
+                statusBadge.classList.remove('hidden');
+            }}
+
+            renderChartForCurrentTimeframe(targetDate);
+            onAuditValuesChanged();
+
+            const toast = document.getElementById('auditToastMsg');
+            const toastTxt = document.getElementById('auditToastText');
+            if (toast && toastTxt) {{
+                toastTxt.innerText = '✔ ' + uniqueBars.length + ' candles do ProfitChart importados com sucesso! Máx: ' + sessionHigh.toFixed(1) + ' | Mín: ' + sessionLow.toFixed(1) + ' | Fch: ' + sessionClose.toFixed(1);
+                toast.classList.remove('hidden');
+                setTimeout(() => toast.classList.add('hidden'), 5000);
+            }}
+        }}
+
         function renderChartForCurrentTimeframe(dateStr) {{
             if (!candleSeries || typeof LightweightCharts === 'undefined' || !wdoChart) return;
             const record = AUDIT_RECORDS.find(r => r.date === dateStr) || AUDIT_RECORDS[0];
@@ -1626,7 +1935,14 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 wdoChart.applyOptions({{
                     timeScale: {{ timeVisible: true, secondsVisible: false }}
                 }});
-                const intradayBars = generateIntradayBars(record, CURRENT_TIMEFRAME);
+                const storedReal = getStoredProfitCandles(record.date);
+                let intradayBars;
+                if (storedReal && storedReal.length > 0) {{
+                    const periodMin = CURRENT_TIMEFRAME === '1m' ? 1 : (CURRENT_TIMEFRAME === '5m' ? 5 : (CURRENT_TIMEFRAME === '15m' ? 15 : 60));
+                    intradayBars = aggregateBars(storedReal, periodMin);
+                }} else {{
+                    intradayBars = generateIntradayBars(record, CURRENT_TIMEFRAME);
+                }}
                 candleSeries.setData(intradayBars);
             }}
 
@@ -1756,11 +2072,22 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             if (lblT2) lblT2.innerText = (w.line_t2_val || 5040.0).toFixed(1);
 
             const inpH = document.getElementById('inpAuditHigh');
-            if (inpH) inpH.value = parseFloat(w.high || 5089.0).toFixed(1);
+            if (inpH) inpH.value = parseFloat(w.high || 5115.0).toFixed(1);
             const inpL = document.getElementById('inpAuditLow');
-            if (inpL) inpL.value = parseFloat(w.low || 5039.5).toFixed(1);
+            if (inpL) inpL.value = parseFloat(w.low || 5072.0).toFixed(1);
             const inpC = document.getElementById('inpAuditClose');
-            if (inpC) inpC.value = parseFloat(w.close || 5042.0).toFixed(1);
+            if (inpC) inpC.value = parseFloat(w.close || 5080.5).toFixed(1);
+
+            const storedReal = getStoredProfitCandles(record.date);
+            const statusBadge = document.getElementById('profitLoadedStatus');
+            if (statusBadge) {{
+                if (storedReal && storedReal.length > 0) {{
+                    statusBadge.innerText = '✔ ' + storedReal.length + ' candles reais (' + record.date + ')';
+                    statusBadge.classList.remove('hidden');
+                }} else {{
+                    statusBadge.classList.add('hidden');
+                }}
+            }}
 
             updateAuditedButtonDisplay(w.is_audited);
             renderChartForCurrentTimeframe(record.date);
