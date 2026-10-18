@@ -353,35 +353,46 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                         Plano de Voo em 30 Segundos (Resumo Executivo)
                     </h2>
                 </div>
-                <button id="copyBtn" onclick="copyTradePlan()" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-bold text-slate-200 transition flex items-center gap-1.5 shadow-sm">
-                    📋 Copiar Níveis de Trade
+                <button id="copyBtn" onclick="copyTradePlan()" class="px-3.5 py-1.5 rounded-xl bg-blue-600/30 hover:bg-blue-600/50 border border-blue-500/40 text-xs font-bold text-blue-200 transition flex items-center gap-1.5 shadow-md active:scale-95">
+                    📋 Copiar Níveis do Dólar (WDO)
                 </button>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800">
-                    <div class="flex items-center gap-2 text-xs font-bold text-emerald-400 mb-1">
-                        <span>📊 Mini-Índice (WIN)</span>
-                        <span class="text-[10px] px-1.5 py-0.2 rounded border bg-emerald-500/10 border-emerald-500/30 uppercase">{win['direction']}</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                <div class="bg-slate-950/80 p-4 rounded-xl border border-blue-500/40 shadow-inner flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-xs font-bold text-blue-400 mb-2">
+                            <span class="text-sm flex items-center gap-1.5">💵 Mini-Dólar (WDO) - Plano do Dia</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded border bg-blue-500/15 border-blue-500/40 uppercase font-black">{wdo['direction']}</span>
+                        </div>
+                        <p class="text-xs text-slate-200 leading-relaxed font-medium">{fp['wdo']}</p>
                     </div>
-                    <p class="text-xs text-slate-300 leading-relaxed">{fp['win']}</p>
+                    <div class="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+                        <span>Preço de Referência: <strong class="text-blue-300 font-mono">{wdo.get('base_price', 'N/D')}</strong></span>
+                        <span class="text-amber-400 font-mono font-semibold">{wdo.get('points_range', '')}</span>
+                    </div>
                 </div>
 
-                <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800">
-                    <div class="flex items-center gap-2 text-xs font-bold text-blue-400 mb-1">
-                        <span>💵 Mini-Dólar (WDO)</span>
-                        <span class="text-[10px] px-1.5 py-0.2 rounded border bg-blue-500/10 border-blue-500/30 uppercase">{wdo['direction']}</span>
+                <div class="bg-slate-950/80 p-4 rounded-xl border border-rose-500/30 shadow-inner flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1.5 text-xs font-bold text-rose-400 mb-2">
+                            <span class="text-sm">⚠️ Zona de Perigo & Horários Críticos</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">{fp['danger']}</p>
                     </div>
-                    <p class="text-xs text-slate-300 leading-relaxed">{fp['wdo']}</p>
-                </div>
-
-                <div class="bg-slate-950/70 p-3 rounded-xl border border-rose-500/20">
-                    <div class="flex items-center gap-1.5 text-xs font-bold text-rose-400 mb-1">
-                        <span>⚠️ Zona de Perigo</span>
-                    </div>
-                    <p class="text-xs text-slate-300 leading-relaxed">{fp['danger']}</p>
+                    <p class="text-[10px] text-slate-500 mt-2.5 pt-2 border-t border-slate-800/80">Regra de ouro: nunca abra ordens a mercado durante a formação de leilão.</p>
                 </div>
             </div>
+
+            <details class="mt-2.5 text-xs text-slate-500">
+                <summary class="cursor-pointer text-slate-500 hover:text-slate-400 py-1 transition flex items-center gap-1.5 select-none">
+                    <span>📊</span> <span>Leitura de Fundo do Mini-Índice (WIN) mantida em segundo plano (Oculto - Clique para expandir)</span>
+                </summary>
+                <div class="mt-1.5 p-3 bg-slate-950/70 rounded-xl border border-slate-800/70 text-slate-400 space-y-1">
+                    <p><strong class="text-slate-300">Viés do WIN:</strong> <span class="text-emerald-400 font-bold">{win['direction']}</span> ({win['expected_range']})</p>
+                    <p><strong class="text-slate-300">Resumo:</strong> {fp['win']}</p>
+                </div>
+            </details>
 
             <!-- Termômetro Visual de Estresse do Mercado (Barra 1 a 10) -->
             <div class="mt-3.5 pt-3 border-t border-slate-800/80">
@@ -546,98 +557,89 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             </div>
         </section>
 
-        <!-- 3. O CORAÇÃO DO TRADE: DIRECIONAL, PONTOS E TRAVAS -->
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- 3. O CORAÇÃO DO TRADE: MINI-DÓLAR (WDO) EM DESTAQUE -->
+        <section class="space-y-4">
             
-            <!-- CARD MINI-ÍNDICE (WIN) -->
-            <div class="bg-slate-900 border-2 border-slate-800 hover:border-slate-700 transition rounded-2xl p-5 shadow-xl relative overflow-hidden flex flex-col justify-between">
-                <div class="absolute top-0 right-0 w-36 h-36 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none"></div>
-                <div>
-                    <div class="flex items-center justify-between mb-3.5">
-                        <div class="flex items-center gap-2.5">
-                            <span class="text-xl">📊</span>
-                            <div>
-                                <h2 class="text-sm font-extrabold text-white">MINI-ÍNDICE (WIN)</h2>
-                                <p class="text-[11px] text-slate-400">Abertura: 09:00 BRT</p>
+            <!-- CARD PRINCIPAL: MINI-DÓLAR (WDO) -->
+            <div class="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-2 border-blue-500/50 hover:border-blue-400/80 transition rounded-2xl p-5 sm:p-6 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-2xl shadow-inner">
+                            💵
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h2 class="text-base font-extrabold text-white tracking-tight">MINI-DÓLAR FUTURO (WDO)</h2>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-bold border border-blue-500/40">ATIVO EM OPERAÇÃO</span>
                             </div>
-                        </div>
-                        <span class="px-3.5 py-1 text-xs font-black rounded-lg border {win_badge_class} flex items-center gap-1.5 shadow-sm">
-                            <span>{win.get('trend_badge', win_dir)}</span>
-                        </span>
-                    </div>
-
-                    <!-- Bloco Vertical Limpo, Fluido e Objetivo -->
-                    <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 mb-3.5 font-mono text-xs space-y-2">
-                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5 font-sans">
-                            <span class="text-slate-400">Projeção (%):</span>
-                            <span class="font-black {win_text_color} font-mono text-sm">{win['expected_range']}</span>
-                        </div>
-                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5 font-sans">
-                            <span class="text-slate-400">Amplitude em Pontos:</span>
-                            <span class="font-bold text-amber-400 font-mono">{win.get('points_range', 'N/D')}</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            {win_t1_html}
-                        </div>
-                        <div class="flex items-center justify-between">
-                            {win_t2_html}
-                        </div>
-                        <div class="flex items-center justify-between border-t border-slate-800/80 pt-1.5">
-                            {win_trava_html}
+                            <p class="text-xs text-slate-400">Abertura: 09:00 BRT | Leilão: 08:50 BRT | Variação mínima: 0.5 pt (R$ 5,00/contrato)</p>
                         </div>
                     </div>
+                    <span class="px-4 py-1.5 text-xs font-black rounded-xl border {wdo_badge_class} flex items-center gap-1.5 shadow-lg">
+                        <span>{wdo.get('trend_badge', wdo_dir)}</span>
+                    </span>
                 </div>
 
-                <div class="text-xs text-slate-300 bg-slate-950/40 border border-slate-800/60 rounded-xl p-3">
-                    <span class="text-amber-400 font-bold block mb-1 text-[11px]">⚡ Catalisador Principal:</span>
-                    <p class="leading-relaxed">{win['catalyst']}</p>
-                </div>
-            </div>
-
-            <!-- CARD MINI-DÓLAR (WDO) -->
-            <div class="bg-slate-900 border-2 border-slate-800 hover:border-slate-700 transition rounded-2xl p-5 shadow-xl relative overflow-hidden flex flex-col justify-between">
-                <div class="absolute top-0 right-0 w-36 h-36 bg-blue-500/5 rounded-full blur-2xl pointer-events-none"></div>
-                <div>
-                    <div class="flex items-center justify-between mb-3.5">
-                        <div class="flex items-center gap-2.5">
-                            <span class="text-xl">💵</span>
-                            <div>
-                                <h2 class="text-sm font-extrabold text-white">MINI-DÓLAR (WDO)</h2>
-                                <p class="text-[11px] text-slate-400">Abertura: 09:00 BRT</p>
-                            </div>
-                        </div>
-                        <span class="px-3.5 py-1 text-xs font-black rounded-lg border {wdo_badge_class} flex items-center gap-1.5 shadow-sm">
-                            <span>{wdo.get('trend_badge', wdo_dir)}</span>
-                        </span>
-                    </div>
-
-                    <!-- Bloco Vertical Limpo, Fluido e Objetivo -->
-                    <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 mb-3.5 font-mono text-xs space-y-2">
-                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5 font-sans">
-                            <span class="text-slate-400">Projeção (%):</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Bloco Vertical de Níveis e Projeções -->
+                    <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-4 font-mono text-xs space-y-2.5 shadow-inner">
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-2 font-sans">
+                            <span class="text-slate-400 font-medium">Projeção Estimada (%):</span>
                             <span class="font-black {wdo_text_color} font-mono text-sm">{wdo['expected_range']}</span>
                         </div>
-                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5 font-sans">
-                            <span class="text-slate-400">Amplitude em Pontos:</span>
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-2 font-sans">
+                            <span class="text-slate-400 font-medium">Amplitude Projetada (Pts):</span>
                             <span class="font-bold text-amber-400 font-mono">{wdo.get('points_range', 'N/D')}</span>
                         </div>
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between py-0.5">
                             {wdo_t1_html}
                         </div>
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between py-0.5">
                             {wdo_t2_html}
                         </div>
-                        <div class="flex items-center justify-between border-t border-slate-800/80 pt-1.5">
+                        <div class="flex items-center justify-between border-t border-slate-800/80 pt-2">
                             {wdo_trava_html}
                         </div>
                     </div>
-                </div>
 
-                <div class="text-xs text-slate-300 bg-slate-950/40 border border-slate-800/60 rounded-xl p-3">
-                    <span class="text-amber-400 font-bold block mb-1 text-[11px]">⚡ Catalisador Principal:</span>
-                    <p class="leading-relaxed">{wdo['catalyst']}</p>
+                    <!-- Catalisador e Contexto Macroeconômico -->
+                    <div class="flex flex-col justify-between space-y-3">
+                        <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 flex-1">
+                            <span class="text-amber-400 font-bold flex items-center gap-1.5 text-xs mb-2">
+                                <span>⚡</span> Catalisador Principal do Câmbio:
+                            </span>
+                            <p class="text-xs text-slate-200 leading-relaxed">{wdo['catalyst']}</p>
+                        </div>
+                        
+                        <div class="bg-blue-950/20 border border-blue-500/20 rounded-xl p-3 flex items-center justify-between text-xs">
+                            <span class="text-slate-400">Preço de Fechamento Base:</span>
+                            <span class="font-mono font-bold text-blue-300">{wdo.get('base_price', 'N/D')}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- Mini-Índice (WIN) Oculto / Segundo Plano -->
+            <details class="text-xs text-slate-500">
+                <summary class="cursor-pointer text-slate-500 hover:text-slate-400 py-1 transition flex items-center gap-1.5 font-medium select-none">
+                    <span>📊</span> <span>Mini-Índice (WIN) mantido em segundo plano (Oculto - Clique para exibir se necessário)</span>
+                </summary>
+                <div class="mt-2 p-4 bg-slate-950/70 border border-slate-800/80 rounded-xl space-y-2 text-slate-300">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span class="font-bold text-white flex items-center gap-2">📊 MINI-ÍNDICE (WIN)</span>
+                        <span class="px-2.5 py-0.5 rounded text-[11px] font-bold border {win_badge_class}">{win.get('trend_badge', win_dir)}</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono pt-1">
+                        <div><span class="text-slate-500 block text-[10px] font-sans">Projeção:</span>{win['expected_range']}</div>
+                        <div><span class="text-slate-500 block text-[10px] font-sans">Alvo 1:</span>{win.get('target_1_val', win.get('target_1'))}</div>
+                        <div><span class="text-slate-500 block text-[10px] font-sans">Alvo 2:</span>{win.get('target_2_val', win.get('target_2'))}</div>
+                        <div><span class="text-slate-500 block text-[10px] font-sans">Stop Trava:</span>{win.get('trava_val', win.get('trava_risco'))}</div>
+                    </div>
+                    <p class="text-[11px] text-slate-400 pt-1.5 border-t border-slate-800/80"><strong class="text-amber-400/90 font-medium">Catalisador WIN:</strong> {win['catalyst']}</p>
+                </div>
+            </details>
         </section>
 
         <!-- 4. PRÉ-MERCADO DE NOVA YORK (ADRs BRASIL) & CÂMBIO -->
@@ -810,15 +812,15 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
     <!-- Script de Cópia Rápida -->
     <script>
         function copyTradePlan() {{
-            const text = `🎯 PLANO DE TRADE DO DIA ({today_str})\\n\\n📊 MINI-ÍNDICE (WIN): {win['direction']}\\n• Projeção: {win['expected_range']} ({win.get('points_range')})\\n• Alvo 1: {win.get('target_1')}\\n• Alvo 2: {win.get('target_2')}\\n• Trava de Stop: {win.get('trava_risco')}\\n\\n💵 MINI-DÓLAR (WDO): {wdo['direction']}\\n• Projeção: {wdo['expected_range']} ({wdo.get('points_range')})\\n• Alvo 1: {wdo.get('target_1')}\\n• Alvo 2: {wdo.get('target_2')}\\n• Trava de Stop: {wdo.get('trava_risco')}\\n\\n⚠️ Zona de Risco: {fp['danger']}`;
+            const text = `🎯 PLANO DE TRADE WDO - MINI-DÓLAR ({today_str})\\n\\n💵 VIÉS DO DÓLAR: {wdo['direction']}\\n• Projeção: {wdo['expected_range']} ({wdo.get('points_range')})\\n• Alvo 1: {wdo.get('target_1_val', wdo.get('target_1'))}\\n• Alvo 2: {wdo.get('target_2_val', wdo.get('target_2'))}\\n• Trava de Stop: {wdo.get('trava_val', wdo.get('trava_risco'))}\\n• Catalisador: {wdo['catalyst']}\\n\\n⚠️ Zona de Risco: {fp['danger']}`;
             navigator.clipboard.writeText(text).then(() => {{
                 const btn = document.getElementById('copyBtn');
-                btn.innerText = '✔ Níveis Copiados!';
-                btn.classList.add('bg-emerald-500', 'text-slate-950');
+                btn.innerText = '✔ Níveis do Dólar Copiados!';
+                btn.classList.add('bg-blue-500', 'text-white');
                 setTimeout(() => {{
-                    btn.innerText = '📋 Copiar Níveis de Trade';
-                    btn.classList.remove('bg-emerald-500', 'text-slate-950');
-                }}, 2000);
+                    btn.innerText = '📋 Copiar Níveis do Dólar (WDO)';
+                    btn.classList.remove('bg-blue-500', 'text-white');
+                }}, 2500);
             }});
         }}
 

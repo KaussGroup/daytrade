@@ -2,8 +2,8 @@ name: Radar Day Trade B3 - Automacao Diaria
 
 on:
   schedule:
-    # 08:35 BRT (Pré-Mercado & Abertura) = 11:35 UTC (Segunda a Sexta)
-    - cron: '35 11 * * 1-5'
+    # 08:20 BRT (Pré-Mercado, Coleta & Processamento Matinal) = 11:20 UTC (Segunda a Sexta)
+    - cron: '20 11 * * 1-5'
     # 10:15 BRT (Abertura de Wall Street & Ações B3) = 13:15 UTC (Segunda a Sexta)
     - cron: '15 13 * * 1-5'
     # 13:00 BRT (Ajuste Intradiário da Tarde) = 16:00 UTC (Segunda a Sexta)
