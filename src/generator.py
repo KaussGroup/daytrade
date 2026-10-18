@@ -280,8 +280,15 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
 <html lang="pt-BR" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Radar Day Trade B3 - {today_str}</title>
+    <!-- Configurações PWA e Atalho de Tela de Início (iPhone / iPad / Android) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Radar DayTrade">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#070a10">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/bullish.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -715,6 +722,12 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                             <span class="w-2 h-2 rounded-full bg-purple-400 inline-block shadow"></span>
                             <span>🚀 Alvo 2: <strong id="lblChartT2">5.040,0</strong></span>
                         </button>
+
+                        <!-- Trava Stop (Vermelho / Rose) -->
+                        <button onclick="toggleChartLine('stop')" id="btnToggleStop" class="px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 border-2 border-rose-400 shadow-sm shadow-rose-500/20 transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-rose-400 inline-block shadow"></span>
+                            <span>🛡️ Stop: <strong id="lblChartStop">5.098,5</strong></span>
+                        </button>
                     </div>
 
                     <!-- Retângulo Laranja: Seleção de Tempos Gráficos (1m, 5m, 15m, 1h, Diário) -->
@@ -784,19 +797,29 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                             <span class="text-[10px] text-slate-500 font-sans">Editável para calibração</span>
                         </div>
 
-                        <!-- 3 Inputs Editáveis -->
-                        <div class="grid grid-cols-3 gap-2.5 mb-3">
-                            <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
-                                <label class="text-[10px] text-slate-400 block font-medium mb-1 font-sans">Máxima Real:</label>
-                                <input type="number" step="0.5" id="inpAuditHigh" oninput="onAuditValuesChanged()" class="w-full bg-slate-950 border border-slate-700 text-white font-mono font-bold text-xs rounded px-2 py-1 focus:outline-none focus:border-blue-400 text-center">
+                        <!-- 4 Inputs Editáveis (Abertura, Máxima, Mínima, Fechamento) com Botão Colar do Mobile/Tablet -->
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-[11px] font-bold text-slate-300">Entrada Rápida de Valores:</span>
+                            <button type="button" onclick="pasteProfitMobileValues()" class="px-2.5 py-1 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/40 text-[11px] font-bold flex items-center gap-1 active:scale-95 transition cursor-pointer shadow-sm">
+                                <span>📋 Colar do Profit Mobile</span>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+                            <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
+                                <label class="text-[10px] text-slate-400 block font-medium mb-1 font-sans">Abertura:</label>
+                                <input type="number" step="0.5" id="inpAuditOpen" oninput="onAuditValuesChanged()" placeholder="5100.0" class="w-full bg-slate-950 border border-slate-700 text-white font-mono font-bold text-xs rounded px-2 py-1 focus:outline-none focus:border-blue-400 text-center">
                             </div>
-                            <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
-                                <label class="text-[10px] text-slate-400 block font-medium mb-1 font-sans">Mínima Real:</label>
-                                <input type="number" step="0.5" id="inpAuditLow" oninput="onAuditValuesChanged()" class="w-full bg-slate-950 border border-slate-700 text-white font-mono font-bold text-xs rounded px-2 py-1 focus:outline-none focus:border-blue-400 text-center">
+                            <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
+                                <label class="text-[10px] text-slate-400 block font-medium mb-1 font-sans">Máxima:</label>
+                                <input type="number" step="0.5" id="inpAuditHigh" oninput="onAuditValuesChanged()" placeholder="5110.5" class="w-full bg-slate-950 border border-slate-700 text-white font-mono font-bold text-xs rounded px-2 py-1 focus:outline-none focus:border-blue-400 text-center">
                             </div>
-                            <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
-                                <label class="text-[10px] text-slate-400 block font-medium mb-1 font-sans">Fechamento Real:</label>
-                                <input type="number" step="0.5" id="inpAuditClose" oninput="onAuditValuesChanged()" class="w-full bg-slate-950 border border-slate-700 text-white font-mono font-bold text-xs rounded px-2 py-1 focus:outline-none focus:border-blue-400 text-center">
+                            <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
+                                <label class="text-[10px] text-slate-400 block font-medium mb-1 font-sans">Mínima:</label>
+                                <input type="number" step="0.5" id="inpAuditLow" oninput="onAuditValuesChanged()" placeholder="5073.0" class="w-full bg-slate-950 border border-slate-700 text-white font-mono font-bold text-xs rounded px-2 py-1 focus:outline-none focus:border-blue-400 text-center">
+                            </div>
+                            <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
+                                <label class="text-[10px] text-slate-400 block font-medium mb-1 font-sans">Fechamento:</label>
+                                <input type="number" step="0.5" id="inpAuditClose" oninput="onAuditValuesChanged()" placeholder="5080.5" class="w-full bg-slate-950 border border-slate-700 text-white font-mono font-bold text-xs rounded px-2 py-1 focus:outline-none focus:border-blue-400 text-center">
                             </div>
                         </div>
 
@@ -1420,8 +1443,32 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
         let VISIBLE_LINES = {{
             base: true,
             t1: true,
-            t2: true
+            t2: true,
+            stop: true
         }};
+
+        function getWdoLineValues(w) {{
+            if (!w) w = {{}};
+            const base = parseFloat(w.base_price_val) || parseProfitNumber(w.base_price) || 5080.5;
+            const isDown = (w.bias || '').includes('BAIXA');
+
+            let t1 = parseFloat(w.line_t1_val) || parseProfitNumber(w.line_t1);
+            if (isNaN(t1)) {{
+                t1 = isDown ? (base - 15.0) : (base + 15.0);
+            }}
+
+            let t2 = parseFloat(w.line_t2_val) || parseProfitNumber(w.line_t2);
+            if (isNaN(t2)) {{
+                t2 = isDown ? (base - 40.5) : (base + 40.5);
+            }}
+
+            let stop = parseFloat(w.line_stop_val) || parseProfitNumber(w.line_stop);
+            if (isNaN(stop)) {{
+                stop = isDown ? (base + 18.0) : (base - 18.0);
+            }}
+
+            return {{ base, t1, t2, stop, isDown }};
+        }}
 
         function loadStoredAuditData() {{
             try {{
@@ -1465,7 +1512,8 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                     fb.innerText = 'Visualizador TradingView carregando ou operando offline. Utilize os dados numéricos abaixo.';
                 }}
                 if (AUDIT_RECORDS.length > 0) {{
-                    onAuditDateSelected(AUDIT_RECORDS[0].date);
+                    const defaultDate = AUDIT_RECORDS.find(r => r.date === '2026-10-16')?.date || AUDIT_RECORDS[0].date;
+                    onAuditDateSelected(defaultDate);
                 }}
                 return;
             }}
@@ -1473,7 +1521,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             container.innerHTML = '';
             wdoChart = LightweightCharts.createChart(container, {{
                 width: container.clientWidth || 800,
-                height: 380,
+                height: 400,
                 layout: {{
                     background: {{ color: '#070a10' }},
                     textColor: '#94a3b8',
@@ -1487,7 +1535,8 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 }},
                 rightPriceScale: {{
                     borderColor: '#334155',
-                    scaleMargins: {{ top: 0.15, bottom: 0.15 }},
+                    scaleMargins: {{ top: 0.08, bottom: 0.08 }},
+                    autoScale: true,
                 }},
                 timeScale: {{
                     borderColor: '#334155',
@@ -1503,6 +1552,8 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 borderUpColor: '#10b981',
                 wickDownColor: '#f43f5e',
                 wickUpColor: '#10b981',
+                priceLineVisible: false, // Evita sobreposição com a linha Ponto Zero
+                lastValueVisible: true,  // Mantém etiqueta na régua de preços
             }});
 
             window.addEventListener('resize', () => {{
@@ -1510,8 +1561,6 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                     wdoChart.applyOptions({{ width: container.clientWidth }});
                 }}
             }});
-
-            updateLineButtonStyles();
 
             if (AUDIT_RECORDS.length > 0) {{
                 const defaultDate = AUDIT_RECORDS.find(r => r.date === '2026-10-16')?.date || AUDIT_RECORDS[0].date;
@@ -2021,82 +2070,119 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
 
         function toggleChartLine(lineKey) {{
             VISIBLE_LINES[lineKey] = !VISIBLE_LINES[lineKey];
-            updateLineButtonStyles();
-
             const sel = document.getElementById('auditDateSelect');
             const dateStr = sel ? sel.value : (AUDIT_RECORDS[0]?.date);
             const record = AUDIT_RECORDS.find(r => r.date === dateStr) || AUDIT_RECORDS[0];
-            if (record) {{
-                updateChartPriceLines(record.wdo || {{}});
-            }}
+            const w = record ? (record.wdo || {{}}) : {{}};
+            updateLineButtonStyles(w);
+            updateChartPriceLines(w);
         }}
 
-        function updateLineButtonStyles() {{
+        function updateLineButtonStyles(w) {{
+            const l = getWdoLineValues(w);
+
             const btnBase = document.getElementById('btnToggleBase');
             if (btnBase) {{
-                if (VISIBLE_LINES.base) {{
-                    btnBase.className = 'px-2.5 py-1 rounded-lg bg-slate-800 text-white border-2 border-slate-300 shadow-sm transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-100';
-                }} else {{
-                    btnBase.className = 'px-2.5 py-1 rounded-lg bg-slate-950 text-slate-500 border border-slate-800 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-40 line-through';
-                }}
+                btnBase.className = VISIBLE_LINES.base ? 'px-2.5 py-1 rounded-lg bg-slate-800 text-white border-2 border-slate-300 shadow-sm transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-100' : 'px-2.5 py-1 rounded-lg bg-slate-950 text-slate-500 border border-slate-800 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-40 line-through';
             }}
+            const lblBase = document.getElementById('lblChartBase');
+            if (lblBase && l) lblBase.innerText = l.base.toFixed(1);
 
             const btnT1 = document.getElementById('btnToggleT1');
             if (btnT1) {{
-                if (VISIBLE_LINES.t1) {{
-                    btnT1.className = 'px-2.5 py-1 rounded-lg bg-sky-500/20 text-sky-300 border-2 border-sky-400 shadow-sm shadow-sky-500/20 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-100';
-                }} else {{
-                    btnT1.className = 'px-2.5 py-1 rounded-lg bg-slate-950 text-slate-500 border border-slate-800 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-40 line-through';
-                }}
+                btnT1.className = VISIBLE_LINES.t1 ? 'px-2.5 py-1 rounded-lg bg-sky-500/20 text-sky-300 border-2 border-sky-400 shadow-sm shadow-sky-500/20 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-100' : 'px-2.5 py-1 rounded-lg bg-slate-950 text-slate-500 border border-slate-800 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-40 line-through';
             }}
+            const lblT1 = document.getElementById('lblChartT1');
+            if (lblT1 && l) lblT1.innerText = l.t1.toFixed(1);
 
             const btnT2 = document.getElementById('btnToggleT2');
             if (btnT2) {{
-                if (VISIBLE_LINES.t2) {{
-                    btnT2.className = 'px-2.5 py-1 rounded-lg bg-purple-500/20 text-purple-300 border-2 border-purple-400 shadow-sm shadow-purple-500/20 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-100';
-                }} else {{
-                    btnT2.className = 'px-2.5 py-1 rounded-lg bg-slate-950 text-slate-500 border border-slate-800 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-40 line-through';
-                }}
+                btnT2.className = VISIBLE_LINES.t2 ? 'px-2.5 py-1 rounded-lg bg-purple-500/20 text-purple-300 border-2 border-purple-400 shadow-sm shadow-purple-500/20 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-100' : 'px-2.5 py-1 rounded-lg bg-slate-950 text-slate-500 border border-slate-800 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-40 line-through';
             }}
+            const lblT2 = document.getElementById('lblChartT2');
+            if (lblT2 && l) lblT2.innerText = l.t2.toFixed(1);
+
+            const btnStop = document.getElementById('btnToggleStop');
+            if (btnStop) {{
+                btnStop.className = VISIBLE_LINES.stop ? 'px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 border-2 border-rose-400 shadow-sm shadow-rose-500/20 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-100' : 'px-2.5 py-1 rounded-lg bg-slate-950 text-slate-500 border border-slate-800 transition active:scale-95 flex items-center gap-1.5 cursor-pointer opacity-40 line-through';
+            }}
+            const lblStop = document.getElementById('lblChartStop');
+            if (lblStop && l) lblStop.innerText = l.stop.toFixed(1);
         }}
 
         function updateChartPriceLines(w) {{
-            if (!candleSeries || typeof LightweightCharts === 'undefined') return;
+            if (!candleSeries || typeof LightweightCharts === 'undefined' || !wdoChart) return;
             priceLines.forEach(l => {{
                 try {{ candleSeries.removePriceLine(l); }} catch(e) {{}}
             }});
             priceLines = [];
 
-            if (VISIBLE_LINES.base && w.base_price_val) {{
+            const l = getWdoLineValues(w);
+
+            if (VISIBLE_LINES.base && l.base) {{
                 priceLines.push(candleSeries.createPriceLine({{
-                    price: w.base_price_val,
-                    color: '#e2e8f0',
-                    lineWidth: 1,
+                    price: l.base,
+                    color: '#f8fafc',
+                    lineWidth: 2,
                     lineStyle: LightweightCharts.LineStyle.Dotted,
                     axisLabelVisible: true,
-                    title: 'Ponto Zero (' + w.base_price_val.toFixed(1) + ')',
+                    title: 'Ponto Zero (' + l.base.toFixed(1) + ')',
                 }}));
             }}
-            if (VISIBLE_LINES.t1 && w.line_t1_val) {{
+            if (VISIBLE_LINES.t1 && l.t1) {{
                 priceLines.push(candleSeries.createPriceLine({{
-                    price: w.line_t1_val,
+                    price: l.t1,
                     color: '#38bdf8',
                     lineWidth: 2,
                     lineStyle: LightweightCharts.LineStyle.Dashed,
                     axisLabelVisible: true,
-                    title: 'Alvo 1 (' + w.line_t1_val.toFixed(1) + ')',
+                    title: 'Alvo 1 (' + l.t1.toFixed(1) + ')',
                 }}));
             }}
-            if (VISIBLE_LINES.t2 && w.line_t2_val) {{
+            if (VISIBLE_LINES.t2 && l.t2) {{
                 priceLines.push(candleSeries.createPriceLine({{
-                    price: w.line_t2_val,
+                    price: l.t2,
                     color: '#c084fc',
                     lineWidth: 2,
                     lineStyle: LightweightCharts.LineStyle.Dashed,
                     axisLabelVisible: true,
-                    title: 'Alvo 2 (' + w.line_t2_val.toFixed(1) + ')',
+                    title: 'Alvo 2 (' + l.t2.toFixed(1) + ')',
                 }}));
             }}
+            if (VISIBLE_LINES.stop && l.stop) {{
+                priceLines.push(candleSeries.createPriceLine({{
+                    price: l.stop,
+                    color: '#fb7185',
+                    lineWidth: 2,
+                    lineStyle: LightweightCharts.LineStyle.Dashed,
+                    axisLabelVisible: true,
+                    title: 'Trava Stop (' + l.stop.toFixed(1) + ')',
+                }}));
+            }}
+
+            candleSeries.applyOptions({{
+                priceLineVisible: false,
+                lastValueVisible: true,
+                autoscaleInfoProvider: (original) => {{
+                    const res = original();
+                    if (!res) return null;
+                    let min = res.priceRange ? res.priceRange.minValue : 5000;
+                    let max = res.priceRange ? res.priceRange.maxValue : 5200;
+
+                    if (VISIBLE_LINES.base && l.base) {{ min = Math.min(min, l.base); max = Math.max(max, l.base); }}
+                    if (VISIBLE_LINES.t1 && l.t1) {{ min = Math.min(min, l.t1); max = Math.max(max, l.t1); }}
+                    if (VISIBLE_LINES.t2 && l.t2) {{ min = Math.min(min, l.t2); max = Math.max(max, l.t2); }}
+                    if (VISIBLE_LINES.stop && l.stop) {{ min = Math.min(min, l.stop); max = Math.max(max, l.stop); }}
+
+                    return {{
+                        priceRange: {{
+                            minValue: min - 3,
+                            maxValue: max + 3,
+                        }},
+                        margins: res.margins,
+                    }};
+                }}
+            }});
         }}
 
         function populateAuditDateSelect() {{
@@ -2116,6 +2202,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             if (!record) return;
 
             const w = record.wdo || {{}};
+            const l = getWdoLineValues(w);
             
             const pBadge = document.getElementById('projDateBadge');
             if (pBadge) pBadge.innerText = record.date;
@@ -2127,27 +2214,34 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             const pRange = document.getElementById('projRangeText');
             if (pRange) pRange.innerText = (w.expected_pct || '--') + ' (' + (w.points_range || '--') + ')';
             const pBase = document.getElementById('projBaseText');
-            if (pBase) pBase.innerText = (w.base_price_val || 5080.5).toFixed(1) + ' pts';
+            if (pBase) pBase.innerText = l.base.toFixed(1) + ' pts';
             const pT1 = document.getElementById('projT1Text');
-            if (pT1) pT1.innerText = (w.line_t1_val || 5065.5).toFixed(1) + ' pts (' + (w.pts_t1 || '-15.0 pts') + ')';
+            if (pT1) pT1.innerText = l.t1.toFixed(1) + ' pts (' + (w.pts_t1 || '-15.0 pts') + ')';
             const pT2 = document.getElementById('projT2Text');
-            if (pT2) pT2.innerText = (w.line_t2_val || 5040.0).toFixed(1) + ' pts (' + (w.pts_t2 || '-40.5 pts') + ')';
+            if (pT2) pT2.innerText = l.t2.toFixed(1) + ' pts (' + (w.pts_t2 || '-40.5 pts') + ')';
 
-            const lblBase = document.getElementById('lblChartBase');
-            if (lblBase) lblBase.innerText = (w.base_price_val || 5080.5).toFixed(1);
-            const lblT1 = document.getElementById('lblChartT1');
-            if (lblT1) lblT1.innerText = (w.line_t1_val || 5065.5).toFixed(1);
-            const lblT2 = document.getElementById('lblChartT2');
-            if (lblT2) lblT2.innerText = (w.line_t2_val || 5040.0).toFixed(1);
-
-            const inpH = document.getElementById('inpAuditHigh');
-            if (inpH) inpH.value = parseFloat(w.high || 5115.0).toFixed(1);
-            const inpL = document.getElementById('inpAuditLow');
-            if (inpL) inpL.value = parseFloat(w.low || 5072.0).toFixed(1);
-            const inpC = document.getElementById('inpAuditClose');
-            if (inpC) inpC.value = parseFloat(w.close || 5080.5).toFixed(1);
+            updateLineButtonStyles(w);
 
             const storedReal = getStoredProfitCandles(record.date);
+            if (storedReal && storedReal.length > 0) {{
+                if (!w.high || !w.has_profit_file) {{
+                    w.high = Math.max(...storedReal.map(b => b.high));
+                    w.low = Math.min(...storedReal.map(b => b.low));
+                    w.open = storedReal[0].open;
+                    w.close = storedReal[storedReal.length - 1].close;
+                    w.has_profit_file = true;
+                }}
+            }}
+
+            const inpO = document.getElementById('inpAuditOpen');
+            if (inpO) inpO.value = parseFloat(w.open || l.base).toFixed(1);
+            const inpH = document.getElementById('inpAuditHigh');
+            if (inpH) inpH.value = parseFloat(w.high || (l.base + 10.0)).toFixed(1);
+            const inpL = document.getElementById('inpAuditLow');
+            if (inpL) inpL.value = parseFloat(w.low || (l.base - 10.0)).toFixed(1);
+            const inpC = document.getElementById('inpAuditClose');
+            if (inpC) inpC.value = parseFloat(w.close || l.base).toFixed(1);
+
             const statusBadge = document.getElementById('profitLoadedStatus');
             if (statusBadge) {{
                 if (storedReal && storedReal.length > 0) {{
@@ -2170,18 +2264,19 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             if (!record) return;
 
             const w = record.wdo || {{}};
+            const l = getWdoLineValues(w);
             const high = parseFloat(document.getElementById('inpAuditHigh')?.value || w.high || 0);
             const low = parseFloat(document.getElementById('inpAuditLow')?.value || w.low || 0);
             const close = parseFloat(document.getElementById('inpAuditClose')?.value || w.close || 0);
 
-            const isDown = w.bias === 'BAIXA';
-            const t1 = w.line_t1_val || (isDown ? (w.base_price_val - 15) : (w.base_price_val + 15));
-            const t2 = w.line_t2_val || (isDown ? (w.base_price_val - 40.5) : (w.base_price_val + 40.5));
+            const isDown = l.isDown;
+            const t1 = l.t1;
+            const t2 = l.t2;
 
             const hitT1 = isDown ? (low <= t1) : (high >= t1);
             const elT1 = document.getElementById('auditChkTarget1');
             if (elT1) {{
-                elT1.innerHTML = hitT1 ? '<span class="text-emerald-400 font-bold">✔ ATINGIDO (' + (isDown ? 'Mín ' + low.toFixed(1) + ' ≤ ' + t1.toFixed(1) : 'Máx ' + high.toFixed(1) + ' ≥ ' + t1.toFixed(1)) + ')</span>' : '<span class="text-slate-500 font-bold">✖ Não atingiu</span>';
+                elT1.innerHTML = hitT1 ? '<span class="text-emerald-400 font-bold">✔ ATINGIDO (' + (isDown ? 'Mín ' + low.toFixed(1) + ' ≤ ' + t1.toFixed(1) : 'Máx ' + high.toFixed(1) + ' ≥ ' + t1.toFixed(1)) + ')</span>' : '<span class="text-slate-500 font-bold">✖ Não atingiu (' + (isDown ? 'Mín ' + low.toFixed(1) + ' > ' + t1.toFixed(1) : 'Máx ' + high.toFixed(1) + ' < ' + t1.toFixed(1)) + ')</span>';
             }}
 
             const hitT2 = isDown ? (low <= t2) : (high >= t2);
@@ -2190,7 +2285,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 elT2.innerHTML = hitT2 ? '<span class="text-emerald-400 font-bold">✔ ATINGIDO (' + (isDown ? 'Mín ' + low.toFixed(1) + ' ≤ ' + t2.toFixed(1) : 'Máx ' + high.toFixed(1) + ' ≥ ' + t2.toFixed(1)) + ')</span>' : '<span class="text-slate-500 font-bold">✖ Não atingiu</span>';
             }}
 
-            const base = w.base_price_val || 5080.5;
+            const base = l.base;
             const diffPct = ((close - base) / base) * 100;
             const hitRange = isDown ? (diffPct <= -0.20 && diffPct >= -1.2) : (diffPct >= 0.20 && diffPct <= 1.2);
             const elRange = document.getElementById('auditChkRange');
@@ -2238,6 +2333,77 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             }}
         }}
 
+        function pasteProfitMobileValues() {{
+            const applyNumbers = (nums) => {{
+                if (!nums || nums.length < 3) {{
+                    alert('Cole o texto ou linha do Profit contendo pelo menos Máxima, Mínima e Fechamento (ex: "Abe: 5100 Max: 5110.5 Min: 5073 Fech: 5080.5" ou "5100; 5110.5; 5073; 5080.5").');
+                    return;
+                }}
+                const inpO = document.getElementById('inpAuditOpen');
+                const inpH = document.getElementById('inpAuditHigh');
+                const inpL = document.getElementById('inpAuditLow');
+                const inpC = document.getElementById('inpAuditClose');
+
+                if (nums.length >= 4) {{
+                    if (inpO) inpO.value = nums[0].toFixed(1);
+                    if (inpH) inpH.value = nums[1].toFixed(1);
+                    if (inpL) inpL.value = nums[2].toFixed(1);
+                    if (inpC) inpC.value = nums[3].toFixed(1);
+                }} else {{
+                    if (inpH) inpH.value = nums[0].toFixed(1);
+                    if (inpL) inpL.value = nums[1].toFixed(1);
+                    if (inpC) inpC.value = nums[2].toFixed(1);
+                }}
+
+                onAuditValuesChanged();
+                saveCurrentAuditDay();
+
+                const toast = document.getElementById('auditToastMsg');
+                const toastTxt = document.getElementById('auditToastText');
+                if (toast && toastTxt) {{
+                    toastTxt.innerText = '✔ Dados do Profit Mobile aplicados e salvos com sucesso!';
+                    toast.classList.remove('hidden');
+                    setTimeout(() => toast.classList.add('hidden'), 4000);
+                }}
+            }};
+
+            const extractFromText = (raw) => {{
+                if (!raw) return;
+                const tokens = raw.split(/[\\s;|\t,]+/);
+                const nums = [];
+                tokens.forEach(tok => {{
+                    const n = parseProfitNumber(tok);
+                    if (!isNaN(n) && n > 1000) nums.push(n);
+                }});
+                if (nums.length >= 3) {{
+                    applyNumbers(nums);
+                }} else {{
+                    const matches = raw.match(/\\d+[\\.,]?\\d*/g);
+                    if (matches) {{
+                        const parsed = matches.map(parseProfitNumber).filter(n => !isNaN(n) && n > 1000);
+                        applyNumbers(parsed);
+                    }}
+                }}
+            }};
+
+            if (navigator.clipboard && navigator.clipboard.readText) {{
+                navigator.clipboard.readText().then(text => {{
+                    if (text && text.trim().length > 0) {{
+                        extractFromText(text);
+                    }} else {{
+                        const manual = prompt('Cole aqui os dados copiados do Profit Mobile (ex: 5100; 5110.5; 5073; 5080.5):');
+                        if (manual) extractFromText(manual);
+                    }}
+                }}).catch(() => {{
+                    const manual = prompt('Cole aqui os dados copiados do Profit Mobile (ex: 5100; 5110.5; 5073; 5080.5):');
+                    if (manual) extractFromText(manual);
+                }});
+            }} else {{
+                const manual = prompt('Cole aqui os dados copiados do Profit Mobile (ex: 5100; 5110.5; 5073; 5080.5):');
+                if (manual) extractFromText(manual);
+            }}
+        }}
+
         function saveCurrentAuditDay() {{
             const sel = document.getElementById('auditDateSelect');
             const dateStr = sel ? sel.value : (AUDIT_RECORDS[0]?.date);
@@ -2245,21 +2411,21 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             if (!record) return;
 
             const w = record.wdo || {{}};
-            const high = parseFloat(document.getElementById('inpAuditHigh')?.value || w.high);
-            const low = parseFloat(document.getElementById('inpAuditLow')?.value || w.low);
-            const close = parseFloat(document.getElementById('inpAuditClose')?.value || w.close);
+            const l = getWdoLineValues(w);
+            const openVal = parseFloat(document.getElementById('inpAuditOpen')?.value || w.open || l.base);
+            const high = parseFloat(document.getElementById('inpAuditHigh')?.value || w.high || l.base);
+            const low = parseFloat(document.getElementById('inpAuditLow')?.value || w.low || l.base);
+            const close = parseFloat(document.getElementById('inpAuditClose')?.value || w.close || l.base);
 
+            w.open = openVal;
             w.high = high;
             w.low = low;
             w.close = close;
 
-            const isDown = w.bias === 'BAIXA';
-            const t1 = w.line_t1_val || 5065.5;
-            const t2 = w.line_t2_val || 5040.0;
-            const base = w.base_price_val || 5080.5;
-
-            w.t1_hit = isDown ? (low <= t1) : (high >= t1);
-            w.t2_hit = isDown ? (low <= t2) : (high >= t2);
+            const isDown = l.isDown;
+            w.t1_hit = isDown ? (low <= l.t1) : (high >= l.t1);
+            w.t2_hit = isDown ? (low <= l.t2) : (high >= l.t2);
+            const base = l.base;
             const diffPct = ((close - base) / base) * 100;
             w.actual_pct = (diffPct >= 0 ? '+' : '') + diffPct.toFixed(2) + '%';
             w.range_hit = isDown ? (diffPct <= -0.20 && diffPct >= -1.2) : (diffPct >= 0.20 && diffPct <= 1.2);
@@ -2270,7 +2436,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             const toast = document.getElementById('auditToastMsg');
             const toastTxt = document.getElementById('auditToastText');
             if (toast && toastTxt) {{
-                toastTxt.innerText = '✔ Pregão ' + dateStr + ' auditado com sucesso! Dados reais salvos e integrados ao histórico.';
+                toastTxt.innerText = '✔ Pregão ' + dateStr + ' auditado com sucesso! Dados reais salvos no histórico.';
                 toast.classList.remove('hidden');
                 setTimeout(() => toast.classList.add('hidden'), 4000);
             }}
