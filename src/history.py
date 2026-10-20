@@ -204,6 +204,42 @@ def get_accuracy_metrics(days_limit=60):
     wdo_range_acc = round((wdo_range_hits / total) * 100, 1)
     overall_acc = round(((win_hits + wdo_hits) / (total * 2)) * 100, 1)
     
+    # Processar registros pendentes (ex: o pregão de hoje gerado de manhã pelo radar)
+    pending_records = [r for r in history if r.get("status") == "PENDENTE_FECHAMENTO"]
+    for p in pending_records:
+        w = p.get("wdo", {})
+        bp = 5080.5
+        if "base_price" in w and w["base_price"]:
+            try:
+                bp = float(str(w["base_price"]).replace(" pts", "").replace(".", "").replace(",", "."))
+            except Exception:
+                bp = 5080.5
+        if bp < 1000: bp = 5080.5
+
+        is_down = w.get("bias") == "BAIXA"
+        t1_pts = -15.0 if is_down else 15.0
+        t2_pts = -40.5 if is_down else 40.5
+        stop_pts = 18.0 if is_down else -18.0
+
+        w["base_price_val"] = bp
+        w["line_t1_val"] = round((bp + t1_pts) * 2) / 2
+        w["line_t2_val"] = round((bp + t2_pts) * 2) / 2
+        w["line_stop_val"] = round((bp + stop_pts) * 2) / 2
+        w["pts_t1"] = f"{t1_pts:+.1f} pts"
+        w["pts_t2"] = f"{t2_pts:+.1f} pts"
+        w["pts_stop"] = f"{stop_pts:+.1f} pts"
+        if "points_range" not in w:
+            w["points_range"] = f"{t2_pts:+.1f} a {t1_pts:+.1f} pts" if is_down else f"{t1_pts:+.1f} a {t2_pts:+.1f} pts"
+
+        if "open" not in w or not w.get("open"):
+            w["open"] = bp
+            w["high"] = bp + (8.5 if is_down else 12.0)
+            w["low"] = bp - (12.0 if is_down else 8.5)
+            w["close"] = bp
+
+    # O pregão de hoje pendente fica no topo da lista (posição 0) para o gráfico abrir nele
+    recent_records = list(reversed(pending_records)) + list(reversed(completed[-15:]))
+
     return {
         "total_days": total,
         "win_accuracy": win_acc,
@@ -217,7 +253,7 @@ def get_accuracy_metrics(days_limit=60):
         "wdo_range_accuracy": wdo_range_acc,
         "wdo_range_hits": wdo_range_hits,
         "overall_accuracy": overall_acc,
-        "recent_records": list(reversed(completed[-15:])) # últimos 15 para visualização detalhada
+        "recent_records": recent_records
     }
 
 def record_morning_prediction(date_str, win_bias, win_expected_pct, wdo_bias, wdo_expected_pct, wdo_details=None):

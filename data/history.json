@@ -1161,19 +1161,45 @@
       "hit": null
     },
     "wdo": {
-      "bias": "BAIXA",
-      "expected_pct": "-0.8% a -0.3%",
+      "bias": "FORTE BAIXA",
+      "expected_pct": "-1.1% a -0.5%",
       "actual_pct": "-",
       "actual_dir": "-",
       "hit": null,
       "base_price": "5.080.5 pts",
-      "line_t1": "5.065.5 pts",
-      "line_t2": "5.040.0 pts",
-      "line_stop": "5.098.5 pts",
-      "pts_t1": "-15.0 pts",
-      "pts_t2": "-40.5 pts",
-      "pts_stop": "+18.0 pts",
-      "points_range": "-40.5 a -15.0 pts"
+      "line_t1": "5.055.0 pts",
+      "line_t2": "5.024.5 pts",
+      "line_stop": "5.095.5 pts",
+      "pts_t1": "-25.5 pts",
+      "pts_t2": "-56.0 pts",
+      "pts_stop": "+15.0 pts",
+      "points_range": "-56.0 a -25.5 pts"
+    },
+    "status": "PENDENTE_FECHAMENTO"
+  },
+  {
+    "date": "2026-10-20",
+    "win": {
+      "bias": "ALTA",
+      "expected_pct": "+0.4% a +1.0%",
+      "actual_pct": "-",
+      "actual_dir": "-",
+      "hit": null
+    },
+    "wdo": {
+      "bias": "FORTE BAIXA",
+      "expected_pct": "-1.1% a -0.5%",
+      "actual_pct": "-",
+      "actual_dir": "-",
+      "hit": null,
+      "base_price": "5.080.5 pts",
+      "line_t1": "5.055.0 pts",
+      "line_t2": "5.024.5 pts",
+      "line_stop": "5.095.5 pts",
+      "pts_t1": "-25.5 pts",
+      "pts_t2": "-56.0 pts",
+      "pts_stop": "+15.0 pts",
+      "points_range": "-56.0 a -25.5 pts"
     },
     "status": "PENDENTE_FECHAMENTO"
   }

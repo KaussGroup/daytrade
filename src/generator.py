@@ -870,6 +870,302 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             </div>
         </section>
 
+        <!-- 2.7. CALCULADORA DE CUSTOS OPERACIONAIS & LUCRO LÍQUIDO REAL (B3 DAY TRADE) -->
+        <section id="b3TradeCalculatorSection" class="bg-gradient-to-b from-slate-900/95 via-slate-900 to-slate-950 border-2 border-emerald-500/40 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-4">
+            
+            <!-- Cabeçalho -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-xl shadow-inner">
+                        🧮
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-sm font-extrabold text-white tracking-tight">CALCULADORA DE CUSTOS, TAXAS B3, IR & LUCRO LÍQUIDO</h2>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40">BOLSO REAL</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Descubra quanto sobra de verdade após taxas da B3, corretagem e IR (20%) para nunca operar no prejuízo disfarçado</p>
+                    </div>
+                </div>
+
+                <!-- Seletor Rápido de Ativo (WDO vs WIN) -->
+                <div class="flex items-center gap-1.5 bg-slate-950/90 p-1 rounded-xl border border-slate-800">
+                    <button type="button" onclick="calcSetAsset('WDO')" id="calcBtnWdo" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer bg-emerald-500 text-slate-950 font-black shadow-md">
+                        <span>💵 Mini-Dólar (WDO)</span>
+                        <span class="text-[9px] opacity-80 font-mono">R$ 10/pt</span>
+                    </button>
+                    <button type="button" onclick="calcSetAsset('WIN')" id="calcBtnWin" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer bg-slate-900 text-slate-400 hover:text-white border border-slate-800">
+                        <span>📈 Mini-Índice (WIN)</span>
+                        <span class="text-[9px] opacity-80 font-mono">R$ 0,20/pt</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grade de Configurações e Inputs Operacionais -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                
+                <!-- Coluna Esquerda: Parâmetros da Operação (5 colunas) -->
+                <div class="lg:col-span-5 space-y-3">
+                    
+                    <!-- 1. Quantidade de Contratos -->
+                    <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="text-xs font-bold text-slate-300 flex items-center gap-1">
+                                <span>📦</span> Quantidade de Contratos:
+                            </label>
+                            <span class="text-[10px] text-slate-400" id="calcAssetContractLabel">1 contrato WDO (R$ 10/pt)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="calcAdjustContracts(-1)" class="w-9 h-9 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-black text-sm flex items-center justify-center transition active:scale-95 cursor-pointer">-</button>
+                            <input type="number" id="calcContractsInput" min="1" max="500" value="1" oninput="calcOnInputChanged('contracts')" class="flex-1 bg-slate-900 border border-slate-700 text-center text-white font-mono font-bold text-base rounded-lg py-1.5 focus:outline-none focus:border-emerald-400">
+                            <button type="button" onclick="calcAdjustContracts(1)" class="w-9 h-9 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-black text-sm flex items-center justify-center transition active:scale-95 cursor-pointer">+</button>
+                            
+                            <!-- Presets Rápidos de Contratos -->
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="calcSetContracts(1)" class="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-[11px] font-mono text-slate-300 border border-slate-800 cursor-pointer">1</button>
+                                <button type="button" onclick="calcSetContracts(2)" class="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-[11px] font-mono text-slate-300 border border-slate-800 cursor-pointer">2</button>
+                                <button type="button" onclick="calcSetContracts(5)" class="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-[11px] font-mono text-slate-300 border border-slate-800 cursor-pointer">5</button>
+                                <button type="button" onclick="calcSetContracts(10)" class="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-[11px] font-mono text-slate-300 border border-slate-800 cursor-pointer">10</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Alvo de Ganho (Take Profit) em Reais e Pontos -->
+                    <div class="bg-slate-950/80 p-3 rounded-xl border border-emerald-500/30">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                                <span>🎯</span> Alvo de Ganho (Lucro Bruto):
+                            </label>
+                            <span class="text-[10px] text-slate-400">Edite em R$ ou em Pontos</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-0.5">Alvo em Reais (R$):</label>
+                                <div class="relative">
+                                    <span class="absolute left-2.5 top-2 text-xs text-slate-500 font-mono">R$</span>
+                                    <input type="number" id="calcTargetReaisInput" step="1" value="20" oninput="calcOnInputChanged('reais')" class="w-full bg-slate-900 border border-slate-700 text-emerald-300 font-mono font-bold text-sm rounded-lg pl-8 pr-2 py-1.5 focus:outline-none focus:border-emerald-400">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-0.5">Alvo em Pontos (pts):</label>
+                                <div class="relative">
+                                    <input type="number" id="calcTargetPointsInput" step="0.5" value="2.0" oninput="calcOnInputChanged('points')" class="w-full bg-slate-900 border border-slate-700 text-emerald-300 font-mono font-bold text-sm rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-emerald-400">
+                                    <span class="absolute right-2.5 top-2 text-xs text-slate-500 font-mono" id="calcPointsUnit">pts</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Presets de Alvo Rápidos -->
+                        <div class="flex flex-wrap items-center gap-1.5 mt-2.5 pt-2 border-t border-slate-800/80">
+                            <span class="text-[10px] text-slate-500">Alvos Rápidos:</span>
+                            <button type="button" onclick="calcSetTargetReais(20)" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-900 hover:bg-slate-800 text-amber-300 border border-slate-800 cursor-pointer">⚡ R$ 20</button>
+                            <button type="button" onclick="calcSetTargetReais(50)" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-900 hover:bg-slate-800 text-amber-300 border border-slate-800 cursor-pointer">⚡ R$ 50</button>
+                            <button type="button" onclick="calcSetTargetReais(100)" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-900 hover:bg-slate-800 text-amber-300 border border-slate-800 cursor-pointer">⚡ R$ 100</button>
+                            <button type="button" onclick="calcSetTargetPoints(15)" id="calcPresetRadarT1" class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 cursor-pointer">🎯 Radar T1 (15 pts)</button>
+                            <button type="button" onclick="calcSetTargetPoints(35)" id="calcPresetRadarT2" class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 border border-purple-500/30 cursor-pointer">🚀 Radar T2 (35 pts)</button>
+                        </div>
+                    </div>
+
+                    <!-- 3. Stop Loss (Risco) -->
+                    <div class="bg-slate-950/80 p-3 rounded-xl border border-rose-500/20">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="text-xs font-bold text-rose-400 flex items-center gap-1">
+                                <span>🛡️</span> Trava Stop Loss (Risco Bruto):
+                            </label>
+                            <span class="text-[10px] text-slate-400" id="calcStopPtsLabel">Stop do Radar: 18 pts</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-0.5">Stop em Pontos (pts):</label>
+                                <input type="number" id="calcStopPointsInput" step="0.5" value="18" oninput="calcOnInputChanged('stop_points')" class="w-full bg-slate-900 border border-slate-700 text-rose-300 font-mono font-bold text-sm rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-rose-400">
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-0.5">Prejuízo Bruto no Stop:</label>
+                                <div class="relative">
+                                    <span class="absolute left-2.5 top-2 text-xs text-slate-500 font-mono">R$</span>
+                                    <input type="text" id="calcStopReaisDisplay" readonly value="-180.00" class="w-full bg-slate-900/60 border border-slate-800 text-rose-400 font-mono font-bold text-sm rounded-lg pl-8 pr-2 py-1.5 focus:outline-none cursor-not-allowed">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Configuração Avançada de Taxas e Impostos (Acordeão) -->
+                    <details class="bg-slate-950/60 border border-slate-800 rounded-xl p-3 text-xs">
+                        <summary class="font-bold text-slate-300 cursor-pointer list-none flex items-center justify-between select-none">
+                            <span class="flex items-center gap-1.5 text-amber-400">
+                                <span>⚙️</span> Ajustar Taxas de Corretagem, B3 & Compensação de Prejuízos
+                            </span>
+                            <span class="text-slate-500 text-[10px]">▼ Detalhes</span>
+                        </summary>
+                        <div class="space-y-3 pt-3 mt-2 border-t border-slate-800">
+                            
+                            <!-- Corretagem -->
+                            <div class="flex items-center justify-between gap-2">
+                                <div>
+                                    <span class="text-slate-300 font-medium block">Corretagem da Corretora:</span>
+                                    <span class="text-[10px] text-slate-500">XP, Clear, Genial, BTG, Toro</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <label class="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+                                        <input type="radio" name="calcBrokerageType" value="zero" checked onchange="calcOnCostConfigChanged()" class="text-emerald-500 focus:ring-0">
+                                        <span>Zero (RLP)</span>
+                                    </label>
+                                    <label class="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+                                        <input type="radio" name="calcBrokerageType" value="custom" onchange="calcOnCostConfigChanged()" class="text-emerald-500 focus:ring-0">
+                                        <span>Cobrada</span>
+                                    </label>
+                                    <input type="number" id="calcBrokerageValInput" step="0.10" value="0.50" disabled oninput="calcOnCostConfigChanged()" class="w-16 bg-slate-900 border border-slate-700 text-white font-mono text-xs rounded px-1.5 py-1 text-center disabled:opacity-30">
+                                </div>
+                            </div>
+
+                            <!-- Taxa B3 por contrato (Ida + Volta) -->
+                            <div class="flex items-center justify-between gap-2">
+                                <div>
+                                    <span class="text-slate-300 font-medium block">Taxas B3 (Emolumentos + Registro):</span>
+                                    <span class="text-[10px] text-slate-500">Ida + Volta oficial da B3</span>
+                                </div>
+                                <div class="flex items-center gap-1 font-mono">
+                                    <span class="text-slate-500 text-xs">R$</span>
+                                    <input type="number" id="calcB3FeeInput" step="0.05" value="2.50" oninput="calcOnCostConfigChanged()" class="w-16 bg-slate-900 border border-slate-700 text-white font-mono text-xs rounded px-1.5 py-1 text-center">
+                                    <span class="text-[10px] text-slate-500">/contrato</span>
+                                </div>
+                            </div>
+
+                            <!-- Compensação de Prejuízos Anteriores -->
+                            <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-900">
+                                <div>
+                                    <span class="text-slate-300 font-medium block">Compensar Prejuízo Anterior?</span>
+                                    <span class="text-[10px] text-slate-500">Se tiver prejuízos acumulados, IR a recolher = R$ 0,00</span>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="calcLossCompensation" onchange="calcOnCostConfigChanged()" class="sr-only peer">
+                                    <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </details>
+
+                </div>
+
+                <!-- Coluna Direita: O Resultado Líquido Real no Seu Bolso (7 colunas) -->
+                <div class="lg:col-span-7 bg-slate-950/90 border border-slate-800 rounded-xl p-4 flex flex-col justify-between shadow-inner space-y-4">
+                    
+                    <!-- Bloco de Destaque Máximo: Lucro Líquido Real -->
+                    <div class="bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-950 p-4 rounded-xl border border-emerald-500/40">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <span>💰</span> Lucro Líquido Real no Seu Bolso:
+                            </span>
+                            <span id="calcProfitPctBadge" class="text-xs px-2.5 py-0.5 rounded-full font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                                70.0% do Bruto
+                            </span>
+                        </div>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <span class="text-3xl sm:text-4xl font-black text-white font-mono tracking-tight" id="calcNetProfitDisplay">
+                                R$ 14,00
+                            </span>
+                            <span class="text-xs text-slate-400 font-mono" id="calcNetPtsEquiv">
+                                (equivale a 1.40 pts líquidos)
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-2 border-t border-slate-800/80 pt-1.5" id="calcSummaryMsg">
+                            De <strong>R$ 20,00 brutos</strong>, você paga <strong>R$ 2,50 de taxas B3</strong> e <strong>R$ 3,50 de IR</strong>, sobrando <strong>R$ 14,00 limpos</strong> na sua conta.
+                        </p>
+                    </div>
+
+                    <!-- 3 Cards de Discriminação de Custos -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        
+                        <!-- 1. Ganho Bruto -->
+                        <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
+                            <span class="text-[10px] text-slate-400 block font-medium">1. Lucro Bruto:</span>
+                            <p class="text-base font-bold text-white font-mono mt-0.5" id="calcGrossProfitDisplay">+ R$ 20,00</p>
+                            <span class="text-[10px] text-emerald-400 font-mono" id="calcGrossPtsDisplay">2.0 pts</span>
+                        </div>
+
+                        <!-- 2. Custos B3 + Corretagem -->
+                        <div class="bg-slate-900/80 p-2.5 rounded-lg border border-rose-500/30">
+                            <span class="text-[10px] text-rose-300 block font-medium">2. Custos Totais:</span>
+                            <p class="text-base font-bold text-rose-400 font-mono mt-0.5" id="calcTotalCostsDisplay">- R$ 2,50</p>
+                            <span class="text-[10px] text-slate-400" id="calcCostsPctDisplay">12.5% do trade</span>
+                        </div>
+
+                        <!-- 3. Imposto de Renda (20%) -->
+                        <div class="bg-slate-900/80 p-2.5 rounded-lg border border-amber-500/30">
+                            <span class="text-[10px] text-amber-300 block font-medium">3. Imposto (IR 20%):</span>
+                            <p class="text-base font-bold text-amber-400 font-mono mt-0.5" id="calcTotalTaxDisplay">- R$ 3,50</p>
+                            <span class="text-[10px] text-slate-400" id="calcTaxDarfBreakdown">IRRF: R$ 0,18 | DARF: R$ 3,32</span>
+                        </div>
+                    </div>
+
+                    <!-- Tabela de Auditoria Passo a Passo dos Centavos -->
+                    <div class="bg-slate-900/50 rounded-xl border border-slate-800/80 p-3 text-xs font-mono">
+                        <div class="flex items-center justify-between pb-1.5 border-b border-slate-800 text-slate-400 text-[11px] font-sans font-bold">
+                            <span>Demonstrativo da Operação</span>
+                            <span>Valor (R$)</span>
+                        </div>
+                        <div class="space-y-1 pt-1.5 text-[11px]">
+                            <div class="flex items-center justify-between text-slate-300">
+                                <span class="font-sans">(+) Lucro Bruto do Pregão:</span>
+                                <span class="text-white font-bold" id="tblGrossVal">R$ 20,00</span>
+                            </div>
+                            <div class="flex items-center justify-between text-slate-400">
+                                <span class="font-sans">(-) Taxa B3 Emolumentos & Registro:</span>
+                                <span class="text-rose-400" id="tblB3Val">- R$ 2,50</span>
+                            </div>
+                            <div class="flex items-center justify-between text-slate-400">
+                                <span class="font-sans">(-) Corretagem Corretora + ISS:</span>
+                                <span class="text-rose-400" id="tblBrokerageVal">- R$ 0,00</span>
+                            </div>
+                            <div class="flex items-center justify-between text-slate-300 pt-1 border-t border-slate-800/60 font-semibold">
+                                <span class="font-sans">(=) Base de Cálculo do IR:</span>
+                                <span class="text-blue-300" id="tblTaxBaseVal">R$ 17,50</span>
+                            </div>
+                            <div class="flex items-center justify-between text-slate-400">
+                                <span class="font-sans">(-) IRRF Retido na Fonte (1% Dedo-Duro):</span>
+                                <span class="text-amber-400" id="tblIrrfVal">- R$ 0,18</span>
+                            </div>
+                            <div class="flex items-center justify-between text-slate-400">
+                                <span class="font-sans">(-) DARF a Pagar no mês seguinte (19%):</span>
+                                <span class="text-amber-400" id="tblDarfVal">- R$ 3,32</span>
+                            </div>
+                            <div class="flex items-center justify-between text-emerald-400 font-bold pt-1.5 border-t border-slate-800 text-xs">
+                                <span class="font-sans font-bold">(=) Lucro Líquido Efetivo no Bolso:</span>
+                                <span id="tblNetVal" class="text-emerald-300 text-sm">R$ 14,00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Régua de Alerta: Breakeven & Stop Loss Líquido -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
+                        
+                        <!-- Breakeven -->
+                        <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                            <span class="text-[10px] text-amber-400 font-bold uppercase tracking-wider block mb-0.5 flex items-center gap-1">
+                                <span>⚖️</span> Breakeven Mínimo:
+                            </span>
+                            <p class="text-slate-200 font-mono text-[11px] leading-tight" id="calcBreakevenText">
+                                Você precisa de pelo menos <strong>0.5 pt</strong> no WDO para não ficar no prejuízo.
+                            </p>
+                        </div>
+
+                        <!-- Cenário de Stop -->
+                        <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                            <span class="text-[10px] text-rose-400 font-bold uppercase tracking-wider block mb-0.5 flex items-center gap-1">
+                                <span>🛡️</span> Se Bater no Stop Loss:
+                            </span>
+                            <p class="text-slate-200 font-mono text-[11px] leading-tight" id="calcStopLossText">
+                                Prejuízo real de <strong>- R$ 182,50</strong> (R$ 180 perda + R$ 2,50 taxas).
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
         <!-- 3. O CORAÇÃO DO TRADE: MINI-DÓLAR (WDO) EM DESTAQUE -->
         <section class="space-y-4">
             
@@ -1483,6 +1779,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
         }}
 
         function loadStoredAuditData() {{
+            let records = JSON.parse(JSON.stringify(SERVER_AUDIT_RECORDS));
             try {{
                 // Remover vestígios e artefatos de versões anteriores
                 localStorage.removeItem('RADAR_PROFIT_CANDLES_2026-01-01');
@@ -1492,16 +1789,32 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 if (stored) {{
                     let parsed = JSON.parse(stored);
                     if (Array.isArray(parsed) && parsed.length > 0) {{
-                        // Filtrar qualquer registro inválido ou corrompido
                         parsed = parsed.filter(r => r && r.date && r.date !== '2026-01-01' && r.date !== '0000-00-00' && !r.date.includes('undefined'));
-                        if (parsed.length > 0) {{
-                            saveStoredAuditData(parsed);
-                            return parsed;
-                        }}
+                        
+                        // Mesclar registros do servidor (garante que o novo dia gerado pelo radar de manhã esteja presente)
+                        const mergedMap = new Map();
+                        // 1. Registros do servidor primeiro
+                        records.forEach(r => mergedMap.set(r.date, r));
+                        // 2. Mesclar dados locais salvos no dispositivo
+                        parsed.forEach(p => {{
+                            if (mergedMap.has(p.date)) {{
+                                const s = mergedMap.get(p.date);
+                                mergedMap.set(p.date, {{
+                                    ...s,
+                                    ...p,
+                                    wdo: {{ ...(s.wdo || {{}}), ...(p.wdo || {{}}) }}
+                                }});
+                            }} else {{
+                                mergedMap.set(p.date, p);
+                            }}
+                        }});
+                        records = Array.from(mergedMap.values());
                     }}
                 }}
             }} catch(e) {{}}
-            return JSON.parse(JSON.stringify(SERVER_AUDIT_RECORDS));
+            records.sort((a, b) => b.date.localeCompare(a.date));
+            saveStoredAuditData(records);
+            return records;
         }}
 
         function saveStoredAuditData(data) {{
@@ -1524,7 +1837,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                     fb.innerText = 'Visualizador TradingView carregando ou operando offline. Utilize os dados numéricos abaixo.';
                 }}
                 if (AUDIT_RECORDS.length > 0) {{
-                    const defaultDate = AUDIT_RECORDS.find(r => r.date === '2026-10-16')?.date || AUDIT_RECORDS[0].date;
+                    const defaultDate = AUDIT_RECORDS[0]?.date;
                     onAuditDateSelected(defaultDate);
                 }}
                 return;
@@ -1575,7 +1888,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             }});
 
             if (AUDIT_RECORDS.length > 0) {{
-                const defaultDate = AUDIT_RECORDS.find(r => r.date === '2026-10-16')?.date || AUDIT_RECORDS[0].date;
+                const defaultDate = AUDIT_RECORDS[0]?.date;
                 const sel = document.getElementById('auditDateSelect');
                 if (sel) sel.value = defaultDate;
                 onAuditDateSelected(defaultDate);
@@ -1584,10 +1897,10 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
 
         function generateIntradayBars(record, tf) {{
             const w = record.wdo || {{}};
-            const o = parseFloat(w.open || w.base_price_val || 5079.0);
-            const h = parseFloat(w.high || 5115.0);
-            const l = parseFloat(w.low || 5072.0);
-            const c = parseFloat(w.close || 5080.5);
+            const o = parseFloat(w.open || w.base_price_val || 5080.5);
+            const h = parseFloat(w.high || (o + 10.0));
+            const l = parseFloat(w.low || (o - 10.0));
+            const c = parseFloat(w.close || o);
 
             const stepMin = tf === '1m' ? 1 : (tf === '5m' ? 5 : (tf === '15m' ? 15 : 60));
             const totalBars = Math.floor(540 / stepMin); // 09:00 as 18:00 = 540 min
@@ -2015,10 +2328,9 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             saveStoredAuditData(AUDIT_RECORDS);
             populateAuditDateSelect();
 
-            // Definir o pregão a exibir na tela:
-            // Preferência para 2026-10-16 (último pregão oficial com dados completos), ou a data atualmente selecionada
+            // Definir o pregão a exibir na tela (data atualmente selecionada ou a mais recente importada)
             const currentSelVal = document.getElementById('auditDateSelect')?.value;
-            let targetDate = (currentSelVal && barsByDate[currentSelVal]) ? currentSelVal : (barsByDate['2026-10-16'] ? '2026-10-16' : allDates[allDates.length - 1]);
+            let targetDate = (currentSelVal && barsByDate[currentSelVal]) ? currentSelVal : allDates[allDates.length - 1];
 
             const targetBars = barsByDate[targetDate];
             const sessionHigh = Math.max(...targetBars.map(b => b.high));
@@ -2510,6 +2822,315 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
             URL.revokeObjectURL(url);
         }}
 
+        // ==========================================
+        // CALCULADORA DE CUSTOS, TAXAS B3, IR & LUCRO LÍQUIDO REAL
+        // ==========================================
+        const CALC_CONFIG = {{
+            asset: 'WDO', // 'WDO' ou 'WIN'
+            contracts: 1,
+            targetReais: 20.0,
+            targetPoints: 2.0,
+            stopPoints: 18.0,
+            brokerageType: 'zero', // 'zero' ou 'custom'
+            brokerageVal: 0.50,
+            b3Fee: 2.50, // WDO: R$ 2,50 ida+volta; WIN: R$ 0,56 ida+volta
+            lossCompensation: false
+        }};
+
+        function calcGetPointValue() {{
+            return CALC_CONFIG.asset === 'WDO' ? 10.0 : 0.20;
+        }}
+
+        function calcSetAsset(asset) {{
+            CALC_CONFIG.asset = asset;
+            const btnWdo = document.getElementById('calcBtnWdo');
+            const btnWin = document.getElementById('calcBtnWin');
+            const unitLabel = document.getElementById('calcPointsUnit');
+            const contractLabel = document.getElementById('calcAssetContractLabel');
+            const presetT1 = document.getElementById('calcPresetRadarT1');
+            const presetT2 = document.getElementById('calcPresetRadarT2');
+            const b3Input = document.getElementById('calcB3FeeInput');
+            const stopLabel = document.getElementById('calcStopPtsLabel');
+
+            if (asset === 'WDO') {{
+                if (btnWdo) btnWdo.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer bg-emerald-500 text-slate-950 font-black shadow-md';
+                if (btnWin) btnWin.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer bg-slate-900 text-slate-400 hover:text-white border border-slate-800';
+                if (unitLabel) unitLabel.innerText = 'pts';
+                if (contractLabel) contractLabel.innerText = CALC_CONFIG.contracts + ' contrato(s) WDO (R$ 10/pt)';
+                if (presetT1) presetT1.innerText = '🎯 Radar T1 (15 pts)';
+                if (presetT2) presetT2.innerText = '🚀 Radar T2 (35 pts)';
+                if (b3Input) b3Input.value = '2.50';
+                CALC_CONFIG.b3Fee = 2.50;
+                CALC_CONFIG.targetPoints = 2.0;
+                CALC_CONFIG.targetReais = 20.0;
+                CALC_CONFIG.stopPoints = 18.0;
+                if (stopLabel) stopLabel.innerText = 'Stop do Radar: 18 pts';
+            }} else {{
+                if (btnWin) btnWin.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer bg-emerald-500 text-slate-950 font-black shadow-md';
+                if (btnWdo) btnWdo.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer bg-slate-900 text-slate-400 hover:text-white border border-slate-800';
+                if (unitLabel) unitLabel.innerText = 'pts';
+                if (contractLabel) contractLabel.innerText = CALC_CONFIG.contracts + ' contrato(s) WIN (R$ 0,20/pt)';
+                if (presetT1) presetT1.innerText = '🎯 Radar T1 (300 pts)';
+                if (presetT2) presetT2.innerText = '🚀 Radar T2 (600 pts)';
+                if (b3Input) b3Input.value = '0.56';
+                CALC_CONFIG.b3Fee = 0.56;
+                CALC_CONFIG.targetPoints = 100.0;
+                CALC_CONFIG.targetReais = 20.0;
+                CALC_CONFIG.stopPoints = 150.0;
+                if (stopLabel) stopLabel.innerText = 'Stop do Radar: 150 pts';
+            }}
+
+            const inpPts = document.getElementById('calcTargetPointsInput');
+            const inpR = document.getElementById('calcTargetReaisInput');
+            const inpStop = document.getElementById('calcStopPointsInput');
+
+            if (inpPts) inpPts.value = CALC_CONFIG.targetPoints.toFixed(asset === 'WDO' ? 1 : 0);
+            if (inpR) inpR.value = CALC_CONFIG.targetReais.toFixed(2);
+            if (inpStop) inpStop.value = CALC_CONFIG.stopPoints.toFixed(asset === 'WDO' ? 1 : 0);
+
+            calcComputeAndRender();
+        }}
+
+        function calcSetContracts(n) {{
+            const c = Math.max(1, parseInt(n) || 1);
+            CALC_CONFIG.contracts = c;
+            const input = document.getElementById('calcContractsInput');
+            if (input) input.value = c;
+            const contractLabel = document.getElementById('calcAssetContractLabel');
+            if (contractLabel) {{
+                const ptVal = calcGetPointValue();
+                contractLabel.innerText = c + ' contrato(s) ' + CALC_CONFIG.asset + ' (R$ ' + ptVal.toFixed(2).replace('.', ',') + '/pt)';
+            }}
+            const ptVal = calcGetPointValue();
+            CALC_CONFIG.targetReais = CALC_CONFIG.targetPoints * ptVal * c;
+            const inpR = document.getElementById('calcTargetReaisInput');
+            if (inpR) inpR.value = CALC_CONFIG.targetReais.toFixed(2);
+
+            calcComputeAndRender();
+        }}
+
+        function calcAdjustContracts(delta) {{
+            calcSetContracts(CALC_CONFIG.contracts + delta);
+        }}
+
+        function calcSetTargetReais(val) {{
+            const r = Math.max(0.1, parseFloat(val) || 0);
+            CALC_CONFIG.targetReais = r;
+            const ptVal = calcGetPointValue();
+            CALC_CONFIG.targetPoints = r / (ptVal * CALC_CONFIG.contracts);
+
+            const inpR = document.getElementById('calcTargetReaisInput');
+            const inpPts = document.getElementById('calcTargetPointsInput');
+            if (inpR) inpR.value = r.toFixed(2);
+            if (inpPts) inpPts.value = CALC_CONFIG.targetPoints.toFixed(CALC_CONFIG.asset === 'WDO' ? 1 : 0);
+
+            calcComputeAndRender();
+        }}
+
+        function calcSetTargetPoints(pts) {{
+            const p = Math.max(0.1, parseFloat(pts) || 0);
+            CALC_CONFIG.targetPoints = p;
+            const ptVal = calcGetPointValue();
+            CALC_CONFIG.targetReais = p * ptVal * CALC_CONFIG.contracts;
+
+            const inpR = document.getElementById('calcTargetReaisInput');
+            const inpPts = document.getElementById('calcTargetPointsInput');
+            if (inpR) inpR.value = CALC_CONFIG.targetReais.toFixed(2);
+            if (inpPts) inpPts.value = p.toFixed(CALC_CONFIG.asset === 'WDO' ? 1 : 0);
+
+            calcComputeAndRender();
+        }}
+
+        function calcOnInputChanged(source) {{
+            const ptVal = calcGetPointValue();
+            const contracts = Math.max(1, parseInt(document.getElementById('calcContractsInput')?.value) || 1);
+            CALC_CONFIG.contracts = contracts;
+
+            if (source === 'contracts') {{
+                CALC_CONFIG.targetReais = CALC_CONFIG.targetPoints * ptVal * contracts;
+                const inpR = document.getElementById('calcTargetReaisInput');
+                if (inpR) inpR.value = CALC_CONFIG.targetReais.toFixed(2);
+            }} else if (source === 'reais') {{
+                const r = parseFloat(document.getElementById('calcTargetReaisInput')?.value) || 0;
+                CALC_CONFIG.targetReais = r;
+                CALC_CONFIG.targetPoints = r / (ptVal * contracts);
+                const inpPts = document.getElementById('calcTargetPointsInput');
+                if (inpPts) inpPts.value = CALC_CONFIG.targetPoints.toFixed(CALC_CONFIG.asset === 'WDO' ? 1 : 0);
+            }} else if (source === 'points') {{
+                const p = parseFloat(document.getElementById('calcTargetPointsInput')?.value) || 0;
+                CALC_CONFIG.targetPoints = p;
+                CALC_CONFIG.targetReais = p * ptVal * contracts;
+                const inpR = document.getElementById('calcTargetReaisInput');
+                if (inpR) inpR.value = CALC_CONFIG.targetReais.toFixed(2);
+            }} else if (source === 'stop_points') {{
+                const sp = parseFloat(document.getElementById('calcStopPointsInput')?.value) || 0;
+                CALC_CONFIG.stopPoints = sp;
+            }}
+
+            calcComputeAndRender();
+        }}
+
+        function calcOnCostConfigChanged() {{
+            const radios = document.getElementsByName('calcBrokerageType');
+            let bType = 'zero';
+            for (let r of radios) {{
+                if (r.checked) bType = r.value;
+            }}
+            CALC_CONFIG.brokerageType = bType;
+
+            const bValInput = document.getElementById('calcBrokerageValInput');
+            if (bValInput) {{
+                bValInput.disabled = (bType === 'zero');
+                CALC_CONFIG.brokerageVal = parseFloat(bValInput.value) || 0.50;
+            }}
+
+            const b3Input = document.getElementById('calcB3FeeInput');
+            if (b3Input) {{
+                CALC_CONFIG.b3Fee = parseFloat(b3Input.value) || (CALC_CONFIG.asset === 'WDO' ? 2.50 : 0.56);
+            }}
+
+            const lossChk = document.getElementById('calcLossCompensation');
+            CALC_CONFIG.lossCompensation = lossChk ? lossChk.checked : false;
+
+            calcComputeAndRender();
+        }}
+
+        function calcComputeAndRender() {{
+            const ptVal = calcGetPointValue();
+            const contracts = CALC_CONFIG.contracts;
+            const points = CALC_CONFIG.targetPoints;
+            const grossProfit = points * ptVal * contracts;
+            CALC_CONFIG.targetReais = grossProfit;
+
+            // Custos B3
+            const b3Cost = CALC_CONFIG.b3Fee * contracts;
+
+            // Corretagem + ISS (5%)
+            let brokerageCost = 0;
+            if (CALC_CONFIG.brokerageType === 'custom') {{
+                const perContractLeg = CALC_CONFIG.brokerageVal;
+                // Ida + Volta com ISS de 5%
+                brokerageCost = (perContractLeg * 2 * contracts) * 1.05;
+            }}
+
+            const totalCosts = b3Cost + brokerageCost;
+            const operatingResult = grossProfit - totalCosts;
+
+            // Imposto de Renda
+            let taxTotal = 0;
+            let irrf = 0;
+            let darf = 0;
+
+            if (operatingResult > 0 && !CALC_CONFIG.lossCompensation) {{
+                taxTotal = operatingResult * 0.20;
+                irrf = operatingResult * 0.01;
+                darf = operatingResult * 0.19;
+            }}
+
+            const netProfit = operatingResult - taxTotal;
+            const profitPct = grossProfit > 0 ? (netProfit / grossProfit) * 100 : 0;
+            const costsPct = grossProfit > 0 ? (totalCosts / grossProfit) * 100 : 0;
+            const netPtsEquiv = ptVal > 0 ? netProfit / (ptVal * contracts) : 0;
+
+            // Breakeven (ponto de equilíbrio onde lucro líquido = 0)
+            const breakevenPts = (ptVal * contracts > 0) ? (totalCosts / (ptVal * contracts)) : 0;
+            const minTick = (CALC_CONFIG.asset === 'WDO' ? 0.5 : 5.0);
+            const practicalBreakevenPts = Math.ceil(breakevenPts / minTick) * minTick;
+
+            // Stop Loss
+            const stopPts = CALC_CONFIG.stopPoints;
+            const stopGross = stopPts * ptVal * contracts;
+            const stopNetLoss = stopGross + totalCosts;
+
+            // Atualização dos Elementos na Tela
+            const elNetProfit = document.getElementById('calcNetProfitDisplay');
+            if (elNetProfit) {{
+                elNetProfit.innerText = 'R$ ' + netProfit.toLocaleString('pt-BR', {{ minimumFractionDigits: 2, maximumFractionDigits: 2 }});
+                elNetProfit.className = netProfit >= 0 ? 'text-3xl sm:text-4xl font-black text-white font-mono tracking-tight' : 'text-3xl sm:text-4xl font-black text-rose-400 font-mono tracking-tight';
+            }}
+
+            const elNetPts = document.getElementById('calcNetPtsEquiv');
+            if (elNetPts) {{
+                elNetPts.innerText = '(equivale a ' + netPtsEquiv.toFixed(CALC_CONFIG.asset === 'WDO' ? 2 : 1) + ' pts líquidos)';
+            }}
+
+            const elProfitBadge = document.getElementById('calcProfitPctBadge');
+            if (elProfitBadge) {{
+                if (netProfit >= 0) {{
+                    elProfitBadge.innerText = profitPct.toFixed(1) + '% do Bruto';
+                    elProfitBadge.className = 'text-xs px-2.5 py-0.5 rounded-full font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+                }} else {{
+                    elProfitBadge.innerText = 'Prejuízo Operacional';
+                    elProfitBadge.className = 'text-xs px-2.5 py-0.5 rounded-full font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40';
+                }}
+            }}
+
+            const elSummaryMsg = document.getElementById('calcSummaryMsg');
+            if (elSummaryMsg) {{
+                if (CALC_CONFIG.lossCompensation) {{
+                    elSummaryMsg.innerHTML = 'De <strong>R$ ' + grossProfit.toFixed(2).replace('.', ',') + ' brutos</strong>, você paga <strong>R$ ' + totalCosts.toFixed(2).replace('.', ',') + ' em taxas</strong> e <strong>R$ 0,00 de IR (prejuízo compensado)</strong>, sobrando <strong>R$ ' + netProfit.toFixed(2).replace('.', ',') + ' limpos no seu bolso</strong>.';
+                }} else {{
+                    elSummaryMsg.innerHTML = 'De <strong>R$ ' + grossProfit.toFixed(2).replace('.', ',') + ' brutos</strong>, você paga <strong>R$ ' + totalCosts.toFixed(2).replace('.', ',') + ' em taxas</strong> e <strong>R$ ' + taxTotal.toFixed(2).replace('.', ',') + ' de IR (20%)</strong>, sobrando <strong>R$ ' + netProfit.toFixed(2).replace('.', ',') + ' limpos no seu bolso</strong>.';
+                }}
+            }}
+
+            // 3 Cards
+            const elGrossDisp = document.getElementById('calcGrossProfitDisplay');
+            if (elGrossDisp) elGrossDisp.innerText = '+ R$ ' + grossProfit.toFixed(2).replace('.', ',');
+            const elGrossPtsDisp = document.getElementById('calcGrossPtsDisplay');
+            if (elGrossPtsDisp) elGrossPtsDisp.innerText = points.toFixed(CALC_CONFIG.asset === 'WDO' ? 1 : 0) + ' pts (' + contracts + ' ct)';
+
+            const elTotalCostsDisp = document.getElementById('calcTotalCostsDisplay');
+            if (elTotalCostsDisp) elTotalCostsDisp.innerText = '- R$ ' + totalCosts.toFixed(2).replace('.', ',');
+            const elCostsPctDisp = document.getElementById('calcCostsPctDisplay');
+            if (elCostsPctDisp) elCostsPctDisp.innerText = costsPct.toFixed(1) + '% do trade';
+
+            const elTotalTaxDisp = document.getElementById('calcTotalTaxDisplay');
+            if (elTotalTaxDisp) elTotalTaxDisp.innerText = '- R$ ' + taxTotal.toFixed(2).replace('.', ',');
+            const elTaxDarfBreakdown = document.getElementById('calcTaxDarfBreakdown');
+            if (elTaxDarfBreakdown) {{
+                if (CALC_CONFIG.lossCompensation) {{
+                    elTaxDarfBreakdown.innerText = 'Isento por compensação';
+                }} else {{
+                    elTaxDarfBreakdown.innerText = 'IRRF: R$ ' + irrf.toFixed(2).replace('.', ',') + ' | DARF: R$ ' + darf.toFixed(2).replace('.', ',');
+                }}
+            }}
+
+            // Tabela Passo a Passo
+            const tGross = document.getElementById('tblGrossVal');
+            if (tGross) tGross.innerText = 'R$ ' + grossProfit.toFixed(2).replace('.', ',');
+            const tB3 = document.getElementById('tblB3Val');
+            if (tB3) tB3.innerText = '- R$ ' + b3Cost.toFixed(2).replace('.', ',');
+            const tBrok = document.getElementById('tblBrokerageVal');
+            if (tBrok) tBrok.innerText = '- R$ ' + brokerageCost.toFixed(2).replace('.', ',');
+            const tTaxBase = document.getElementById('tblTaxBaseVal');
+            if (tTaxBase) tTaxBase.innerText = 'R$ ' + Math.max(0, operatingResult).toFixed(2).replace('.', ',');
+            const tIrrf = document.getElementById('tblIrrfVal');
+            if (tIrrf) tIrrf.innerText = '- R$ ' + irrf.toFixed(2).replace('.', ',');
+            const tDarf = document.getElementById('tblDarfVal');
+            if (tDarf) tDarf.innerText = '- R$ ' + darf.toFixed(2).replace('.', ',');
+            const tNet = document.getElementById('tblNetVal');
+            if (tNet) tNet.innerText = 'R$ ' + netProfit.toFixed(2).replace('.', ',');
+
+            // Breakeven Text
+            const elBreakevenText = document.getElementById('calcBreakevenText');
+            if (elBreakevenText) {{
+                elBreakevenText.innerHTML = 'Para cobrir os <strong>R$ ' + totalCosts.toFixed(2).replace('.', ',') + '</strong> de taxas, você precisa de pelo menos <strong>' + practicalBreakevenPts.toFixed(CALC_CONFIG.asset === 'WDO' ? 1 : 0) + ' pt(s)</strong> no ' + CALC_CONFIG.asset + '.';
+            }}
+
+            // Stop Loss Text
+            const elStopLossText = document.getElementById('calcStopLossText');
+            const elStopReaisDisp = document.getElementById('calcStopReaisDisplay');
+            if (elStopReaisDisp) elStopReaisDisp.value = '- ' + stopGross.toFixed(2);
+            if (elStopLossText) {{
+                elStopLossText.innerHTML = 'Prejuízo real de <strong>- R$ ' + stopNetLoss.toFixed(2).replace('.', ',') + '</strong> (R$ ' + stopGross.toFixed(2).replace('.', ',') + ' perda + R$ ' + totalCosts.toFixed(2).replace('.', ',') + ' taxas B3).';
+            }}
+        }}
+
+        function calcInit() {{
+            calcComputeAndRender();
+        }}
+
         setInterval(updateClockAndSessions, 1000);
         setInterval(fetchLiveBtc, 15000);
         setInterval(fetchLiveForex, 30000);
@@ -2517,6 +3138,7 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
         document.addEventListener('DOMContentLoaded', () => {{
             refreshLiveMarket();
             initAuditChart();
+            calcInit();
         }});
     </script>
 
