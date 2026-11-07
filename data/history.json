@@ -1202,5 +1202,31 @@
       "points_range": "-56.0 a -25.5 pts"
     },
     "status": "PENDENTE_FECHAMENTO"
+  },
+  {
+    "date": "2026-11-06",
+    "win": {
+      "bias": "LATERAL",
+      "expected_pct": "-0.3% a +0.3%",
+      "actual_pct": "-",
+      "actual_dir": "-",
+      "hit": null
+    },
+    "wdo": {
+      "bias": "FORTE ALTA",
+      "expected_pct": "+0.5% a +1.1%",
+      "actual_pct": "-",
+      "actual_dir": "-",
+      "hit": null,
+      "base_price": "5.514.5 pts",
+      "line_t1": "5.542.0 pts",
+      "line_t2": "5.575.0 pts",
+      "line_stop": "5.498.0 pts",
+      "pts_t1": "+27.5 pts",
+      "pts_t2": "+60.5 pts",
+      "pts_stop": "-16.5 pts",
+      "points_range": "+27.5 a +60.5 pts"
+    },
+    "status": "PENDENTE_FECHAMENTO"
   }
 ]

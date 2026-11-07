@@ -359,8 +359,8 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
                 <div>
                     <h1 class="text-sm font-extrabold tracking-tight text-white flex items-center gap-2">
                         RADAR DE ABERTURA DAY TRADE
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                            AO VIVO
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                            ⏸️ PAUSADO
                         </span>
                     </h1>
                     <p class="text-[11px] text-slate-400">Projeção em Pontos | Travas de Stop | Pré-Mercado NY</p>
@@ -387,6 +387,22 @@ def render_html_dashboard(analysis, collected_data, accuracy_metrics, output_pat
     </header>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 py-5 space-y-5">
+
+        <!-- Alerta de Painel / Automação Temporariamente Pausada -->
+        <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-lg shadow-inner">
+                    ⏸️
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold text-amber-300 uppercase tracking-wider">Painel Temporariamente Desligado / Pausado</h3>
+                    <p class="text-[11px] text-slate-300 mt-0.5">As rotinas automáticas de pré-mercado e varredura de notícias foram pausadas na nuvem. A calculadora de custos, auditoria e consultas continuam funcionando normalmente.</p>
+                </div>
+            </div>
+            <span class="text-[10px] font-mono font-bold uppercase bg-amber-500/20 border border-amber-500/40 px-2.5 py-1 rounded-lg text-amber-300">
+                Robô em Standby
+            </span>
+        </div>
 
         <!-- 1. HERO: PLANO DE VOO EM 30 SEGUNDOS -->
         <section class="bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950 border-2 border-amber-500/40 rounded-2xl p-4 sm:p-5 shadow-2xl relative overflow-hidden">

@@ -1,15 +1,18 @@
 name: Radar Day Trade B3 - Automacao Diaria
 
 on:
-  schedule:
-    # 08:20 BRT (Pré-Mercado, Coleta & Processamento Matinal) = 11:20 UTC (Segunda a Sexta)
-    - cron: '20 11 * * 1-5'
-    # 10:15 BRT (Abertura de Wall Street & Ações B3) = 13:15 UTC (Segunda a Sexta)
-    - cron: '15 13 * * 1-5'
-    # 13:00 BRT (Ajuste Intradiário da Tarde) = 16:00 UTC (Segunda a Sexta)
-    - cron: '00 16 * * 1-5'
-    # 18:15 BRT (Fechamento e Auditoria) = 21:15 UTC (Segunda a Sexta)
-    - cron: '15 21 * * 1-5'
+  # AUTOMACAO TEMPORARIAMENTE PAUSADA A PEDIDO DO OPERADOR
+  # Para reativar o agendamento automatico, basta descomentar o bloco 'schedule' abaixo:
+  # schedule:
+  #   # 08:20 BRT (Pré-Mercado, Coleta & Processamento Matinal) = 11:20 UTC (Segunda a Sexta)
+  #   - cron: '20 11 * * 1-5'
+  #   # 10:15 BRT (Abertura de Wall Street & Ações B3) = 13:15 UTC (Segunda a Sexta)
+  #   - cron: '15 13 * * 1-5'
+  #   # 13:00 BRT (Ajuste Intradiário da Tarde) = 16:00 UTC (Segunda a Sexta)
+  #   - cron: '00 16 * * 1-5'
+  #   # 18:15 BRT (Fechamento e Auditoria) = 21:15 UTC (Segunda a Sexta)
+  #   - cron: '15 21 * * 1-5'
+
   workflow_dispatch:
     inputs:
       mode:
@@ -20,13 +23,15 @@ on:
         options:
           - morning
           - closing
-  push:
-    branches:
-      - main
-    paths:
-      - 'src/**'
-      - 'run_briefing.py'
-      - '.github/workflows/**'
+
+  # Disparo automatico em push tambem pausado temporariamente
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'src/**'
+  #     - 'run_briefing.py'
+  #     - '.github/workflows/**'
 
 jobs:
   run-radar:
